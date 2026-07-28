@@ -1,0 +1,1732 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Sistemas Operativos I",
+    "section": "",
+    "text": "UNIVERSIDAD MARIANO GÁLVEZ DE GUATEMALA\n\n\nFacultad de Ingeniería en Sistemas\n\n\n\n\n\nSISTEMAS OPERATIVOS I\n\n\nIntroducción y Fundamentos\n\n\n\n\n\nEditorial Académica\nIngeniería en Sistemas\n\n\nIng. Jorge Luis García Chacón\n\n\nSegundo Semestre\nEdición 2026\n\n\nDiseñar una vez.\nEnseñar toda la vida.\n\n\n\n1 Créditos Editoriales\nAutor\nIng. Jorge Luis García Chacón\nEditorial\nEditorial Académica de Ingeniería en Sistemas\nArquitectura Editorial\nOpenAI · ChatGPT\nEdición\n2026\n\n\n2 Acerca de este volumen\nEste libro forma parte de la colección Editorial Académica de Ingeniería en Sistemas.\nSu propósito es proporcionar material de estudio moderno, visual y práctico para apoyar el proceso de enseñanza y aprendizaje.\nCada capítulo ha sido diseñado para combinar teoría, ejemplos, diagramas, laboratorios y ejercicios que permitan al estudiante comprender los conceptos y aplicarlos en situaciones reales.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>index.html</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html",
+    "title": "2  Presentación de la clase",
+    "section": "",
+    "text": "2.1 Objetivos de aprendizaje\nBienvenidos al curso de Sistemas Operativos I. En esta primera clase estudiaremos el software que coordina prácticamente todo lo que ocurre en una computadora, un teléfono, un servidor o un dispositivo inteligente.\nImagine que enciende su computadora y, en pocos segundos, puede abrir un navegador, reproducir música, guardar archivos, conectarse a Internet y utilizar varios programas al mismo tiempo. Mientras usted observa una pantalla aparentemente sencilla, el equipo está detectando dispositivos, reservando memoria, iniciando servicios, creando procesos, aplicando controles de seguridad y organizando el acceso al almacenamiento.\nLa pieza que coordina esas actividades es el sistema operativo.\nAl finalizar esta clase, el estudiante será capaz de:",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#objetivos-de-aprendizaje",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#objetivos-de-aprendizaje",
+    "title": "2  Presentación de la clase",
+    "section": "",
+    "text": "Explicar qué es un sistema operativo y por qué es indispensable.\nIdentificar la relación entre usuario, aplicaciones, sistema operativo y hardware.\nReconocer las funciones principales del sistema operativo.\nDiferenciar una interfaz gráfica de una interfaz de línea de comandos.\nClasificar sistemas operativos según su propósito y forma de trabajo.\nExplicar, de manera introductoria, qué son el kernel, los procesos y las llamadas al sistema.\nIdentificar el sistema operativo, la versión y las características básicas de su propio equipo.\n\n\n\n\n\n\n\nTipEl libro que nos hubiera gustado tener\n\n\n\nEn este curso no memorizaremos listas aisladas. Relacionaremos cada concepto con situaciones que un ingeniero encontrará al administrar computadoras, servidores, redes y aplicaciones.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#una-comparación-sencilla",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#una-comparación-sencilla",
+    "title": "2  Presentación de la clase",
+    "section": "3.1 Una comparación sencilla",
+    "text": "3.1 Una comparación sencilla\nPensemos en un hotel:\n\nLos huéspedes representan a los usuarios y aplicaciones.\nLas habitaciones, energía, ascensores y servicios representan los recursos de hardware.\nLa administración del hotel representa al sistema operativo.\n\nCada huésped utiliza servicios sin controlar directamente toda la infraestructura. La administración asigna recursos, organiza prioridades, establece reglas y evita conflictos.\n\n\n\n\n\n\nImportanteImportante\n\n\n\nEl sistema operativo no es únicamente la apariencia del escritorio. La interfaz gráfica es solo una de sus capas. Debajo de ella existen procesos, controladores, servicios, mecanismos de seguridad y un kernel que trabaja continuamente.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#modo-usuario-y-modo-privilegiado",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#modo-usuario-y-modo-privilegiado",
+    "title": "2  Presentación de la clase",
+    "section": "4.1 Modo usuario y modo privilegiado",
+    "text": "4.1 Modo usuario y modo privilegiado\nLos procesadores modernos permiten separar al menos dos niveles de ejecución:\n\n\n\n\n\n\n\n\nNivel\nCaracterística principal\nEjemplo\n\n\n\n\nModo usuario\nAcceso limitado; las aplicaciones no controlan directamente todo el hardware\nNavegador, editor de texto, reproductor\n\n\nModo kernel o privilegiado\nAcceso a operaciones críticas y recursos protegidos\nKernel, controladores y componentes esenciales\n\n\n\nEsta separación evita que un error común en una aplicación tenga acceso irrestricto a toda la memoria o a los dispositivos del sistema.\n\n\n\n\n\n\nAdvertenciaError común\n\n\n\nDecir que una aplicación “habla directamente con el hardware” suele ser una simplificación. En la mayoría de los casos, la aplicación solicita servicios al sistema operativo, y este coordina la operación con el hardware.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#gestión-de-procesos",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#gestión-de-procesos",
+    "title": "2  Presentación de la clase",
+    "section": "5.1 Gestión de procesos",
+    "text": "5.1 Gestión de procesos\nUn proceso es un programa en ejecución. El sistema operativo debe decidir:\n\nqué proceso utiliza el procesador;\ndurante cuánto tiempo;\ncuándo se pausa;\ncuándo continúa;\ny cómo se comunica con otros procesos.\n\nCuando una persona abre un navegador, un editor y una videollamada, el equipo parece ejecutar todo simultáneamente. En realidad, el sistema operativo distribuye el tiempo del procesador entre muchas actividades, aprovechando además los múltiples núcleos de la CPU.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#gestión-de-memoria",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#gestión-de-memoria",
+    "title": "2  Presentación de la clase",
+    "section": "5.2 Gestión de memoria",
+    "text": "5.2 Gestión de memoria\nEl sistema operativo asigna memoria a cada proceso y procura que una aplicación no modifique sin autorización la memoria de otra.\nTambién puede utilizar memoria virtual, una técnica que permite organizar el espacio de direcciones de los procesos y, cuando es necesario, apoyar temporalmente la memoria física con almacenamiento secundario.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#gestión-de-archivos-y-almacenamiento",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#gestión-de-archivos-y-almacenamiento",
+    "title": "2  Presentación de la clase",
+    "section": "5.3 Gestión de archivos y almacenamiento",
+    "text": "5.3 Gestión de archivos y almacenamiento\nEl sistema operativo organiza la información mediante archivos, carpetas, permisos y sistemas de archivos.\nEntre sus tareas se encuentran:\n\ncrear, leer, modificar y eliminar archivos;\norganizar directorios;\ncontrolar permisos;\nregistrar ubicaciones y metadatos;\ncoordinar el uso de discos, memorias USB y otras unidades.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#gestión-de-dispositivos",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#gestión-de-dispositivos",
+    "title": "2  Presentación de la clase",
+    "section": "5.4 Gestión de dispositivos",
+    "text": "5.4 Gestión de dispositivos\nLos dispositivos poseen características distintas. Para utilizarlos, el sistema operativo emplea controladores o drivers.\nUn controlador traduce solicitudes generales del sistema a operaciones específicas del dispositivo. Gracias a esta capa, una aplicación puede imprimir sin conocer todos los detalles internos de cada impresora.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#seguridad-y-protección",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#seguridad-y-protección",
+    "title": "2  Presentación de la clase",
+    "section": "5.5 Seguridad y protección",
+    "text": "5.5 Seguridad y protección\nEl sistema operativo administra usuarios, sesiones, permisos, credenciales y aislamiento entre procesos.\nLa seguridad no consiste únicamente en utilizar una contraseña. También incluye:\n\ncontrolar quién puede acceder a un archivo;\nlimitar privilegios;\nproteger la memoria;\naplicar actualizaciones;\nregistrar eventos;\nbloquear operaciones no autorizadas.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#redes-y-comunicación",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#redes-y-comunicación",
+    "title": "2  Presentación de la clase",
+    "section": "5.6 Redes y comunicación",
+    "text": "5.6 Redes y comunicación\nLos sistemas operativos modernos incluyen una pila de red que permite utilizar protocolos, interfaces, puertos y servicios de comunicación.\nCuando un navegador accede a una página web, el sistema operativo participa en la resolución de nombres, el envío de paquetes, la recepción de información y la entrega de datos a la aplicación correspondiente.\n\n\n\n\n\n\nTipEn la práctica profesional\n\n\n\nCuando un servidor deja de responder, un administrador no debería comenzar reinstalando el sistema operativo. Primero revisa el uso de CPU, memoria, disco, red, procesos y registros para identificar la causa del problema.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#primeras-computadoras",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#primeras-computadoras",
+    "title": "2  Presentación de la clase",
+    "section": "6.1 Primeras computadoras",
+    "text": "6.1 Primeras computadoras\nEn las primeras generaciones, los programas se cargaban manualmente y el operador controlaba gran parte del proceso. El tiempo de la computadora era costoso y se perdía mucho tiempo preparando cada trabajo.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#monitor-residente",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#monitor-residente",
+    "title": "2  Presentación de la clase",
+    "section": "6.2 Monitor residente",
+    "text": "6.2 Monitor residente\nEl monitor residente permanecía en memoria y automatizaba parte de la carga y ejecución de programas. Fue un paso inicial hacia la coordinación automática de trabajos.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#procesamiento-por-lotes",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#procesamiento-por-lotes",
+    "title": "2  Presentación de la clase",
+    "section": "6.3 Procesamiento por lotes",
+    "text": "6.3 Procesamiento por lotes\nEl procesamiento por lotes agrupó varios trabajos para ejecutarlos secuencialmente con poca interacción humana. Esta modalidad mejoró la utilización del equipo, aunque el usuario debía esperar para recibir resultados.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#multiprogramación-y-tiempo-compartido",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#multiprogramación-y-tiempo-compartido",
+    "title": "2  Presentación de la clase",
+    "section": "6.4 Multiprogramación y tiempo compartido",
+    "text": "6.4 Multiprogramación y tiempo compartido\nLa multiprogramación permitió mantener varios trabajos en memoria y utilizar el procesador mientras otro esperaba una operación de entrada o salida.\nEl tiempo compartido extendió esta idea para atender a varios usuarios de forma interactiva, ofreciendo la impresión de que cada uno disponía del sistema.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#computadoras-personales-e-interfaces-gráficas",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#computadoras-personales-e-interfaces-gráficas",
+    "title": "2  Presentación de la clase",
+    "section": "6.5 Computadoras personales e interfaces gráficas",
+    "text": "6.5 Computadoras personales e interfaces gráficas\nLas computadoras personales acercaron la informática a hogares y oficinas. Las interfaces gráficas facilitaron el uso mediante ventanas, iconos, menús y dispositivos apuntadores.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#internet-dispositivos-móviles-nube-y-virtualización",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#internet-dispositivos-móviles-nube-y-virtualización",
+    "title": "2  Presentación de la clase",
+    "section": "6.6 Internet, dispositivos móviles, nube y virtualización",
+    "text": "6.6 Internet, dispositivos móviles, nube y virtualización\nLos sistemas actuales ya no se limitan a una computadora de escritorio. Existen sistemas para:\n\nservidores físicos y virtuales;\nteléfonos y tabletas;\ndispositivos integrados;\ninfraestructura en la nube;\nvehículos y equipos industriales;\nplataformas de contenedores.\n\n\n\n\n\n\n\nNotaPerspectiva histórica\n\n\n\nLos sistemas antiguos como MS-DOS, Windows XP o las primeras versiones de Mac OS siguen siendo importantes para comprender la evolución, pero no deben presentarse como el panorama tecnológico actual.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#windows-y-windows-server",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#windows-y-windows-server",
+    "title": "2  Presentación de la clase",
+    "section": "7.1 Windows y Windows Server",
+    "text": "7.1 Windows y Windows Server\nA julio de 2026, Windows 11 continúa como la familia principal de escritorio de Microsoft. Microsoft mantiene información oficial de versiones y canales de actualización en su portal de salud de versiones. Windows Server 2025 es la versión LTSC vigente de la plataforma de servidores y se orienta a seguridad, virtualización, almacenamiento e integración híbrida.\nLa línea de tiempo incluida en el material original muestra parte de la evolución de Windows. Se conserva como referencia histórica, pero debe leerse junto con la información actualizada de esta sección.\n\n\n\nEvolución de Windows en el material original de la clase",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#gnulinux",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#gnulinux",
+    "title": "2  Presentación de la clase",
+    "section": "7.2 GNU/Linux",
+    "text": "7.2 GNU/Linux\nLinux es el kernel iniciado por Linus Torvalds. Cuando se combina con herramientas, bibliotecas, gestores de paquetes y entornos de usuario, forma sistemas completos distribuidos en variantes como Ubuntu, Debian, Fedora, Rocky Linux, AlmaLinux o Arch Linux.\nUbuntu 24.04 LTS continúa siendo una versión de soporte prolongado ampliamente utilizada. Las versiones LTS priorizan estabilidad y mantenimiento extendido, una característica valiosa en organizaciones y servidores.\n\n\n\n\n\n\nImportantePrecisión terminológica\n\n\n\nLinux es técnicamente el kernel. En el uso cotidiano se habla de “sistema operativo Linux”, pero una expresión más precisa para muchas distribuciones es GNU/Linux o simplemente el nombre de la distribución: Ubuntu, Debian, Fedora, etc.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#macos",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#macos",
+    "title": "2  Presentación de la clase",
+    "section": "7.3 macOS",
+    "text": "7.3 macOS\nmacOS es el sistema operativo de las computadoras Mac. A julio de 2026, macOS Tahoe 26 es la versión estable con actualizaciones de seguridad publicadas por Apple; macOS 27 se encuentra anunciado o en ciclo previo a su disponibilidad general según el momento de consulta.\nPara un libro reutilizable es preferible enseñar la familia, su arquitectura general y sus herramientas, en lugar de depender únicamente del número de versión.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#android-e-ios",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#android-e-ios",
+    "title": "2  Presentación de la clase",
+    "section": "7.4 Android e iOS",
+    "text": "7.4 Android e iOS\nAndroid domina una gran variedad de dispositivos móviles y utiliza el kernel Linux como base, aunque su entorno de aplicaciones y servicios es diferente al de una distribución GNU/Linux de escritorio.\nAndroid 17 fue publicado en junio de 2026. En el ecosistema Apple, iOS 26 continúa como versión estable con actualizaciones de seguridad, mientras iOS 27 fue anunciado para una etapa posterior.\n\n\n\n\n\n\nTipConsejo del Ingeniero\n\n\n\nLas versiones cambian con rapidez. En la práctica profesional, siempre consulte la documentación oficial antes de planificar una instalación, una actualización o una migración.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#interfaz-gráfica-de-usuario",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#interfaz-gráfica-de-usuario",
+    "title": "2  Presentación de la clase",
+    "section": "8.1 Interfaz gráfica de usuario",
+    "text": "8.1 Interfaz gráfica de usuario\nLa GUI (Graphical User Interface) utiliza ventanas, iconos, menús, botones y otros elementos visuales.\nSus ventajas incluyen:\n\nfacilidad de aprendizaje;\ndescubrimiento visual de opciones;\ninteracción mediante mouse, pantalla táctil o teclado;\nbuena experiencia para tareas generales.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#interfaz-de-línea-de-comandos",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#interfaz-de-línea-de-comandos",
+    "title": "2  Presentación de la clase",
+    "section": "8.2 Interfaz de línea de comandos",
+    "text": "8.2 Interfaz de línea de comandos\nLa CLI (Command-Line Interface) permite escribir instrucciones en una terminal o intérprete de comandos.\nEntre sus ventajas se encuentran:\n\nautomatización mediante scripts;\nadministración remota;\nprecisión y repetibilidad;\nmenor consumo de recursos en muchos escenarios;\nacceso rápido a herramientas avanzadas.\n\n\n\n\nEjemplos de interfaces conservados del material original",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#no-son-enemigas",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#no-son-enemigas",
+    "title": "2  Presentación de la clase",
+    "section": "8.3 No son enemigas",
+    "text": "8.3 No son enemigas\nGUI y CLI no deben verse como opciones excluyentes. Un profesional utiliza ambas según la tarea.\n\n\n\nSituación\nInterfaz conveniente\n\n\n\n\nConfigurar una opción ocasional\nGUI\n\n\nRepetir la misma tarea en 100 equipos\nCLI y automatización\n\n\nExplorar visualmente archivos\nGUI\n\n\nAdministrar un servidor remoto\nCLI\n\n\nAnalizar procesos rápidamente\nGUI o CLI, según el contexto\n\n\n\n\n\n\n\n\n\nTipEn la práctica profesional\n\n\n\nPowerShell, Bash y otras shells permiten convertir procedimientos manuales en scripts repetibles. Esa capacidad reduce errores y facilita administrar muchos equipos.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#monotarea-y-multitarea",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#monotarea-y-multitarea",
+    "title": "2  Presentación de la clase",
+    "section": "9.1 Monotarea y multitarea",
+    "text": "9.1 Monotarea y multitarea\n\nMonotarea: ejecuta una tarea principal a la vez.\nMultitarea: administra varios procesos concurrentes y distribuye recursos entre ellos.\n\nLos sistemas generales actuales son multitarea.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#monousuario-y-multiusuario",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#monousuario-y-multiusuario",
+    "title": "2  Presentación de la clase",
+    "section": "9.2 Monousuario y multiusuario",
+    "text": "9.2 Monousuario y multiusuario\n\nMonousuario: está diseñado principalmente para una sesión o usuario a la vez.\nMultiusuario: permite atender varios usuarios y separar recursos, permisos y sesiones.\n\nUn servidor Linux o Windows Server puede atender múltiples usuarios y servicios simultáneamente.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#procesamiento-por-lotes-1",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#procesamiento-por-lotes-1",
+    "title": "2  Presentación de la clase",
+    "section": "9.3 Procesamiento por lotes",
+    "text": "9.3 Procesamiento por lotes\nEjecuta conjuntos de trabajos con poca interacción durante el procesamiento. Sigue siendo útil en tareas como generación nocturna de reportes, respaldo de información o procesamiento masivo de datos.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#tiempo-compartido",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#tiempo-compartido",
+    "title": "2  Presentación de la clase",
+    "section": "9.4 Tiempo compartido",
+    "text": "9.4 Tiempo compartido\nDistribuye el tiempo de CPU entre múltiples usuarios o procesos interactivos, proporcionando respuestas suficientemente rápidas para mantener la sensación de atención individual.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#sistemas-de-red-y-distribuidos",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#sistemas-de-red-y-distribuidos",
+    "title": "2  Presentación de la clase",
+    "section": "9.5 Sistemas de red y distribuidos",
+    "text": "9.5 Sistemas de red y distribuidos\nUn sistema operativo de red facilita compartir servicios y recursos entre equipos conectados. Un sistema distribuido coordina componentes ubicados en diferentes nodos para ofrecer un servicio integrado.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#sistemas-de-tiempo-real",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#sistemas-de-tiempo-real",
+    "title": "2  Presentación de la clase",
+    "section": "9.6 Sistemas de tiempo real",
+    "text": "9.6 Sistemas de tiempo real\nUn sistema de tiempo real debe responder dentro de límites temporales definidos.\n\nTiempo real duro: incumplir el plazo puede producir una falla crítica.\nTiempo real blando: el retraso reduce la calidad del servicio, pero no necesariamente causa una falla catastrófica.\n\nEjemplos:\n\ncontrol industrial;\nsistemas automotrices;\ntelecomunicaciones;\nrobótica;\ninstrumentación médica;\ncontrol de energía.\n\n\n\n\nEsquema de sistema de tiempo real tomado del material original\n\n\n\n\n\n\n\n\nAdvertenciaAclaración\n\n\n\n“Tiempo real” no significa simplemente “muy rápido”. Significa que el sistema debe responder dentro de un tiempo máximo conocido y verificable.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#bibliotecas-y-api",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#bibliotecas-y-api",
+    "title": "2  Presentación de la clase",
+    "section": "10.1 Bibliotecas y API",
+    "text": "10.1 Bibliotecas y API\nLos lenguajes de alto nivel suelen utilizar bibliotecas que presentan funciones más sencillas. La biblioteca prepara los parámetros y realiza la transición necesaria para solicitar el servicio al sistema operativo.\nPor ejemplo, una aplicación puede llamar una función para abrir un archivo. Esa función termina utilizando servicios del sistema operativo para validar permisos, localizar el archivo y coordinar el acceso al almacenamiento.\n\n\n\n\n\n\nNotaObserve\n\n\n\nLas llamadas al sistema forman una frontera controlada entre las aplicaciones y el kernel. Esta frontera permite ofrecer servicios sin entregar a cada programa control total sobre el equipo.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#cpu",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#cpu",
+    "title": "2  Presentación de la clase",
+    "section": "11.1 CPU",
+    "text": "11.1 CPU\nLa unidad central de procesamiento ejecuta instrucciones y realiza operaciones aritméticas, lógicas y de control.\nEn sistemas modernos, una CPU puede incluir varios núcleos, memorias caché y mecanismos especializados. El sistema operativo planifica procesos e hilos para aprovechar esos recursos.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#memoria-principal",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#memoria-principal",
+    "title": "2  Presentación de la clase",
+    "section": "11.2 Memoria principal",
+    "text": "11.2 Memoria principal\nLa memoria RAM almacena temporalmente instrucciones y datos necesarios durante la ejecución.\nEs rápida, pero normalmente pierde su contenido al apagar el equipo. El sistema operativo administra qué regiones utiliza cada proceso y coordina la memoria virtual.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#almacenamiento-secundario",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#almacenamiento-secundario",
+    "title": "2  Presentación de la clase",
+    "section": "11.3 Almacenamiento secundario",
+    "text": "11.3 Almacenamiento secundario\nSSD, discos duros y otros medios conservan información de forma persistente. Son más lentos que la RAM, pero poseen mayor capacidad.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#unidad-de-control-y-alu",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#unidad-de-control-y-alu",
+    "title": "2  Presentación de la clase",
+    "section": "11.4 Unidad de control y ALU",
+    "text": "11.4 Unidad de control y ALU\nLa unidad de control coordina la ejecución de instrucciones dentro del procesador. La unidad aritmética y lógica realiza operaciones matemáticas y comparaciones.\nEn cursos modernos estos componentes se estudian como partes de la arquitectura del procesador, mientras el sistema operativo se analiza como el software que administra su utilización.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#periféricos-y-entradasalida",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#periféricos-y-entradasalida",
+    "title": "2  Presentación de la clase",
+    "section": "11.5 Periféricos y entrada/salida",
+    "text": "11.5 Periféricos y entrada/salida\nTeclado, mouse, pantalla, almacenamiento, impresoras y adaptadores de red intercambian información con el sistema mediante controladores y mecanismos de entrada/salida.\n\n\n\n\n\n\nTipConsejo del Ingeniero\n\n\n\nCuando una computadora está lenta, no asuma inmediatamente que “la CPU está mala”. El cuello de botella puede encontrarse en memoria, almacenamiento, red, temperatura, controladores o en un proceso específico.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#propósito",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#propósito",
+    "title": "2  Presentación de la clase",
+    "section": "13.1 Propósito",
+    "text": "13.1 Propósito\nIdentificar el sistema operativo del equipo y relacionar los conceptos estudiados con información real.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#actividad-a-información-general",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#actividad-a-información-general",
+    "title": "2  Presentación de la clase",
+    "section": "13.2 Actividad A: información general",
+    "text": "13.2 Actividad A: información general\nRegistre los siguientes datos:\n\n\n\nDato\nResultado de su equipo\n\n\n\n\nSistema operativo\n\n\n\nEdición o distribución\n\n\n\nVersión\n\n\n\nArquitectura\n\n\n\nProcesador\n\n\n\nMemoria RAM\n\n\n\nNombre del equipo\n\n\n\nUsuario actual\n\n\n\nEspacio disponible",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#actividad-b-windows",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#actividad-b-windows",
+    "title": "2  Presentación de la clase",
+    "section": "13.3 Actividad B: Windows",
+    "text": "13.3 Actividad B: Windows\nAbra Terminal, PowerShell o Símbolo del sistema y ejecute:\nsysteminfo\nTambién puede utilizar:\nGet-ComputerInfo\nComandos básicos seguros para explorar:\nhostname\nwhoami\nGet-Location\nGet-ChildItem\nResponda:\n\n¿Qué versión y compilación de Windows utiliza?\n¿Cuánta memoria física aparece instalada?\n¿Cuál es el nombre del equipo?\n¿Qué diferencia observa entre Get-ChildItem y la vista del Explorador de archivos?",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#actividad-c-macos",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#actividad-c-macos",
+    "title": "2  Presentación de la clase",
+    "section": "13.4 Actividad C: macOS",
+    "text": "13.4 Actividad C: macOS\nAbra Terminal y ejecute:\nsw_vers\nuname -a\nwhoami\nhostname\npwd\nls\nsystem_profiler SPHardwareDataType\nResponda:\n\n¿Qué versión de macOS utiliza?\n¿Qué arquitectura reporta el equipo?\n¿Qué información muestra pwd?\n¿Qué relación encuentra entre Finder y ls?",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#actividad-d-gnulinux",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#actividad-d-gnulinux",
+    "title": "2  Presentación de la clase",
+    "section": "13.5 Actividad D: GNU/Linux",
+    "text": "13.5 Actividad D: GNU/Linux\nAbra una terminal y ejecute:\ncat /etc/os-release\nuname -r\nhostnamectl\nwhoami\npwd\nls\nResponda:\n\n¿Cuál es la distribución?\n¿Qué versión del kernel utiliza?\n¿Qué arquitectura tiene el equipo?\n¿Qué información proporciona /etc/os-release?",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/01_introduccion_sistemas_operativos.html#actividad-e-comparación",
+    "href": "capitulos/01_introduccion_sistemas_operativos.html#actividad-e-comparación",
+    "title": "2  Presentación de la clase",
+    "section": "13.6 Actividad E: comparación",
+    "text": "13.6 Actividad E: comparación\nComplete la tabla:\n\n\n\n\n\n\n\n\nAcción\nWindows\nmacOS/Linux\n\n\n\n\nMostrar usuario\nwhoami\nwhoami\n\n\nMostrar nombre del equipo\nhostname\nhostname\n\n\nMostrar carpeta actual\nGet-Location\npwd\n\n\nListar archivos\nGet-ChildItem\nls\n\n\nInformación del sistema\nsysteminfo\nsw_vers, hostnamectl o /etc/os-release\n\n\n\n\n\n\n\n\n\nAdvertenciaRegla del laboratorio\n\n\n\nEjecute únicamente los comandos indicados y lea su salida. No modifique usuarios, permisos, particiones, fecha, hora ni configuraciones del sistema durante esta práctica.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Presentación de la clase</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html",
+    "href": "capitulos/02_administracion_sistema_archivos.html",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "",
+    "text": "4 Presentación de la clase\nEn la clase anterior estudiamos qué es un sistema operativo y por qué constituye la base de todo sistema informático. En esta sesión nos concentraremos en una de sus funciones más visibles: organizar y administrar la información almacenada.\nCada documento, fotografía, programa o proyecto necesita un lugar dentro del sistema. Cuando esa información está bien organizada, puede localizarse, copiarse, trasladarse o eliminarse con rapidez. Cuando no lo está, incluso un archivo que sigue existiendo puede parecer perdido.\nLa administración de archivos puede realizarse mediante ventanas e iconos, pero también a través de instrucciones escritas. Por ello, en esta clase utilizaremos el Símbolo del sistema de Windows (CMD) para comprender cómo piensa el sistema operativo cuando trabaja con unidades, directorios, rutas y archivos.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#objetivos-de-aprendizaje",
+    "href": "capitulos/02_administracion_sistema_archivos.html#objetivos-de-aprendizaje",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "4.1 Objetivos de aprendizaje",
+    "text": "4.1 Objetivos de aprendizaje\nAl finalizar esta clase, el estudiante será capaz de:\n\nExplicar cómo organiza el sistema operativo la información.\nDiferenciar unidades, directorios, subdirectorios y archivos.\nInterpretar rutas absolutas y relativas.\nReconocer la función del intérprete de comandos de Windows.\nUtilizar comandos básicos para navegar y organizar información.\nAplicar buenas prácticas para evitar errores durante la administración de archivos.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#ruta-de-trabajo-de-la-sesión",
+    "href": "capitulos/02_administracion_sistema_archivos.html#ruta-de-trabajo-de-la-sesión",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "4.2 Ruta de trabajo de la sesión",
+    "text": "4.2 Ruta de trabajo de la sesión\n\n\n\nMomento\nActividad\nTiempo aproximado\n\n\n\n\nInicio\nSituación problemática y conceptos base\n15 min\n\n\nDesarrollo\nDirectorios, archivos, rutas y CMD\n20 min\n\n\nLaboratorio\nConstrucción del proyecto SOI\n35 min\n\n\nAplicación\nReto guiado y análisis de errores\n15 min\n\n\nCierre\nSíntesis y autoevaluación\n5 min",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#unidades-de-almacenamiento",
+    "href": "capitulos/02_administracion_sistema_archivos.html#unidades-de-almacenamiento",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "6.1 Unidades de almacenamiento",
+    "text": "6.1 Unidades de almacenamiento\nEn Windows, las unidades suelen identificarse mediante una letra seguida de dos puntos:\nC:\nD:\nE:\nLa unidad C: suele contener el sistema operativo y los perfiles de usuario. Otras letras pueden representar particiones, memorias USB, discos externos, unidades ópticas o recursos conectados.\n\n\n\n\n\n\nAdvertenciaNo confundir\n\n\n\nLa letra no indica por sí sola el tipo de dispositivo. Una memoria USB puede aparecer como D:, E: o cualquier otra letra disponible.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#directorios-y-carpetas",
+    "href": "capitulos/02_administracion_sistema_archivos.html#directorios-y-carpetas",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "6.2 Directorios y carpetas",
+    "text": "6.2 Directorios y carpetas\nEn Windows se utiliza con frecuencia la palabra carpeta. En el lenguaje técnico y en la línea de comandos se emplea el término directorio.\nAmbos describen una estructura que permite agrupar archivos y otros directorios.\nC:\\\n└── Usuarios\n    └── Estudiante\n        ├── Documentos\n        ├── Descargas\n        └── Escritorio",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#archivos-y-extensiones",
+    "href": "capitulos/02_administracion_sistema_archivos.html#archivos-y-extensiones",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "6.3 Archivos y extensiones",
+    "text": "6.3 Archivos y extensiones\nUn archivo es una unidad de información identificada mediante un nombre.\ninforme.docx\npresupuesto.xlsx\nprograma.cpp\nmanual.pdf\nimagen.png\nLa parte ubicada después del último punto se denomina extensión. Esta ayuda al sistema operativo y a las aplicaciones a reconocer el formato del archivo.\n\n\n\n\n\n\nImportanteIdea clave\n\n\n\nCambiar fotografia.jpg por fotografia.pdf no transforma la imagen en un PDF. Solo modifica el nombre.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#ruta-absoluta",
+    "href": "capitulos/02_administracion_sistema_archivos.html#ruta-absoluta",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "7.1 Ruta absoluta",
+    "text": "7.1 Ruta absoluta\nUna ruta absoluta comienza desde la unidad y describe el recorrido completo.\nC:\\Usuarios\\Estudiante\\Documentos\\SOI\\Clase_02\\notas.txt\nEsta ruta puede interpretarse de izquierda a derecha:\n\nUnidad C:.\nDirectorio Usuarios.\nPerfil Estudiante.\nDirectorio Documentos.\nProyecto SOI.\nDirectorio Clase_02.\nArchivo notas.txt.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#ruta-relativa",
+    "href": "capitulos/02_administracion_sistema_archivos.html#ruta-relativa",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "7.2 Ruta relativa",
+    "text": "7.2 Ruta relativa\nUna ruta relativa se interpreta desde la ubicación actual.\nSi la ubicación actual es:\nC:\\Usuarios\\Estudiante\\Documentos\\SOI\nla ruta relativa hacia el archivo anterior sería:\nClase_02\\notas.txt\nEl símbolo .. representa el directorio superior.\ncd ..\nsignifica:\n\nSubir un nivel dentro de la estructura.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#separadores-y-espacios",
+    "href": "capitulos/02_administracion_sistema_archivos.html#separadores-y-espacios",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "7.3 Separadores y espacios",
+    "text": "7.3 Separadores y espacios\nWindows utiliza la barra invertida \\ para separar los componentes de una ruta.\nCuando una ruta contiene espacios, es recomendable escribirla entre comillas:\ncd \"C:\\Usuarios\\Estudiante\\Mis documentos\"",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#cómo-abrirlo",
+    "href": "capitulos/02_administracion_sistema_archivos.html#cómo-abrirlo",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "10.1 Cómo abrirlo",
+    "text": "10.1 Cómo abrirlo\nPuede abrirse de distintas maneras:\n\nPresionar la tecla Windows.\nEscribir cmd.\nSeleccionar Símbolo del sistema.\n\nTambién puede utilizarse la ventana Ejecutar:\nWindows + R\nLuego escribir:\ncmd\ny presionar Enter.\n\n\n\n\n\n\nAdvertenciaPermisos administrativos\n\n\n\nPara esta práctica no es necesario abrir CMD como administrador. Trabajar con privilegios elevados aumenta el impacto de un error.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#situación",
+    "href": "capitulos/02_administracion_sistema_archivos.html#situación",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "12.1 Situación",
+    "text": "12.1 Situación\nDurante el semestre se generarán apuntes, prácticas, recursos y entregables. Para evitar que todo quede mezclado, construiremos una estructura permanente llamada SOI.\nEl laboratorio se realizará dentro de Documentos. No trabaje en directorios del sistema como C:\\Windows o C:\\Program Files.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#paso-1.-saber-dónde-estamos",
+    "href": "capitulos/02_administracion_sistema_archivos.html#paso-1.-saber-dónde-estamos",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "12.2 Paso 1. Saber dónde estamos",
+    "text": "12.2 Paso 1. Saber dónde estamos\nEscriba:\ncd\nCMD mostrará la ruta actual.\nTambién puede observarla directamente en el prompt.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#paso-2.-ver-el-contenido",
+    "href": "capitulos/02_administracion_sistema_archivos.html#paso-2.-ver-el-contenido",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "12.3 Paso 2. Ver el contenido",
+    "text": "12.3 Paso 2. Ver el contenido\nEjecute:\ndir\nEl comando dir muestra directorios y archivos de la ubicación actual.\nEn la salida encontrará datos como:\n\nfecha y hora;\nindicador &lt;DIR&gt; para directorios;\ntamaño de archivos;\nnombre de cada elemento.\n\n\n12.3.1 Variantes útiles\ndir /w\nMuestra una vista resumida.\ndir /p\nPausa la salida cuando ocupa más de una pantalla.\ndir *.txt\nMuestra únicamente archivos con extensión .txt.\n\n\n\n\n\n\nTipLectura antes de acción\n\n\n\nAntes de crear, mover o borrar algo, use dir. Confirmar la ubicación reduce errores.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#paso-3.-ir-a-documentos",
+    "href": "capitulos/02_administracion_sistema_archivos.html#paso-3.-ir-a-documentos",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "12.4 Paso 3. Ir a Documentos",
+    "text": "12.4 Paso 3. Ir a Documentos\nSegún el idioma y la configuración de Windows, el nombre visible puede variar. Una forma práctica es utilizar la variable del perfil:\ncd /d \"%USERPROFILE%\\Documents\"\nSi la carpeta se muestra en español pero la ruta interna utiliza Documents, el comando seguirá funcionando.\nLa opción /d permite cambiar de unidad y directorio en una sola instrucción.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#paso-4.-crear-el-directorio-principal",
+    "href": "capitulos/02_administracion_sistema_archivos.html#paso-4.-crear-el-directorio-principal",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "12.5 Paso 4. Crear el directorio principal",
+    "text": "12.5 Paso 4. Crear el directorio principal\nmkdir SOI\nTambién puede utilizarse la forma abreviada:\nmd SOI\nAmbos comandos crean el directorio.\nCompruebe el resultado:\ndir",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#paso-5.-entrar-al-proyecto",
+    "href": "capitulos/02_administracion_sistema_archivos.html#paso-5.-entrar-al-proyecto",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "12.6 Paso 5. Entrar al proyecto",
+    "text": "12.6 Paso 5. Entrar al proyecto\ncd SOI\nEl prompt debería terminar de forma similar a:\n...\\Documents\\SOI&gt;",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#paso-6.-crear-la-estructura-del-semestre",
+    "href": "capitulos/02_administracion_sistema_archivos.html#paso-6.-crear-la-estructura-del-semestre",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "12.7 Paso 6. Crear la estructura del semestre",
+    "text": "12.7 Paso 6. Crear la estructura del semestre\nEjecute:\nmkdir Clase_01 Clase_02 Clase_03 Laboratorios Recursos Proyecto_Final\nLuego verifique:\ndir\nLa estructura esperada es:\nSOI\n├── Clase_01\n├── Clase_02\n├── Clase_03\n├── Laboratorios\n├── Recursos\n└── Proyecto_Final\n\n\n\n\n\n\nFigura 12.1: Estructura inicial del proyecto SOI",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#paso-7.-visualizar-el-árbol",
+    "href": "capitulos/02_administracion_sistema_archivos.html#paso-7.-visualizar-el-árbol",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "12.8 Paso 7. Visualizar el árbol",
+    "text": "12.8 Paso 7. Visualizar el árbol\nEjecute:\ntree\nPara incluir también archivos:\ntree /f\ntree permite comprobar visualmente la jerarquía construida.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#entrar-a-un-directorio",
+    "href": "capitulos/02_administracion_sistema_archivos.html#entrar-a-un-directorio",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "13.1 Entrar a un directorio",
+    "text": "13.1 Entrar a un directorio\ncd Clase_02",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#subir-un-nivel",
+    "href": "capitulos/02_administracion_sistema_archivos.html#subir-un-nivel",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "13.2 Subir un nivel",
+    "text": "13.2 Subir un nivel\ncd ..",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#ir-a-la-raíz-de-la-unidad",
+    "href": "capitulos/02_administracion_sistema_archivos.html#ir-a-la-raíz-de-la-unidad",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "13.3 Ir a la raíz de la unidad",
+    "text": "13.3 Ir a la raíz de la unidad\ncd \\",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#cambiar-directamente-mediante-una-ruta",
+    "href": "capitulos/02_administracion_sistema_archivos.html#cambiar-directamente-mediante-una-ruta",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "13.4 Cambiar directamente mediante una ruta",
+    "text": "13.4 Cambiar directamente mediante una ruta\ncd /d \"%USERPROFILE%\\Documents\\SOI\\Clase_02\"",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#volver-al-directorio-anterior",
+    "href": "capitulos/02_administracion_sistema_archivos.html#volver-al-directorio-anterior",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "13.5 Volver al directorio anterior",
+    "text": "13.5 Volver al directorio anterior\nCMD no ofrece exactamente el mismo comportamiento que algunos intérpretes modernos, por lo que conviene leer el prompt y utilizar rutas relativas o absolutas de manera consciente.\n\n\n\n\n\n\nAdvertenciaError común\n\n\n\ncd... no es la forma correcta de subir un nivel. Debe existir un espacio:\ncd ..",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#copiar-en-el-mismo-directorio",
+    "href": "capitulos/02_administracion_sistema_archivos.html#copiar-en-el-mismo-directorio",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "15.1 Copiar en el mismo directorio",
+    "text": "15.1 Copiar en el mismo directorio\ncopy apuntes.txt respaldo_apuntes.txt",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#copiar-hacia-otro-directorio",
+    "href": "capitulos/02_administracion_sistema_archivos.html#copiar-hacia-otro-directorio",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "15.2 Copiar hacia otro directorio",
+    "text": "15.2 Copiar hacia otro directorio\ncopy apuntes.txt ..\\Recursos\\\nLa ruta ..\\Recursos\\ significa:\n\nsubir desde Clase_02 hacia SOI;\nentrar en Recursos.\n\nCompruebe el resultado:\ndir ..\\Recursos",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#evitar-sobrescrituras-accidentales",
+    "href": "capitulos/02_administracion_sistema_archivos.html#evitar-sobrescrituras-accidentales",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "15.3 Evitar sobrescrituras accidentales",
+    "text": "15.3 Evitar sobrescrituras accidentales\nPuede utilizar:\ncopy /-y apuntes.txt respaldo_apuntes.txt\nLa opción /-y solicita confirmación antes de reemplazar un archivo existente.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#riesgo-de-los-comodines",
+    "href": "capitulos/02_administracion_sistema_archivos.html#riesgo-de-los-comodines",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "18.1 Riesgo de los comodines",
+    "text": "18.1 Riesgo de los comodines\ndel *.txt\nelimina todos los archivos .txt del directorio actual.\nEste tipo de instrucción no debe ejecutarse sin revisar previamente:\ndir *.txt\nLa secuencia profesional es:\n1. Mostrar\n2. Verificar\n3. Ejecutar",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#directorio-vacío",
+    "href": "capitulos/02_administracion_sistema_archivos.html#directorio-vacío",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "19.1 Directorio vacío",
+    "text": "19.1 Directorio vacío\nmkdir Prueba_Vacia\nrmdir Prueba_Vacia",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#directorio-con-contenido",
+    "href": "capitulos/02_administracion_sistema_archivos.html#directorio-con-contenido",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "19.2 Directorio con contenido",
+    "text": "19.2 Directorio con contenido\nrmdir /s Carpeta\nLa opción /s incluye todo su contenido.\nPara solicitar confirmación:\nrmdir /s Carpeta\nPara omitirla existe /q, pero no debe utilizarse durante el aprendizaje:\nrmdir /s /q Carpeta\n\nrmdir /s /q puede eliminar una estructura completa sin preguntar. No lo utilice fuera de carpetas de práctica.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#escenario",
+    "href": "capitulos/02_administracion_sistema_archivos.html#escenario",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "22.1 Escenario",
+    "text": "22.1 Escenario\nEl directorio SOI debe quedar organizado de la siguiente manera:\nSOI\n├── Clase_01\n├── Clase_02\n├── Clase_03\n├── Laboratorios\n│   └── bitacora_clase_02.txt\n├── Recursos\n│   └── apuntes.txt\n└── Proyecto_Final",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#reglas",
+    "href": "capitulos/02_administracion_sistema_archivos.html#reglas",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "22.2 Reglas",
+    "text": "22.2 Reglas\nRealice el reto únicamente con comandos.\n\nCompruebe la ubicación actual.\nNavegue hasta SOI.\nUse tree /f para revisar la estructura.\nAsegúrese de que apuntes.txt esté en Recursos.\nAsegúrese de que bitacora_clase_02.txt esté en Laboratorios.\nElimine únicamente archivos temporales creados durante la práctica.\nMuestre el árbol final.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#evidencia-sugerida",
+    "href": "capitulos/02_administracion_sistema_archivos.html#evidencia-sugerida",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "22.3 Evidencia sugerida",
+    "text": "22.3 Evidencia sugerida\nEl estudiante puede entregar:\n\ncaptura del comando tree /f;\nlista de comandos utilizados;\nexplicación breve de un error cometido y cómo lo corrigió.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#el-sistema-no-puede-encontrar-la-ruta-especificada",
+    "href": "capitulos/02_administracion_sistema_archivos.html#el-sistema-no-puede-encontrar-la-ruta-especificada",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "23.1 “El sistema no puede encontrar la ruta especificada”",
+    "text": "23.1 “El sistema no puede encontrar la ruta especificada”\nPosibles causas:\n\nel directorio no existe;\nel nombre fue escrito incorrectamente;\nla ruta contiene espacios y no se utilizaron comillas;\nla ubicación actual no es la esperada.\n\nAcciones:\ncd\ndir\nLuego revise la ruta paso a paso.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#el-sistema-no-puede-encontrar-el-archivo-especificado",
+    "href": "capitulos/02_administracion_sistema_archivos.html#el-sistema-no-puede-encontrar-el-archivo-especificado",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "23.2 “El sistema no puede encontrar el archivo especificado”",
+    "text": "23.2 “El sistema no puede encontrar el archivo especificado”\nCompruebe:\ndir\ndir *.txt\nRevise el nombre y la extensión real.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#acceso-denegado",
+    "href": "capitulos/02_administracion_sistema_archivos.html#acceso-denegado",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "23.3 “Acceso denegado”",
+    "text": "23.3 “Acceso denegado”\nPuede ocurrir cuando:\n\nel archivo está protegido;\notro programa lo utiliza;\nel usuario no posee permisos;\nse trabaja en un directorio del sistema.\n\nNo resuelva automáticamente el problema ejecutando todo como administrador. Primero determine la causa.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#el-comando-se-ejecutó-en-el-lugar-equivocado",
+    "href": "capitulos/02_administracion_sistema_archivos.html#el-comando-se-ejecutó-en-el-lugar-equivocado",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "23.4 El comando se ejecutó en el lugar equivocado",
+    "text": "23.4 El comando se ejecutó en el lugar equivocado\nCompruebe siempre el prompt. Una instrucción correcta ejecutada en un directorio incorrecto puede producir un resultado no deseado.\n\n\n\n\n\n\nTipMétodo de recuperación\n\n\n\nCuando se sienta perdido:\ncd\ndir\nPrimero determine dónde está. Luego decida a dónde necesita ir.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#selección-breve",
+    "href": "capitulos/02_administracion_sistema_archivos.html#selección-breve",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "25.1 Selección breve",
+    "text": "25.1 Selección breve\n\n¿Qué representa C:?\n\n\nUn archivo\n\n\nUna unidad\n\n\nUn comando\n\n\nUna extensión\n\n\n¿Qué comando muestra el contenido del directorio actual?\n\n\nshow\n\n\nlist\n\n\ndir\n\n\ntype\n\n\n¿Qué significa .. dentro de una ruta?\n\n\nDirectorio actual\n\n\nDirectorio superior\n\n\nUnidad principal\n\n\nArchivo oculto\n\n\n¿Cuál comando crea un directorio?\n\n\nmkdir\n\n\ncopy\n\n\ntype\n\n\ncls\n\n\n¿Cuál acción requiere mayor precaución?\n\n\ndir\n\n\ncd\n\n\ndel\n\n\ncls",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/02_administracion_sistema_archivos.html#preguntas-de-reflexión",
+    "href": "capitulos/02_administracion_sistema_archivos.html#preguntas-de-reflexión",
+    "title": "3  Administración del sistema de archivos desde la línea de comandos",
+    "section": "25.2 Preguntas de reflexión",
+    "text": "25.2 Preguntas de reflexión\n\n¿Por qué una ruta absoluta funciona aunque el usuario se encuentre en otro directorio?\n¿Qué ventaja ofrece una ruta relativa?\n¿Por qué conviene ejecutar dir antes de del?\n¿Qué diferencia existe entre copiar y mover?\n¿Por qué CMD no debe presentarse simplemente como MS-DOS?",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Administración del sistema de archivos desde la línea de comandos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html",
+    "href": "capitulos/03_sistemas_operativos_red.html",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "",
+    "text": "5 Presentación de la clase\nCuando una computadora trabaja de forma aislada, su sistema operativo administra los recursos del equipo: procesador, memoria, archivos, dispositivos y aplicaciones. Sin embargo, en cuanto varias computadoras deben compartir información, impresoras, usuarios o aplicaciones, aparece una necesidad diferente: administrar la red como un sistema organizado.\nUn laboratorio universitario, una clínica, una empresa o una institución pública no puede depender de que cada usuario configure manualmente su equipo, guarde los archivos donde quiera y decida por su cuenta qué información comparte. Conforme aumenta el número de computadoras, también crecen los riesgos, los errores y el esfuerzo de administración.\nLos Sistemas Operativos de Red surgieron para resolver este problema. Permiten centralizar usuarios, permisos, servicios y recursos, de manera que una organización pueda trabajar con mayor seguridad, orden y continuidad.\nLa respuesta no depende de un único programa. Detrás de esa acción participan varios servicios coordinados por uno o más servidores. Esta clase explica cómo funciona esa infraestructura y por qué constituye una pieza esencial de cualquier organización moderna.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#qué-es-un-sistema-operativo-de-red",
+    "href": "capitulos/03_sistemas_operativos_red.html#qué-es-un-sistema-operativo-de-red",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "8.1 ¿Qué es un Sistema Operativo de Red?",
+    "text": "8.1 ¿Qué es un Sistema Operativo de Red?\nUn Sistema Operativo de Red, también llamado Network Operating System o NOS, es un sistema diseñado para administrar los recursos y servicios compartidos dentro de una red de computadoras.\nEntre sus responsabilidades se encuentran:\n\nAdministrar usuarios y equipos.\nControlar el acceso a los recursos.\nCompartir archivos e impresoras.\nProporcionar servicios de comunicación.\nRegistrar eventos y actividades.\nAplicar políticas de seguridad.\nFacilitar la administración remota.\nMantener disponibles las aplicaciones institucionales.\n\n\n\n\n\n\n\nTipIdea central\n\n\n\nUn Sistema Operativo de Red no se limita a conectar computadoras. Su función principal es organizar, proteger y administrar los recursos compartidos de una organización.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#sistema-operativo-de-escritorio-y-sistema-operativo-de-red",
+    "href": "capitulos/03_sistemas_operativos_red.html#sistema-operativo-de-escritorio-y-sistema-operativo-de-red",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "8.2 Sistema operativo de escritorio y Sistema Operativo de Red",
+    "text": "8.2 Sistema operativo de escritorio y Sistema Operativo de Red\nUn sistema operativo de escritorio está orientado principalmente a la experiencia de una persona frente a un equipo. Un Sistema Operativo de Red está orientado a ofrecer servicios a muchos usuarios y dispositivos.\n\n\n\n\n\n\n\n\nAspecto\nSistema de escritorio\nSistema Operativo de Red\n\n\n\n\nEnfoque principal\nUso individual\nServicios compartidos\n\n\nNúmero de usuarios\nUno o pocos\nDecenas, cientos o miles\n\n\nAdministración\nLocal\nCentralizada\n\n\nDisponibilidad esperada\nVariable\nAlta\n\n\nSeguridad\nCentrada en el equipo\nCentrada en usuarios, servicios y datos\n\n\nAcceso remoto\nComplementario\nFundamental\n\n\nEscalabilidad\nLimitada\nDiseñada para crecer\n\n\n\nEn la práctica, ambos pueden compartir tecnologías. Un sistema moderno de escritorio puede compartir archivos y un servidor puede incluir interfaz gráfica. La diferencia principal está en el propósito, la configuración y el nivel de administración requerido.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#los-primeros-sistemas-multiusuario",
+    "href": "capitulos/03_sistemas_operativos_red.html#los-primeros-sistemas-multiusuario",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "9.1 Los primeros sistemas multiusuario",
+    "text": "9.1 Los primeros sistemas multiusuario\nDurante las décadas de 1960 y 1970, las computadoras eran equipos costosos y de gran tamaño. Para aprovecharlas, varios usuarios se conectaban mediante terminales. En este contexto, UNIX introdujo conceptos fundamentales:\n\nMultiusuario.\nMultitarea.\nSistemas de archivos jerárquicos.\nPermisos.\nAdministración remota.\nHerramientas pequeñas que podían combinarse.\n\nEstas ideas influyeron en numerosos sistemas posteriores.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#tcpip-y-la-expansión-de-las-redes",
+    "href": "capitulos/03_sistemas_operativos_red.html#tcpip-y-la-expansión-de-las-redes",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "9.2 TCP/IP y la expansión de las redes",
+    "text": "9.2 TCP/IP y la expansión de las redes\nEn la década de 1980, las implementaciones derivadas de BSD incorporaron herramientas de comunicación basadas en TCP/IP y sockets. Esto facilitó que diferentes equipos pudieran intercambiar información utilizando estándares comunes.\nTCP/IP terminó convirtiéndose en la base de Internet y de la mayoría de redes actuales.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#redes-locales-y-novell-netware",
+    "href": "capitulos/03_sistemas_operativos_red.html#redes-locales-y-novell-netware",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "9.3 Redes locales y Novell NetWare",
+    "text": "9.3 Redes locales y Novell NetWare\nCon la expansión de las redes locales, empresas y universidades comenzaron a compartir archivos e impresoras. Novell NetWare se convirtió en una plataforma muy importante para estas tareas.\nSu éxito se debió a que ofrecía:\n\nBuen rendimiento como servidor de archivos.\nAdministración de usuarios.\nServicios de impresión.\nCompatibilidad con diferentes clientes.\nCapacidad para operar en redes empresariales.\n\nAunque perdió presencia con el crecimiento de Windows Server y Linux, NetWare representa una etapa clave en la historia de las redes.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#windows-nt-y-windows-server",
+    "href": "capitulos/03_sistemas_operativos_red.html#windows-nt-y-windows-server",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "9.4 Windows NT y Windows Server",
+    "text": "9.4 Windows NT y Windows Server\nMicrosoft desarrolló Windows NT como una plataforma orientada a entornos empresariales. Posteriormente evolucionó hacia la familia Windows Server.\nEstas plataformas incorporaron servicios como:\n\nAdministración de dominios.\nActive Directory.\nPolíticas de grupo.\nServicios de archivos e impresión.\nDNS y DHCP.\nVirtualización.\nAdministración remota.\n\nSu integración con equipos Windows facilitó su adopción en muchas organizaciones.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#el-crecimiento-de-linux",
+    "href": "capitulos/03_sistemas_operativos_red.html#el-crecimiento-de-linux",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "9.5 El crecimiento de Linux",
+    "text": "9.5 El crecimiento de Linux\nLinux heredó la filosofía de UNIX y se desarrolló mediante una comunidad internacional. Su estabilidad, flexibilidad y capacidad de adaptación lo convirtieron en una opción ampliamente utilizada para servidores.\nHoy es común encontrar Linux en:\n\nServidores web.\nBases de datos.\nCentros de datos.\nPlataformas de nube.\nDispositivos de red.\nSupercomputadoras.\nSistemas embebidos.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#virtualización-contenedores-y-nube",
+    "href": "capitulos/03_sistemas_operativos_red.html#virtualización-contenedores-y-nube",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "9.6 Virtualización, contenedores y nube",
+    "text": "9.6 Virtualización, contenedores y nube\nDurante muchos años se instalaba un servidor físico para cada servicio. Esto provocaba altos costos de energía, espacio y mantenimiento.\nLa virtualización permitió ejecutar varios servidores virtuales dentro de un mismo equipo físico. Posteriormente, los contenedores facilitaron empaquetar aplicaciones y dependencias de forma más ligera.\nLa computación en la nube añadió otra posibilidad: utilizar infraestructura administrada por proveedores externos y pagar según la capacidad consumida.\n\n\n\n\n\n\nNotaIngeniería en la vida real\n\n\n\nUna universidad que antes necesitaba comprar un servidor físico para cada aplicación puede ejecutar varios servidores virtuales en un clúster local, mantener respaldos fuera del campus y utilizar servicios en la nube para atender períodos de alta demanda.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#ejemplo",
+    "href": "capitulos/03_sistemas_operativos_red.html#ejemplo",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "11.1 Ejemplo",
+    "text": "11.1 Ejemplo\nUn pequeño despacho posee cuatro computadoras. Una comparte la impresora, otra contiene una carpeta de proyectos y las demás permiten consultar ciertos documentos.\nNo existe un servidor central. Cada usuario decide qué comparte y con quién.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#ventajas",
+    "href": "capitulos/03_sistemas_operativos_red.html#ventajas",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "11.2 Ventajas",
+    "text": "11.2 Ventajas\n\nBajo costo inicial.\nConfiguración relativamente sencilla.\nNo requiere un servidor dedicado.\nPuede ser suficiente para pocos usuarios.\nPermite compartir recursos rápidamente.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#limitaciones",
+    "href": "capitulos/03_sistemas_operativos_red.html#limitaciones",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "11.3 Limitaciones",
+    "text": "11.3 Limitaciones\n\nLa administración depende de cada equipo.\nEs difícil mantener permisos consistentes.\nLos respaldos quedan dispersos.\nLa seguridad es limitada.\nUn recurso deja de estar disponible si se apaga el equipo que lo comparte.\nEl crecimiento aumenta rápidamente la complejidad.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#cuándo-puede-utilizarse",
+    "href": "capitulos/03_sistemas_operativos_red.html#cuándo-puede-utilizarse",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "11.4 ¿Cuándo puede utilizarse?",
+    "text": "11.4 ¿Cuándo puede utilizarse?\nPuede ser apropiada cuando:\n\nHay pocos equipos.\nLa información no es crítica.\nEl presupuesto es muy reducido.\nNo se requiere administración centralizada.\nLa red es temporal o doméstica.\n\n\n\n\n\n\n\nAdvertenciaCuidado\n\n\n\nQue una red Punto a Punto sea fácil de instalar no significa que sea adecuada para cualquier organización. Cuando existen datos sensibles, muchos usuarios o necesidad de auditoría, este modelo suele quedarse corto.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#ejemplo-universitario",
+    "href": "capitulos/03_sistemas_operativos_red.html#ejemplo-universitario",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "12.1 Ejemplo universitario",
+    "text": "12.1 Ejemplo universitario\nEn un laboratorio, los estudiantes inician sesión desde diferentes computadoras. Un servidor valida las credenciales, otro aloja el Campus Virtual y otro contiene las bases de datos.\nEl estudiante observa una experiencia sencilla, pero la infraestructura se encuentra distribuida y administrada.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#ventajas-1",
+    "href": "capitulos/03_sistemas_operativos_red.html#ventajas-1",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "12.2 Ventajas",
+    "text": "12.2 Ventajas\n\nAdministración centralizada.\nMayor control de usuarios.\nPermisos consistentes.\nRespaldos más sencillos.\nMejor capacidad de crecimiento.\nPosibilidad de alta disponibilidad.\nAuditoría y monitoreo centralizados.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#limitaciones-1",
+    "href": "capitulos/03_sistemas_operativos_red.html#limitaciones-1",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "12.3 Limitaciones",
+    "text": "12.3 Limitaciones\n\nMayor inversión inicial.\nRequiere personal capacitado.\nLos servidores son componentes críticos.\nUna mala configuración puede afectar a muchos usuarios.\nSe necesita planificar respaldo, redundancia y recuperación.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#comparación-general",
+    "href": "capitulos/03_sistemas_operativos_red.html#comparación-general",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "12.4 Comparación general",
+    "text": "12.4 Comparación general\n\n\n\n\n\n\n\n\nCaracterística\nPunto a Punto\nCliente/Servidor\n\n\n\n\nServidor dedicado\nNo es necesario\nGeneralmente sí\n\n\nAdministración\nDistribuida\nCentralizada\n\n\nSeguridad\nBásica\nMayor control\n\n\nEscalabilidad\nBaja\nAlta\n\n\nRespaldos\nDispersos\nCentralizados\n\n\nCosto inicial\nBajo\nMedio o alto\n\n\nDisponibilidad\nDepende de cada equipo\nPuede diseñarse con redundancia\n\n\nUso típico\nHogares y oficinas pequeñas\nOrganizaciones medianas y grandes\n\n\n\n\n\n\n\n\n\nTipCriterio de ingeniería\n\n\n\nLa arquitectura adecuada no es la más costosa ni la más moderna. Es la que responde a los requerimientos de seguridad, capacidad, disponibilidad, presupuesto y crecimiento de la organización.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#autenticación-y-autorización",
+    "href": "capitulos/03_sistemas_operativos_red.html#autenticación-y-autorización",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "14.1 Autenticación y autorización",
+    "text": "14.1 Autenticación y autorización\nEstos conceptos no significan lo mismo.\n\nAutenticación: confirma quién es el usuario.\nAutorización: determina qué puede hacer.\n\nUna persona puede autenticarse correctamente y aun así no tener permiso para abrir una carpeta financiera.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#ejemplo-de-funcionamiento",
+    "href": "capitulos/03_sistemas_operativos_red.html#ejemplo-de-funcionamiento",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "15.1 Ejemplo de funcionamiento",
+    "text": "15.1 Ejemplo de funcionamiento\n\nEl usuario escribe una dirección en el navegador.\nEl equipo consulta al servidor DNS.\nEl servidor DNS busca la dirección IP.\nLa respuesta regresa al equipo.\nEl navegador se comunica con el servidor web.\n\n\n\n\n\n\n\nTipIdea central\n\n\n\nDNS responde a la pregunta: ¿qué dirección IP corresponde a este nombre?",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#qué-ocurriría-sin-dns",
+    "href": "capitulos/03_sistemas_operativos_red.html#qué-ocurriría-sin-dns",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "15.2 ¿Qué ocurriría sin DNS?",
+    "text": "15.2 ¿Qué ocurriría sin DNS?\nLos usuarios tendrían que memorizar direcciones IP. Además, cualquier cambio de dirección obligaría a comunicar la nueva configuración a todas las personas y aplicaciones.\nDNS desacopla el nombre lógico de la dirección física utilizada en un momento determinado.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#beneficios",
+    "href": "capitulos/03_sistemas_operativos_red.html#beneficios",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "16.1 Beneficios",
+    "text": "16.1 Beneficios\n\nReduce errores manuales.\nEvita direcciones duplicadas.\nFacilita la incorporación de equipos.\nPermite cambiar la configuración de forma centralizada.\nAhorra tiempo al personal técnico.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#concesión-o-lease",
+    "href": "capitulos/03_sistemas_operativos_red.html#concesión-o-lease",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "16.2 Concesión o lease",
+    "text": "16.2 Concesión o lease\nDHCP normalmente asigna una dirección durante un período determinado. El equipo puede renovarla mientras permanece conectado.\nEsto permite reutilizar las direcciones disponibles cuando los dispositivos abandonan la red.\n\n\n\n\n\n\nNotaDNS y DHCP trabajan juntos\n\n\n\nDHCP puede entregar al equipo la dirección del servidor DNS. DNS permite localizar servicios por nombre. Uno configura la comunicación y el otro facilita encontrar los recursos.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#ventajas-2",
+    "href": "capitulos/03_sistemas_operativos_red.html#ventajas-2",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "17.1 Ventajas",
+    "text": "17.1 Ventajas\n\nFacilita los respaldos.\nReduce la dispersión de documentos.\nPermite trabajo colaborativo.\nMejora el control de acceso.\nFacilita auditoría y recuperación.\nEvita depender de un equipo personal.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#ejemplo-de-estructura",
+    "href": "capitulos/03_sistemas_operativos_red.html#ejemplo-de-estructura",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "17.2 Ejemplo de estructura",
+    "text": "17.2 Ejemplo de estructura\n/Institución\n├── Dirección\n├── Administración\n├── Docentes\n├── Estudiantes\n├── Biblioteca\n└── Soporte\nCada carpeta puede tener permisos distintos.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#riesgos-que-deben-administrarse",
+    "href": "capitulos/03_sistemas_operativos_red.html#riesgos-que-deben-administrarse",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "17.3 Riesgos que deben administrarse",
+    "text": "17.3 Riesgos que deben administrarse\n\nEliminación accidental.\nModificaciones no autorizadas.\nUso excesivo del almacenamiento.\nArchivos maliciosos.\nAcceso desde dispositivos no autorizados.\nFalta de versiones o respaldos.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#por-qué-evitar-cuentas-compartidas",
+    "href": "capitulos/03_sistemas_operativos_red.html#por-qué-evitar-cuentas-compartidas",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "23.1 ¿Por qué evitar cuentas compartidas?",
+    "text": "23.1 ¿Por qué evitar cuentas compartidas?\nSi varias personas utilizan la misma cuenta:\n\nNo se sabe quién realizó una acción.\nEs difícil revocar el acceso de una sola persona.\nLa contraseña se comparte ampliamente.\nLa auditoría pierde valor.\nAumenta el riesgo de uso indebido.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#ventaja-administrativa",
+    "href": "capitulos/03_sistemas_operativos_red.html#ventaja-administrativa",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "24.1 Ventaja administrativa",
+    "text": "24.1 Ventaja administrativa\nSi ingresan diez docentes nuevos, basta con agregarlos al grupo Docentes para que reciban los permisos establecidos.\nSi una persona cambia de puesto, se modifican sus grupos en lugar de revisar recurso por recurso.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#caso-carpeta-de-calificaciones",
+    "href": "capitulos/03_sistemas_operativos_red.html#caso-carpeta-de-calificaciones",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "25.1 Caso: carpeta de calificaciones",
+    "text": "25.1 Caso: carpeta de calificaciones\n\n\n\nRol\nLeer\nEscribir\nEliminar\n\n\n\n\nCoordinación\nSí\nSí\nSí\n\n\nDocente\nSí\nSí\nSegún política\n\n\nEstudiante\nSolo sus resultados\nNo\nNo\n\n\nVisitante\nNo\nNo\nNo",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#ejemplos",
+    "href": "capitulos/03_sistemas_operativos_red.html#ejemplos",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "26.1 Ejemplos",
+    "text": "26.1 Ejemplos\n\nUn estudiante no necesita administrar servidores.\nUna recepcionista no necesita modificar respaldos.\nUn técnico de soporte no necesita consultar salarios.\nUna aplicación web no debería conectarse a la base de datos como administrador.\n\n\n\n\n\n\n\nImportanteIdea central\n\n\n\nDar permisos “por si acaso” facilita el trabajo al inicio, pero aumenta el riesgo. El acceso debe justificarse por una necesidad real.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#fortalezas",
+    "href": "capitulos/03_sistemas_operativos_red.html#fortalezas",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "28.1 Fortalezas",
+    "text": "28.1 Fortalezas\n\nAdministración centralizada.\nAmplia adopción empresarial.\nIntegración con escritorios Windows.\nHerramientas gráficas.\nEcosistema de soporte.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#consideraciones",
+    "href": "capitulos/03_sistemas_operativos_red.html#consideraciones",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "28.2 Consideraciones",
+    "text": "28.2 Consideraciones\n\nLicenciamiento.\nRequisitos de hardware.\nNecesidad de planificar actualizaciones.\nDependencia de herramientas y conocimientos especializados.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#fortalezas-1",
+    "href": "capitulos/03_sistemas_operativos_red.html#fortalezas-1",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "29.1 Fortalezas",
+    "text": "29.1 Fortalezas\n\nFlexibilidad.\nEstabilidad.\nAutomatización.\nAmplia comunidad.\nPosibilidad de utilizar herramientas abiertas.\nBuen desempeño en servidores.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#consideraciones-1",
+    "href": "capitulos/03_sistemas_operativos_red.html#consideraciones-1",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "29.2 Consideraciones",
+    "text": "29.2 Consideraciones\n\nLa administración puede requerir experiencia en línea de comandos.\nLas distribuciones poseen ciclos de soporte diferentes.\nDebe seleccionarse una versión adecuada para producción.\nLa flexibilidad también exige disciplina de configuración.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#confidencialidad",
+    "href": "capitulos/03_sistemas_operativos_red.html#confidencialidad",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "47.1 Confidencialidad",
+    "text": "47.1 Confidencialidad\nLa información solo debe ser accesible para personas autorizadas.\nEjemplo: un estudiante consulta sus propias calificaciones, no las de todo el grupo.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#integridad",
+    "href": "capitulos/03_sistemas_operativos_red.html#integridad",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "47.2 Integridad",
+    "text": "47.2 Integridad\nLa información debe mantenerse correcta y solo modificarse mediante procesos autorizados.\nEjemplo: el docente registra una nota y el estudiante únicamente la consulta.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#disponibilidad",
+    "href": "capitulos/03_sistemas_operativos_red.html#disponibilidad",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "47.3 Disponibilidad",
+    "text": "47.3 Disponibilidad\nLos servicios deben estar accesibles cuando se necesitan.\nEjemplo: la plataforma de inscripción debe funcionar durante el período de asignación de cursos.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#regla-3-2-1",
+    "href": "capitulos/03_sistemas_operativos_red.html#regla-3-2-1",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "50.1 Regla 3-2-1",
+    "text": "50.1 Regla 3-2-1\n\nMantener tres copias de la información.\nUtilizar dos medios diferentes.\nConservar una copia fuera del sitio principal.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#un-respaldo-debe-probarse",
+    "href": "capitulos/03_sistemas_operativos_red.html#un-respaldo-debe-probarse",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "50.2 Un respaldo debe probarse",
+    "text": "50.2 Un respaldo debe probarse\nNo basta con que el sistema indique “copia finalizada”. Es necesario verificar que los archivos puedan recuperarse.\n\n\n\n\n\n\nAdvertenciaAdvertencia\n\n\n\nUn respaldo que nunca ha sido restaurado es una promesa, no una garantía.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#pregunta-1",
+    "href": "capitulos/03_sistemas_operativos_red.html#pregunta-1",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "55.1 Pregunta 1",
+    "text": "55.1 Pregunta 1\n¿Cuál es la diferencia principal entre una arquitectura Punto a Punto y una Cliente/Servidor?\n\nEl tipo de cable utilizado.\n\nLa existencia de administración y servicios centralizados.\n\nLa marca de las computadoras.\n\nLa velocidad de Internet.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#pregunta-2",
+    "href": "capitulos/03_sistemas_operativos_red.html#pregunta-2",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "55.2 Pregunta 2",
+    "text": "55.2 Pregunta 2\n¿Qué servicio traduce nombres de dominio en direcciones IP?\n\nDHCP.\n\nDNS.\n\nSMB.\n\nSSH.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#pregunta-3",
+    "href": "capitulos/03_sistemas_operativos_red.html#pregunta-3",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "55.3 Pregunta 3",
+    "text": "55.3 Pregunta 3\n¿Qué servicio asigna automáticamente direcciones IP?\n\nDNS.\n\nHTTP.\n\nDHCP.\n\nLDAP.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#pregunta-4",
+    "href": "capitulos/03_sistemas_operativos_red.html#pregunta-4",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "55.4 Pregunta 4",
+    "text": "55.4 Pregunta 4\n¿Qué elemento facilita asignar permisos a muchas personas con funciones semejantes?\n\nUn grupo.\n\nUna impresora.\n\nUna dirección IP.\n\nUn navegador.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#pregunta-5",
+    "href": "capitulos/03_sistemas_operativos_red.html#pregunta-5",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "55.5 Pregunta 5",
+    "text": "55.5 Pregunta 5\n¿Cuál es un ejemplo del principio del mínimo privilegio?\n\nTodos son administradores.\n\nCada usuario recibe únicamente el acceso necesario.\n\nSe comparte una sola cuenta.\n\nSe desactiva la auditoría.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#pregunta-6",
+    "href": "capitulos/03_sistemas_operativos_red.html#pregunta-6",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "55.6 Pregunta 6",
+    "text": "55.6 Pregunta 6\n¿Qué objetivo de seguridad se relaciona con mantener un servicio accesible?\n\nConfidencialidad.\n\nIntegridad.\n\nDisponibilidad.\n\nPortabilidad.\n\n\n\n\n\n\n\nNotaRespuestas\n\n\n\n\n\n\nb\n\nb\n\nc\n\na\n\nb\n\nc",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#situación",
+    "href": "capitulos/03_sistemas_operativos_red.html#situación",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "56.1 Situación",
+    "text": "56.1 Situación\nLa Academia Horizonte abrirá una nueva sede.\nContará con:\n\n28 computadoras para estudiantes.\n4 computadoras administrativas.\n3 computadoras para docentes.\n2 impresoras.\nUna conexión a Internet.\nUna plataforma académica.\nDocumentos financieros.\nMateriales de clase compartidos.\n\nActualmente, cada computadora utiliza cuentas locales y los archivos se transfieren mediante memorias USB.\nLa dirección solicita una propuesta básica de red.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#misión",
+    "href": "capitulos/03_sistemas_operativos_red.html#misión",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "56.2 Misión",
+    "text": "56.2 Misión\nActúe como integrante del equipo de infraestructura y diseñe una solución inicial.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#parte-1.-arquitectura",
+    "href": "capitulos/03_sistemas_operativos_red.html#parte-1.-arquitectura",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "56.3 Parte 1. Arquitectura",
+    "text": "56.3 Parte 1. Arquitectura\nResponda:\n\n¿Implementaría Punto a Punto o Cliente/Servidor?\nJustifique la decisión con al menos tres criterios.\n¿Qué riesgos tendría mantener cuentas locales independientes?",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#parte-2.-roles",
+    "href": "capitulos/03_sistemas_operativos_red.html#parte-2.-roles",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "56.4 Parte 2. Roles",
+    "text": "56.4 Parte 2. Roles\nSeleccione los roles necesarios.\n\n\n\nRol\n¿Se necesita?\nJustificación\n\n\n\n\nDNS\n\n\n\n\nDHCP\n\n\n\n\nDirectorio\n\n\n\n\nArchivos\n\n\n\n\nImpresión\n\n\n\n\nWeb\n\n\n\n\nBase de datos\n\n\n\n\nRespaldo\n\n\n\n\nMonitoreo",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#parte-3.-usuarios-y-grupos",
+    "href": "capitulos/03_sistemas_operativos_red.html#parte-3.-usuarios-y-grupos",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "56.5 Parte 3. Usuarios y grupos",
+    "text": "56.5 Parte 3. Usuarios y grupos\nProponga grupos.\nEjemplo:\n\nAdministrativos.\nDocentes.\nEstudiantes.\nSoporte Técnico.\n\nIndique qué recursos debe utilizar cada grupo.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#parte-4.-permisos",
+    "href": "capitulos/03_sistemas_operativos_red.html#parte-4.-permisos",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "56.6 Parte 4. Permisos",
+    "text": "56.6 Parte 4. Permisos\nDiseñe una matriz.\n\n\n\nRecurso\nAdministrativos\nDocentes\nEstudiantes\nSoporte\n\n\n\n\nFinanzas\n\n\n\n\n\n\nMateriales docentes\n\n\n\n\n\n\nEntregas estudiantiles\n\n\n\n\n\n\nConfiguración de servidores\n\n\n\n\n\n\nImpresoras\n\n\n\n\n\n\n\nUtilice valores como:\n\nSin acceso.\nLectura.\nLectura y escritura.\nAdministración.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#parte-5.-seguridad",
+    "href": "capitulos/03_sistemas_operativos_red.html#parte-5.-seguridad",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "56.7 Parte 5. Seguridad",
+    "text": "56.7 Parte 5. Seguridad\nProponga al menos una medida para cada categoría:\n\nContraseñas.\nRespaldos.\nActualizaciones.\nAuditoría.\nSeguridad física.\nContinuidad.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#parte-6.-diagrama",
+    "href": "capitulos/03_sistemas_operativos_red.html#parte-6.-diagrama",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "56.8 Parte 6. Diagrama",
+    "text": "56.8 Parte 6. Diagrama\nDibuje la infraestructura propuesta.\nDebe incluir:\n\nInternet.\nFirewall o router.\nServidor o servidores.\nSwitch.\nComputadoras.\nImpresoras.\nRespaldos.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/03_sistemas_operativos_red.html#producto-esperado",
+    "href": "capitulos/03_sistemas_operativos_red.html#producto-esperado",
+    "title": "4  Clase 3. Sistemas Operativos de Red",
+    "section": "56.9 Producto esperado",
+    "text": "56.9 Producto esperado\nEntregue:\n\nUna justificación de la arquitectura.\nLa lista de roles.\nLos grupos.\nLa matriz de permisos.\nLas medidas de seguridad.\nEl diagrama.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Clase 3. Sistemas Operativos de Red</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/04_administracion_procesos.html",
+    "href": "capitulos/04_administracion_procesos.html",
+    "title": "5  Clase 4. Administración de Procesos",
+    "section": "",
+    "text": "6 Presentación\nCada vez que abrimos un navegador, reproducimos música o editamos un documento, el Sistema Operativo crea y administra procesos. Aunque parezca que todas las aplicaciones trabajan al mismo tiempo, en realidad el procesador distribuye su tiempo entre ellas de forma extremadamente rápida.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Clase 4. Administración de Procesos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/04_administracion_procesos.html#analogía",
+    "href": "capitulos/04_administracion_procesos.html#analogía",
+    "title": "5  Clase 4. Administración de Procesos",
+    "section": "7.1 Analogía",
+    "text": "7.1 Analogía\nUna receta de cocina representa un programa. Preparar la receta utilizando ingredientes, tiempo y utensilios representa el proceso.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Clase 4. Administración de Procesos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/04_administracion_procesos.html#evolución-de-los-modelos-de-estados",
+    "href": "capitulos/04_administracion_procesos.html#evolución-de-los-modelos-de-estados",
+    "title": "5  Clase 4. Administración de Procesos",
+    "section": "13.1 Evolución de los modelos de estados",
+    "text": "13.1 Evolución de los modelos de estados\n\n\n\n\n\n\n\n\nModelo\nEstados\n¿Dónde se utiliza?\n\n\n\n\nDos estados\nListo y Ejecución\nSistemas muy simples o con fines didácticos.\n\n\nCinco estados\nNuevo, Listo, Ejecución, Bloqueado y Terminado\nEs el modelo más utilizado para explicar la administración de procesos.\n\n\nSiete estados\nCinco estados + Listo Suspendido + Bloqueado Suspendido\nSistemas operativos modernos que utilizan memoria virtual y Swap.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Clase 4. Administración de Procesos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/04_administracion_procesos.html#modelo-de-cinco-estados",
+    "href": "capitulos/04_administracion_procesos.html#modelo-de-cinco-estados",
+    "title": "5  Clase 4. Administración de Procesos",
+    "section": "13.2 Modelo de cinco estados",
+    "text": "13.2 Modelo de cinco estados\nEl modelo de cinco estados es uno de los más utilizados para explicar el ciclo de vida de un proceso en un sistema operativo. En este modelo, un proceso puede encontrarse en uno de cinco estados bien definidos, y el sistema operativo controla las transiciones entre ellos.\n\n\n\n\n\nstateDiagram-v2\n\n[*] --&gt; Nuevo\n\nNuevo --&gt; Listo: Admitir\n\nListo --&gt; Ejecucion: Scheduler\n\nEjecucion --&gt; Listo: Fin del quantum\n\nEjecucion --&gt; Bloqueado: Espera E/S\n\nBloqueado --&gt; Listo: Evento completado\n\nEjecucion --&gt; Terminado: Finaliza\n\nTerminado --&gt; [*]\n\n\n\n\n\n\n\n13.2.1 Descripción de los estados\n\n\n\n\n\n\n\nEstado\nDescripción\n\n\n\n\nNuevo\nEl proceso acaba de ser creado y aún no está listo para ejecutarse.\n\n\nListo (Ready)\nEl proceso posee todos los recursos necesarios excepto la CPU. Espera su turno para ejecutarse.\n\n\nEjecución (Running)\nEl proceso está utilizando el procesador y ejecutando instrucciones.\n\n\nBloqueado (Waiting)\nEl proceso espera la finalización de una operación de entrada/salida o algún evento externo.\n\n\nTerminado (Exit)\nEl proceso concluyó su ejecución y el sistema operativo libera los recursos utilizados.\n\n\n\n\n\n\n\n\n\nTipIdea clave\n\n\n\nTodo proceso pasa necesariamente por los estados Nuevo y Terminado, mientras que los estados Listo, Ejecución y Bloqueado pueden repetirse varias veces durante su ciclo de vida.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Clase 4. Administración de Procesos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/04_administracion_procesos.html#modelo-con-procesos-suspendidos-swap",
+    "href": "capitulos/04_administracion_procesos.html#modelo-con-procesos-suspendidos-swap",
+    "title": "5  Clase 4. Administración de Procesos",
+    "section": "13.3 Modelo con procesos suspendidos (Swap)",
+    "text": "13.3 Modelo con procesos suspendidos (Swap)\nEn sistemas multitarea es posible que la memoria principal no sea suficiente para mantener todos los procesos cargados simultáneamente. En estos casos, el sistema operativo puede mover temporalmente algunos procesos al almacenamiento secundario mediante una técnica denominada Swap o Intercambio de memoria.\nCuando esto ocurre aparecen dos nuevos estados:\n\nListo y Suspendido\nBloqueado y Suspendido\n\n\n\n\n\n\nstateDiagram-v2\n\n[*] --&gt; Nuevo\n\nNuevo --&gt; Listo\n\nNuevo --&gt; ListoSuspendido\n\nListo --&gt; Ejecucion\n\nEjecucion --&gt; Listo\n\nEjecucion --&gt; Bloqueado\n\nBloqueado --&gt; Listo\n\nListo --&gt; ListoSuspendido: Suspender\n\nListoSuspendido --&gt; Listo: Activar\n\nBloqueado --&gt; BloqueadoSuspendido: Suspender\n\nBloqueadoSuspendido --&gt; Bloqueado: Activar\n\nBloqueadoSuspendido --&gt; ListoSuspendido: Evento completado\n\nEjecucion --&gt; Terminado\n\nTerminado --&gt; [*]\n\n\n\n\n\n\n\n13.3.1 Nuevos estados\n\n\n\n\n\n\n\nEstado\nDescripción\n\n\n\n\nListo y Suspendido\nEl proceso está preparado para ejecutarse, pero fue trasladado al disco porque no existe memoria RAM suficiente.\n\n\nBloqueado y Suspendido\nEl proceso permanece esperando un evento y, además, fue movido temporalmente al almacenamiento secundario.\n\n\n\n\n\n\n\n\n\nNota¿Qué es el Swap?\n\n\n\nEl Swap consiste en mover procesos completos o parte de su memoria desde la RAM hacia un área especial del disco duro o del SSD para liberar memoria física y permitir que otros procesos continúen ejecutándose.\nAunque esta técnica incrementa la capacidad de ejecución del sistema, también reduce el rendimiento, ya que acceder al disco es mucho más lento que acceder a la memoria RAM.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Clase 4. Administración de Procesos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/04_administracion_procesos.html#autoevaluación",
+    "href": "capitulos/04_administracion_procesos.html#autoevaluación",
+    "title": "5  Clase 4. Administración de Procesos",
+    "section": "17.1 Autoevaluación",
+    "text": "17.1 Autoevaluación\n\n¿Cuál es la diferencia entre un programa y un proceso?\n¿Qué información almacena el PCB?\n¿Qué función cumple el Scheduler?\n¿Cuándo ocurre un cambio de contexto?\nExplique el recorrido NEW → READY → RUNNING → WAITING → READY → EXIT con sus propias palabras.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Clase 4. Administración de Procesos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html",
+    "href": "capitulos/05_control_procesos_concurrencia.html",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "",
+    "text": "7 Clase 5. Control de Procesos y Concurrencia",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#presentación-de-la-clase",
+    "href": "capitulos/05_control_procesos_concurrencia.html#presentación-de-la-clase",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "7.1 Presentación de la clase",
+    "text": "7.1 Presentación de la clase\nEn la clase anterior estudiamos cómo el sistema operativo crea, registra y administra los procesos mediante estructuras como el PCB, la tabla de procesos, el Scheduler, el Dispatcher y los cambios de contexto.\nEn esta clase ampliaremos esa base para comprender cómo el sistema operativo controla varios procesos e hilos que avanzan de forma concurrente, cómo distribuye el tiempo del procesador y qué problemas aparecen cuando varias unidades de ejecución comparten datos o recursos.\nTambién analizaremos el papel real que puede desempeñar la inteligencia artificial en la administración de recursos. La IA no sustituye al kernel ni modifica por sí misma el PCB; puede emplearse como apoyo para construir políticas de planificación, predicción y detección de anomalías.\n\n\n\n\n\n\nNotaPregunta detonadora\n\n\n\nCuando un navegador reproduce música, descarga un archivo, muestra varias pestañas y responde al teclado casi al mismo tiempo, ¿cómo evita el sistema operativo que todas esas actividades interfieran entre sí?",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#objetivos-de-aprendizaje",
+    "href": "capitulos/05_control_procesos_concurrencia.html#objetivos-de-aprendizaje",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "7.2 Objetivos de aprendizaje",
+    "text": "7.2 Objetivos de aprendizaje\nAl finalizar la clase, el estudiante será capaz de:\n\nExplicar qué significa controlar un proceso.\nDiferenciar procesos e hilos.\nComprender la relación entre concurrencia y paralelismo.\nExplicar el propósito del quantum de tiempo.\nRelacionar el quantum con la planificación Round Robin.\nIdentificar los componentes principales del PCB.\nReconocer una sección crítica y una condición de carrera.\nExplicar la finalidad de la exclusión mutua.\nInterpretar el algoritmo de Dekker como una solución histórica para dos procesos.\nAnalizar, con criterio técnico, posibles aplicaciones de inteligencia artificial en la administración de recursos.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#ruta-de-aprendizaje",
+    "href": "capitulos/05_control_procesos_concurrencia.html#ruta-de-aprendizaje",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "7.3 Ruta de aprendizaje",
+    "text": "7.3 Ruta de aprendizaje\nLa clase seguirá esta secuencia:\n\nControl del ciclo de vida de los procesos.\nDiferencia entre proceso e hilo.\nConcurrencia y paralelismo.\nQuantum y planificación Round Robin.\nPCB y cambio de contexto.\nRecursos compartidos y condiciones de carrera.\nSección crítica y exclusión mutua.\nAlgoritmo de Dekker.\nIA aplicada a planificación y observabilidad.\nCaso integrador, laboratorio y autoevaluación.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#proceso",
+    "href": "capitulos/05_control_procesos_concurrencia.html#proceso",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "9.1 Proceso",
+    "text": "9.1 Proceso\nUn proceso es una instancia de un programa en ejecución. Posee su propio espacio de direcciones y los recursos que el sistema operativo le ha asignado.\nUn proceso normalmente incluye:\n\ncódigo;\ndatos;\nheap;\nstack;\narchivos abiertos;\ncredenciales y permisos;\nuno o más hilos;\nun PCB o estructura equivalente mantenida por el kernel.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#hilo",
+    "href": "capitulos/05_control_procesos_concurrencia.html#hilo",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "9.2 Hilo",
+    "text": "9.2 Hilo\nUn hilo o thread es una unidad de ejecución dentro de un proceso.\nLos hilos de un mismo proceso suelen compartir:\n\ncódigo;\ndatos globales;\nheap;\narchivos abiertos;\nespacio de direcciones.\n\nCada hilo conserva elementos propios, como:\n\ncontador de programa;\nregistros;\nstack;\nestado de ejecución;\nidentificador del hilo.\n\n\n\n\n\n\nflowchart TB\n    P[Proceso]\n    P --&gt; M[Memoria compartida]\n    P --&gt; A[Archivos abiertos]\n    P --&gt; T1[Thread 1&lt;br/&gt;Registros + Stack]\n    P --&gt; T2[Thread 2&lt;br/&gt;Registros + Stack]\n    P --&gt; T3[Thread 3&lt;br/&gt;Registros + Stack]",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#comparación",
+    "href": "capitulos/05_control_procesos_concurrencia.html#comparación",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "9.3 Comparación",
+    "text": "9.3 Comparación\n\n\n\n\n\n\n\n\nCaracterística\nProceso\nHilo\n\n\n\n\nEspacio de memoria\nGeneralmente independiente\nComparte el espacio del proceso\n\n\nCosto de creación\nMayor\nMenor\n\n\nComunicación\nRequiere mecanismos de IPC\nPuede compartir variables y estructuras\n\n\nAislamiento\nMayor\nMenor\n\n\nFallo\nPuede quedar aislado\nPuede afectar al proceso completo\n\n\nUso típico\nAplicaciones o servicios separados\nTareas relacionadas dentro de una aplicación\n\n\n\n\n\n\n\n\n\nAdvertenciaPrecisión importante\n\n\n\nNo debe afirmarse que cada pestaña de un navegador siempre corresponde a un hilo. Los navegadores modernos pueden utilizar una arquitectura multiproceso y, dentro de cada proceso, varios hilos. La implementación exacta depende del navegador y de su modelo de aislamiento.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#concurrencia",
+    "href": "capitulos/05_control_procesos_concurrencia.html#concurrencia",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "10.1 Concurrencia",
+    "text": "10.1 Concurrencia\nExiste concurrencia cuando varias tareas progresan durante un mismo período, aunque no necesariamente se ejecuten exactamente al mismo tiempo.\nEn una CPU de un solo núcleo, el sistema puede intercalar rápidamente la ejecución:\nProceso A → Proceso B → Proceso C → Proceso A → ...",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#paralelismo",
+    "href": "capitulos/05_control_procesos_concurrencia.html#paralelismo",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "10.2 Paralelismo",
+    "text": "10.2 Paralelismo\nExiste paralelismo cuando dos o más tareas se ejecutan físicamente al mismo tiempo, por ejemplo, en núcleos diferentes.\n\n\n\n\n\nflowchart TB\n    subgraph C[Concurrencia en un núcleo]\n      A1[A] --&gt; B1[B] --&gt; C1[C] --&gt; A2[A]\n    end\n\n    subgraph P[Paralelismo en varios núcleos]\n      N1[Núcleo 1&lt;br/&gt;Proceso A]\n      N2[Núcleo 2&lt;br/&gt;Proceso B]\n      N3[Núcleo 3&lt;br/&gt;Proceso C]\n    end\n\n\n\n\n\n\n\n\n\n\n\n\n\nConcepto\nPregunta clave\n\n\n\n\nConcurrencia\n¿Varias tareas avanzan durante el mismo período?\n\n\nParalelismo\n¿Varias tareas se ejecutan simultáneamente en hardware distinto?\n\n\n\n\n\n\n\n\n\nNotaEjemplo\n\n\n\nUna persona puede atender concurrentemente varias conversaciones alternando entre ellas. Dos personas pueden atender conversaciones en paralelo.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#qué-ocurre-cuando-termina-el-quantum",
+    "href": "capitulos/05_control_procesos_concurrencia.html#qué-ocurre-cuando-termina-el-quantum",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "11.1 ¿Qué ocurre cuando termina el quantum?",
+    "text": "11.1 ¿Qué ocurre cuando termina el quantum?\n\nEl reloj genera una interrupción.\nEl kernel recupera el control.\nSe guarda el contexto del proceso.\nEl proceso pasa de Ejecución a Listo.\nEl Scheduler selecciona otro proceso.\nEl Dispatcher restaura su contexto.\nEl nuevo proceso continúa ejecutándose.\n\n\n\n\n\n\nflowchart LR\n    Q[Cola READY] --&gt; P1[Proceso A]\n    P1 --&gt;|Quantum| CPU((CPU))\n    CPU --&gt;|Expira| Q\n    Q --&gt; P2[Proceso B]\n    P2 --&gt;|Quantum| CPU",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#efecto-del-tamaño-del-quantum",
+    "href": "capitulos/05_control_procesos_concurrencia.html#efecto-del-tamaño-del-quantum",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "11.2 Efecto del tamaño del quantum",
+    "text": "11.2 Efecto del tamaño del quantum\n\n\n\n\n\n\n\n\nQuantum\nVentaja\nRiesgo\n\n\n\n\nMuy pequeño\nMayor sensación de respuesta\nMás cambios de contexto\n\n\nModerado\nEquilibrio entre respuesta y costo\nDebe adaptarse al sistema\n\n\nMuy grande\nMenos cambios de contexto\nSe aproxima a FCFS y reduce interactividad\n\n\n\n\n\n\n\n\n\nImportanteNo existe un quantum universal\n\n\n\nEl valor apropiado depende de la carga, el hardware, los objetivos de respuesta y la política del sistema operativo.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#componentes-principales",
+    "href": "capitulos/05_control_procesos_concurrencia.html#componentes-principales",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "13.1 Componentes principales",
+    "text": "13.1 Componentes principales\n\n\n\n\n\n\n\nCategoría\nInformación\n\n\n\n\nIdentificación\nPID, PPID, usuario y grupo\n\n\nEstado\nNuevo, listo, ejecución, bloqueado o terminado\n\n\nContexto de CPU\nRegistros, contador de programa y puntero de pila\n\n\nPlanificación\nPrioridad, política, tiempo utilizado y afinidad\n\n\nMemoria\nEspacio de direcciones y estructuras de administración\n\n\nEntrada/salida\nDispositivos, operaciones pendientes y archivos abiertos\n\n\nSeguridad\nCredenciales, privilegios y permisos\n\n\nContabilidad\nTiempo de CPU, fecha de creación y estadísticas\n\n\n\n\n\n\n\n\nflowchart TB\n    PCB[PCB]\n    PCB --&gt; I[Identificación&lt;br/&gt;PID · PPID]\n    PCB --&gt; E[Estado]\n    PCB --&gt; C[Contexto de CPU]\n    PCB --&gt; PL[Planificación]\n    PCB --&gt; M[Memoria]\n    PCB --&gt; IO[E/S y archivos]\n    PCB --&gt; S[Seguridad]\n    PCB --&gt; CT[Contabilidad]\n\n\n\n\n\n\n\n\n\n\n\n\nAdvertenciaModelo conceptual\n\n\n\nLos nombres y campos exactos varían entre sistemas operativos. “PCB” es una forma didáctica de agrupar la información; un kernel real puede distribuirla entre varias estructuras internas.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#del-mundo-real-al-sistema-operativo",
+    "href": "capitulos/05_control_procesos_concurrencia.html#del-mundo-real-al-sistema-operativo",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "14.1 Del mundo real al Sistema Operativo",
+    "text": "14.1 Del mundo real al Sistema Operativo\n\n\n\n\n\n\nTip🍽️ Analogía: El mesero del restaurante\n\n\n\nImagina un restaurante donde solo hay un mesero atendiendo varias mesas.\nEn la Mesa A una familia está haciendo su pedido, pero mientras el mesero la atiende, llega una nueva familia a la Mesa B.\nEl administrador le pide que primero reciba a los nuevos clientes.\nAntes de irse, el mesero anota exactamente en qué punto quedó atendiendo la Mesa A para no olvidar ningún detalle.\nDespués atiende la Mesa B y, cuando termina, regresa a la Mesa A. Gracias a las anotaciones de su libreta puede continuar exactamente donde había quedado.\nLa CPU realiza un proceso muy similar cuando cambia de un proceso a otro.\n\n\n\n\n\n\n\nflowchart LR\n%%| fig-width: 6.2\n%%| fig-height: 5.2\n%%| fig-align: center\nA[\"🍽️ Mesa A&lt;br&gt;&lt;br&gt;El mesero atiende a la familia\"]\n\nB[\"⏱️ Llega una nueva familia&lt;br&gt;o el administrador lo llama\"]\n\nC[\"📝 Guarda notas&lt;br&gt;en su libreta\"]\n\nD[\"🍽️ Atiende la Mesa B\"]\n\nE[\"📖 Revisa nuevamente&lt;br&gt;sus notas\"]\n\nF[\"🍽️ Continúa atendiendo&lt;br&gt;la Mesa A\"]\n\nA --&gt; B\nB --&gt; C\nC --&gt; D\nD --&gt; E\nE --&gt; F\n\n\n\n\n\n\nFlujo\n1. El mesero atiende a la **Mesa A**.\n2. Ocurre una **interrupción**.\n3. Guarda notas en su libreta.\n4. Atiende la **Mesa B**.\n5. Recupera sus notas.\n6. Continúa atendiendo la **Mesa A**.\n\n14.1.1 Relación entre el restaurante y el Sistema Operativo\n\n\n\nEn el restaurante\nEn el Sistema Operativo\n\n\n\n\nMesero\nCPU\n\n\nMesa A\nProceso A\n\n\nMesa B\nProceso B\n\n\nLibreta del mesero\nPCB (Process Control Block)\n\n\nAdministrador\nKernel\n\n\nCambiar de una mesa a otra\nCambio de contexto",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#qué-sucede-realmente",
+    "href": "capitulos/05_control_procesos_concurrencia.html#qué-sucede-realmente",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "14.2 ¿Qué sucede realmente?",
+    "text": "14.2 ¿Qué sucede realmente?\nCuando la CPU está ejecutando un proceso y ocurre una interrupción o finaliza su quantum, el sistema operativo realiza un cambio de contexto.\n\n\n\n\n\n\nImportanteIdea clave\n\n\n\nLa CPU no recuerda por sí sola en qué punto quedó cada proceso.\nToda esa información se almacena en el PCB (Process Control Block), de la misma forma que un mesero utiliza su libreta para recordar qué estaba haciendo en cada mesa.\nPor eso, un cambio de contexto no significa volver a empezar un proceso, sino continuar exactamente desde el punto donde fue interrumpido.\n\n\n\n\n\n\n\n\nNota🧠 ¿Sabías que…?\n\n\n\nUn procesador moderno puede realizar miles o incluso millones de cambios de contexto por segundo, dependiendo de la carga del sistema y del sistema operativo.\nAunque cada cambio toma muy poco tiempo, también representa un costo, ya que durante ese instante la CPU no está ejecutando instrucciones útiles del programa, sino organizando cuál proceso continuará después.\n\n\nEste procedimiento consiste en:\n\nDetener temporalmente el proceso que se estaba ejecutando.\nGuardar su estado actual dentro del PCB.\nSeleccionar el siguiente proceso listo para ejecutarse.\nRecuperar el estado almacenado del nuevo proceso.\nReanudar la ejecución exactamente donde ese proceso había quedado anteriormente.\n\nGracias a este mecanismo, la CPU puede compartir su tiempo entre muchos procesos dando la impresión de que todos se ejecutan simultáneamente.\nDurante el cambio:\n\nse guarda el estado del proceso o hilo actual;\nse actualiza su información de control;\nse selecciona otra unidad;\nse restaura su contexto;\nse reanuda la ejecución.\n\n\n\n\n\n\nsequenceDiagram\n    participant A as Proceso A\n    participant K as Kernel\n    participant PA as PCB A\n    participant PB as PCB B\n    participant B as Proceso B\n\n    A-&gt;&gt;K: Expira quantum / interrupción\n    K-&gt;&gt;PA: Guardar registros y estado\n    K-&gt;&gt;PB: Recuperar registros y estado\n    K-&gt;&gt;B: Reanudar ejecución\n\n\n\n\n\n\nUn cambio de contexto tiene costo porque consume tiempo sin avanzar directamente el trabajo de la aplicación. Sin embargo, es indispensable para ofrecer multitarea, aislamiento y capacidad de respuesta.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#ejemplo-contador-compartido",
+    "href": "capitulos/05_control_procesos_concurrencia.html#ejemplo-contador-compartido",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "15.1 Ejemplo: contador compartido",
+    "text": "15.1 Ejemplo: contador compartido\nSupongamos que:\ncontador = 10\nDos hilos ejecutan:\ncontador = contador + 1\nLa operación no siempre es indivisible. Puede implicar:\n\nleer contador;\nsumar uno;\nescribir el resultado.\n\nPosible intercalado:\n\n\n\nPaso\nHilo A\nHilo B\nValor\n\n\n\n\n1\nLee 10\n\n10\n\n\n2\n\nLee 10\n10\n\n\n3\nCalcula 11\n\n10\n\n\n4\n\nCalcula 11\n10\n\n\n5\nEscribe 11\n\n11\n\n\n6\n\nEscribe 11\n11\n\n\n\nEl resultado esperado era 12, pero se obtuvo 11.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#idea-general",
+    "href": "capitulos/05_control_procesos_concurrencia.html#idea-general",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "19.1 Idea general",
+    "text": "19.1 Idea general\nCada proceso indica que desea entrar. Si ambos quieren entrar al mismo tiempo, la variable turno resuelve quién cede temporalmente.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#pseudocódigo-conceptual",
+    "href": "capitulos/05_control_procesos_concurrencia.html#pseudocódigo-conceptual",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "19.2 Pseudocódigo conceptual",
+    "text": "19.2 Pseudocódigo conceptual\nbandera[0] = falso\nbandera[1] = falso\nturno = 0\n\nProceso i:\n    j = 1 - i\n\n    mientras verdadero:\n        bandera[i] = verdadero\n\n        mientras bandera[j]:\n            si turno == j:\n                bandera[i] = falso\n\n                mientras turno == j:\n                    esperar\n\n                bandera[i] = verdadero\n\n        sección crítica\n\n        turno = j\n        bandera[i] = falso\n\n        sección no crítica",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#explicación",
+    "href": "capitulos/05_control_procesos_concurrencia.html#explicación",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "19.3 Explicación",
+    "text": "19.3 Explicación\n\nbandera[i] = verdadero anuncia intención de entrar.\nSi el otro proceso no desea entrar, el proceso continúa.\nSi ambos desean entrar, turno decide quién espera.\nAl salir, se entrega el turno al otro proceso.\nLa bandera se desactiva.\n\n\n\n\n\n\n\nNotaImportancia histórica\n\n\n\nDekker demuestra que la exclusión mutua puede lograrse mediante coordinación lógica entre dos procesos.\n\n\n\n\n\n\n\n\nAdvertenciaLimitación práctica\n\n\n\nDekker es valioso para estudiar concurrencia, pero no debe implementarse como sustituto de mutex, semáforos u operaciones atómicas en aplicaciones modernas. Además, los modelos modernos de memoria y las optimizaciones del compilador requieren primitivas con garantías explícitas.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#ejemplo-de-interbloqueo",
+    "href": "capitulos/05_control_procesos_concurrencia.html#ejemplo-de-interbloqueo",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "20.1 Ejemplo de interbloqueo",
+    "text": "20.1 Ejemplo de interbloqueo\n\n\n\n\n\nflowchart LR\n    P1[Proceso 1&lt;br/&gt;retiene A] --&gt;|espera B| P2[Proceso 2&lt;br/&gt;retiene B]\n    P2 --&gt;|espera A| P1",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#áreas-de-aplicación",
+    "href": "capitulos/05_control_procesos_concurrencia.html#áreas-de-aplicación",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "21.1 Áreas de aplicación",
+    "text": "21.1 Áreas de aplicación\n\n21.1.1 Predicción de carga\nUn modelo puede estimar:\n\nconsumo futuro de CPU;\npresión de memoria;\ncomportamiento interactivo;\nráfagas de entrada/salida;\ndemanda de energía.\n\n\n\n21.1.2 Planificación adaptativa\nLa investigación explora planificadores capaces de ajustar políticas según:\n\ntipo de carga;\nlatencia;\nrendimiento;\nconsumo energético;\nafinidad entre tareas y núcleos;\nobjetivos de servicio.\n\n\n\n21.1.3 Detección de anomalías\nLos datos de procesos pueden utilizarse para detectar:\n\nconsumo inusual;\nprocesos que dejan de responder;\nfugas de memoria;\npatrones sospechosos;\ndegradación de rendimiento.\n\n\n\n21.1.4 Administración energética\nEn equipos móviles, servidores y centros de datos, modelos predictivos pueden apoyar decisiones sobre:\n\nfrecuencias;\nnúcleos activos;\ndistribución de carga;\nconsolidación de tareas;\nlímites térmicos.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#estado-actual-planificadores-extensibles",
+    "href": "capitulos/05_control_procesos_concurrencia.html#estado-actual-planificadores-extensibles",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "22.1 Estado actual: planificadores extensibles",
+    "text": "22.1 Estado actual: planificadores extensibles\nLinux dispone de sched_ext, una clase de planificación extensible basada en BPF que permite experimentar con algoritmos de planificación externos y regresar al planificador predeterminado cuando se detectan errores. Esta interfaz permite investigar políticas personalizadas, incluidas políticas que podrían integrar modelos predictivos, pero no implica que los sistemas operativos de escritorio utilicen IA de manera general para reemplazar su Scheduler. Documentación oficial del kernel de Linux.\n\n\n\n\n\n\nAdvertenciaNo confundir posibilidad con adopción\n\n\n\nQue una interfaz permita implementar una política inteligente no significa que todo sistema operativo actual utilice aprendizaje automático para planificar procesos.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#análisis",
+    "href": "capitulos/05_control_procesos_concurrencia.html#análisis",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "24.1 Análisis",
+    "text": "24.1 Análisis\n\nEl navegador puede utilizar varios procesos e hilos.\nEl Scheduler distribuye tiempo de CPU.\nCada hilo conserva su contexto de ejecución.\nLas operaciones de red o disco pueden bloquear temporalmente tareas.\nAl expirar el quantum, una tarea puede volver a READY.\nLos buffers y estructuras compartidas requieren sincronización.\nUna condición de carrera podría corromper datos.\nLos mutex y otras primitivas protegen secciones críticas.\nHerramientas de observabilidad pueden detectar consumo anómalo.\nUna política adaptativa podría ajustar prioridades, pero el kernel conserva el control.\n\n\n\n\n\n\nflowchart TB\n    U[Usuario] --&gt; N[Navegador]\n    N --&gt; P1[Proceso de interfaz]\n    N --&gt; P2[Proceso de contenido]\n    N --&gt; P3[Proceso de red]\n\n    P1 --&gt; T1[Hilo de eventos]\n    P2 --&gt; T2[Hilo de renderizado]\n    P3 --&gt; T3[Hilo de comunicación]\n\n    T1 --&gt; S[Scheduler]\n    T2 --&gt; S\n    T3 --&gt; S\n    S --&gt; CPU((CPU / Núcleos))\n\n    T2 --&gt; M[Memoria compartida]\n    T3 --&gt; M\n    M --&gt; X[Sincronización]",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#propósito",
+    "href": "capitulos/05_control_procesos_concurrencia.html#propósito",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "25.1 Propósito",
+    "text": "25.1 Propósito\nRelacionar los conceptos de procesos, hilos, estados, CPU y cambios de contexto con información real del sistema.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#parte-a.-windows",
+    "href": "capitulos/05_control_procesos_concurrencia.html#parte-a.-windows",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "25.2 Parte A. Windows",
+    "text": "25.2 Parte A. Windows\nAbra Administrador de tareas o Monitor de recursos.\nRegistre:\n\n\n\nElemento\nResultado\n\n\n\n\nProceso con mayor uso de CPU\n\n\n\nProceso con mayor uso de memoria\n\n\n\nNúmero aproximado de procesos\n\n\n\nNúmero aproximado de hilos\n\n\n\nAplicación con varios procesos relacionados\n\n\n\n\nOpcionalmente, en PowerShell:\nGet-Process |\n  Sort-Object CPU -Descending |\n  Select-Object -First 10 Name, Id, CPU, Threads, WorkingSet",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#parte-b.-macos",
+    "href": "capitulos/05_control_procesos_concurrencia.html#parte-b.-macos",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "25.3 Parte B. macOS",
+    "text": "25.3 Parte B. macOS\nAbra Monitor de Actividad.\nTambién puede utilizar:\nps -axo pid,ppid,state,%cpu,%mem,comm | head\ny:\ntop -l 1 -stats pid,command,cpu,mem,threads",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#parte-c.-gnulinux",
+    "href": "capitulos/05_control_procesos_concurrencia.html#parte-c.-gnulinux",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "25.4 Parte C. GNU/Linux",
+    "text": "25.4 Parte C. GNU/Linux\nUtilice:\nps -eo pid,ppid,stat,pri,ni,%cpu,%mem,comm --sort=-%cpu | head\nPara observar hilos:\nps -eLf | head\nTambién puede utilizar:\ntop\no, si está instalado:\nhtop\n\n\n\n\n\n\nAdvertenciaRegla de seguridad del laboratorio\n\n\n\nLa actividad es únicamente de observación. No finalice procesos del sistema, no cambie prioridades y no ejecute comandos con privilegios administrativos.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#preguntas-de-análisis",
+    "href": "capitulos/05_control_procesos_concurrencia.html#preguntas-de-análisis",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "25.5 Preguntas de análisis",
+    "text": "25.5 Preguntas de análisis\n\n¿Qué diferencia observa entre proceso e hilo?\n¿Qué proceso tiene más hilos?\n¿El proceso con mayor memoria también utiliza más CPU?\n¿Qué significan los estados observados?\n¿Por qué el uso de CPU cambia constantemente?\n¿Qué aplicación parece utilizar una arquitectura multiproceso?\n¿Qué riesgo tendría finalizar un proceso sin conocer su función?",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#materiales",
+    "href": "capitulos/05_control_procesos_concurrencia.html#materiales",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "26.1 Materiales",
+    "text": "26.1 Materiales\n\nCuatro tarjetas de procesos.\nUn cronómetro.\nUna tabla de seguimiento.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#datos",
+    "href": "capitulos/05_control_procesos_concurrencia.html#datos",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "26.2 Datos",
+    "text": "26.2 Datos\n\n\n\nProceso\nRáfaga\n\n\n\n\nP1\n7\n\n\nP2\n4\n\n\nP3\n9\n\n\nP4\n5\n\n\n\nUse:\nQuantum = 3",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#instrucciones",
+    "href": "capitulos/05_control_procesos_concurrencia.html#instrucciones",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "26.3 Instrucciones",
+    "text": "26.3 Instrucciones\n\nColoque los procesos en la cola.\nAsigne tres unidades al primero.\nSi no termina, envíelo al final.\nRegistre cada cambio.\nCalcule el tiempo de finalización.\nCuente los cambios de contexto.\nRepita con quantum 1 y quantum 6.\nCompare los resultados.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#tabla-de-resultados",
+    "href": "capitulos/05_control_procesos_concurrencia.html#tabla-de-resultados",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "26.4 Tabla de resultados",
+    "text": "26.4 Tabla de resultados\n\n\n\nQuantum\nCambios de contexto\nRespuesta percibida\nObservación\n\n\n\n\n1\n\n\n\n\n\n3\n\n\n\n\n\n6",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#selección-múltiple",
+    "href": "capitulos/05_control_procesos_concurrencia.html#selección-múltiple",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "28.1 Selección múltiple",
+    "text": "28.1 Selección múltiple\n\n¿Qué comparte normalmente un grupo de hilos del mismo proceso?\n\nÚnicamente el PID\n\nEspacio de direcciones y recursos\n\nNingún recurso\n\nProcesadores físicos\n\n¿Qué ocurre cuando expira el quantum?\n\nEl proceso siempre termina\n\nEl proceso se elimina\n\nEl kernel puede interrumpirlo y devolverlo a READY\n\nSe borra su PCB\n\n¿Qué caracteriza una condición de carrera?\n\nEl resultado depende del intercalado\n\nTodos los procesos terminan en orden\n\nNo existen recursos compartidos\n\nEl quantum es demasiado grande\n\n¿Qué busca garantizar un mutex?\n\nParalelismo ilimitado\n\nExclusión mutua\n\nEliminación del PCB\n\nMayor memoria RAM\n\n¿Para cuántos procesos fue diseñado Dekker?\n\nUno\n\nDos\n\nDiez\n\nUn número ilimitado\n\n¿Cuál afirmación sobre IA y PCB es más precisa?\n\nLa IA reemplaza siempre el PCB\n\nLa IA modifica directamente cualquier estructura del kernel\n\nUn modelo puede apoyar decisiones utilizando métricas observadas\n\nTodo sistema operativo utiliza redes neuronales\n\n\n\n\n\n\n\n\nNotaRespuestas\n\n\n\n\nb\n\nc\n\na\n\nb\n\nb\n\nc",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#preguntas-de-reflexión",
+    "href": "capitulos/05_control_procesos_concurrencia.html#preguntas-de-reflexión",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "28.2 Preguntas de reflexión",
+    "text": "28.2 Preguntas de reflexión\n\n¿Por qué un quantum demasiado pequeño puede reducir el rendimiento?\n¿Cuál es la diferencia entre concurrencia y paralelismo?\n¿Por qué los hilos son más ligeros, pero también menos aislados?\n¿Por qué una condición de carrera puede ser difícil de reproducir?\n¿Qué valor educativo tiene Dekker aunque no sea la opción usual en aplicaciones modernas?\n¿Qué riesgos introduce una política de planificación basada en aprendizaje automático?",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/99_cierre.html",
+    "href": "capitulos/99_cierre.html",
+    "title": "7  Cierre de la clase",
+    "section": "",
+    "text": "7.1 Próximo paso\nEn la siguiente clase profundizaremos en la estructura y los componentes de un sistema operativo, relacionando kernel, procesos, memoria, dispositivos y servicios.",
+    "crumbs": [
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Cierre de la clase</span>"
+    ]
+  }
+]

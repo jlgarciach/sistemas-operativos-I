@@ -1,0 +1,332 @@
+[
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html",
+    "href": "capitulos/05_control_procesos_concurrencia.html",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "",
+    "text": "7 Clase 5. Control de Procesos y Concurrencia",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#presentación-de-la-clase",
+    "href": "capitulos/05_control_procesos_concurrencia.html#presentación-de-la-clase",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "7.1 Presentación de la clase",
+    "text": "7.1 Presentación de la clase\nEn la clase anterior estudiamos cómo el sistema operativo crea, registra y administra los procesos mediante estructuras como el PCB, la tabla de procesos, el Scheduler, el Dispatcher y los cambios de contexto.\nEn esta clase ampliaremos esa base para comprender cómo el sistema operativo controla varios procesos e hilos que avanzan de forma concurrente, cómo distribuye el tiempo del procesador y qué problemas aparecen cuando varias unidades de ejecución comparten datos o recursos.\nTambién analizaremos el papel real que puede desempeñar la inteligencia artificial en la administración de recursos. La IA no sustituye al kernel ni modifica por sí misma el PCB; puede emplearse como apoyo para construir políticas de planificación, predicción y detección de anomalías.\n\n\n\n\n\n\nNotaPregunta detonadora\n\n\n\nCuando un navegador reproduce música, descarga un archivo, muestra varias pestañas y responde al teclado casi al mismo tiempo, ¿cómo evita el sistema operativo que todas esas actividades interfieran entre sí?",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#objetivos-de-aprendizaje",
+    "href": "capitulos/05_control_procesos_concurrencia.html#objetivos-de-aprendizaje",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "7.2 Objetivos de aprendizaje",
+    "text": "7.2 Objetivos de aprendizaje\nAl finalizar la clase, el estudiante será capaz de:\n\nExplicar qué significa controlar un proceso.\nDiferenciar procesos e hilos.\nComprender la relación entre concurrencia y paralelismo.\nExplicar el propósito del quantum de tiempo.\nRelacionar el quantum con la planificación Round Robin.\nIdentificar los componentes principales del PCB.\nReconocer una sección crítica y una condición de carrera.\nExplicar la finalidad de la exclusión mutua.\nInterpretar el algoritmo de Dekker como una solución histórica para dos procesos.\nAnalizar, con criterio técnico, posibles aplicaciones de inteligencia artificial en la administración de recursos.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#ruta-de-aprendizaje",
+    "href": "capitulos/05_control_procesos_concurrencia.html#ruta-de-aprendizaje",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "7.3 Ruta de aprendizaje",
+    "text": "7.3 Ruta de aprendizaje\nLa clase seguirá esta secuencia:\n\nControl del ciclo de vida de los procesos.\nDiferencia entre proceso e hilo.\nConcurrencia y paralelismo.\nQuantum y planificación Round Robin.\nPCB y cambio de contexto.\nRecursos compartidos y condiciones de carrera.\nSección crítica y exclusión mutua.\nAlgoritmo de Dekker.\nIA aplicada a planificación y observabilidad.\nCaso integrador, laboratorio y autoevaluación.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#proceso",
+    "href": "capitulos/05_control_procesos_concurrencia.html#proceso",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "9.1 Proceso",
+    "text": "9.1 Proceso\nUn proceso es una instancia de un programa en ejecución. Posee su propio espacio de direcciones y los recursos que el sistema operativo le ha asignado.\nUn proceso normalmente incluye:\n\ncódigo;\ndatos;\nheap;\nstack;\narchivos abiertos;\ncredenciales y permisos;\nuno o más hilos;\nun PCB o estructura equivalente mantenida por el kernel.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#hilo",
+    "href": "capitulos/05_control_procesos_concurrencia.html#hilo",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "9.2 Hilo",
+    "text": "9.2 Hilo\nUn hilo o thread es una unidad de ejecución dentro de un proceso.\nLos hilos de un mismo proceso suelen compartir:\n\ncódigo;\ndatos globales;\nheap;\narchivos abiertos;\nespacio de direcciones.\n\nCada hilo conserva elementos propios, como:\n\ncontador de programa;\nregistros;\nstack;\nestado de ejecución;\nidentificador del hilo.\n\n\n\n\n\n\nflowchart TB\n    P[Proceso]\n    P --&gt; M[Memoria compartida]\n    P --&gt; A[Archivos abiertos]\n    P --&gt; T1[Thread 1&lt;br/&gt;Registros + Stack]\n    P --&gt; T2[Thread 2&lt;br/&gt;Registros + Stack]\n    P --&gt; T3[Thread 3&lt;br/&gt;Registros + Stack]",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#comparación",
+    "href": "capitulos/05_control_procesos_concurrencia.html#comparación",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "9.3 Comparación",
+    "text": "9.3 Comparación\n\n\n\n\n\n\n\n\nCaracterística\nProceso\nHilo\n\n\n\n\nEspacio de memoria\nGeneralmente independiente\nComparte el espacio del proceso\n\n\nCosto de creación\nMayor\nMenor\n\n\nComunicación\nRequiere mecanismos de IPC\nPuede compartir variables y estructuras\n\n\nAislamiento\nMayor\nMenor\n\n\nFallo\nPuede quedar aislado\nPuede afectar al proceso completo\n\n\nUso típico\nAplicaciones o servicios separados\nTareas relacionadas dentro de una aplicación\n\n\n\n\n\n\n\n\n\nAdvertenciaPrecisión importante\n\n\n\nNo debe afirmarse que cada pestaña de un navegador siempre corresponde a un hilo. Los navegadores modernos pueden utilizar una arquitectura multiproceso y, dentro de cada proceso, varios hilos. La implementación exacta depende del navegador y de su modelo de aislamiento.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#concurrencia",
+    "href": "capitulos/05_control_procesos_concurrencia.html#concurrencia",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "10.1 Concurrencia",
+    "text": "10.1 Concurrencia\nExiste concurrencia cuando varias tareas progresan durante un mismo período, aunque no necesariamente se ejecuten exactamente al mismo tiempo.\nEn una CPU de un solo núcleo, el sistema puede intercalar rápidamente la ejecución:\nProceso A → Proceso B → Proceso C → Proceso A → ...",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#paralelismo",
+    "href": "capitulos/05_control_procesos_concurrencia.html#paralelismo",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "10.2 Paralelismo",
+    "text": "10.2 Paralelismo\nExiste paralelismo cuando dos o más tareas se ejecutan físicamente al mismo tiempo, por ejemplo, en núcleos diferentes.\n\n\n\n\n\nflowchart TB\n    subgraph C[Concurrencia en un núcleo]\n      A1[A] --&gt; B1[B] --&gt; C1[C] --&gt; A2[A]\n    end\n\n    subgraph P[Paralelismo en varios núcleos]\n      N1[Núcleo 1&lt;br/&gt;Proceso A]\n      N2[Núcleo 2&lt;br/&gt;Proceso B]\n      N3[Núcleo 3&lt;br/&gt;Proceso C]\n    end\n\n\n\n\n\n\n\n\n\n\n\n\n\nConcepto\nPregunta clave\n\n\n\n\nConcurrencia\n¿Varias tareas avanzan durante el mismo período?\n\n\nParalelismo\n¿Varias tareas se ejecutan simultáneamente en hardware distinto?\n\n\n\n\n\n\n\n\n\nNotaEjemplo\n\n\n\nUna persona puede atender concurrentemente varias conversaciones alternando entre ellas. Dos personas pueden atender conversaciones en paralelo.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#qué-ocurre-cuando-termina-el-quantum",
+    "href": "capitulos/05_control_procesos_concurrencia.html#qué-ocurre-cuando-termina-el-quantum",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "11.1 ¿Qué ocurre cuando termina el quantum?",
+    "text": "11.1 ¿Qué ocurre cuando termina el quantum?\n\nEl reloj genera una interrupción.\nEl kernel recupera el control.\nSe guarda el contexto del proceso.\nEl proceso pasa de Ejecución a Listo.\nEl Scheduler selecciona otro proceso.\nEl Dispatcher restaura su contexto.\nEl nuevo proceso continúa ejecutándose.\n\n\n\n\n\n\nflowchart LR\n    Q[Cola READY] --&gt; P1[Proceso A]\n    P1 --&gt;|Quantum| CPU((CPU))\n    CPU --&gt;|Expira| Q\n    Q --&gt; P2[Proceso B]\n    P2 --&gt;|Quantum| CPU",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#efecto-del-tamaño-del-quantum",
+    "href": "capitulos/05_control_procesos_concurrencia.html#efecto-del-tamaño-del-quantum",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "11.2 Efecto del tamaño del quantum",
+    "text": "11.2 Efecto del tamaño del quantum\n\n\n\n\n\n\n\n\nQuantum\nVentaja\nRiesgo\n\n\n\n\nMuy pequeño\nMayor sensación de respuesta\nMás cambios de contexto\n\n\nModerado\nEquilibrio entre respuesta y costo\nDebe adaptarse al sistema\n\n\nMuy grande\nMenos cambios de contexto\nSe aproxima a FCFS y reduce interactividad\n\n\n\n\n\n\n\n\n\nImportanteNo existe un quantum universal\n\n\n\nEl valor apropiado depende de la carga, el hardware, los objetivos de respuesta y la política del sistema operativo.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#componentes-principales",
+    "href": "capitulos/05_control_procesos_concurrencia.html#componentes-principales",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "13.1 Componentes principales",
+    "text": "13.1 Componentes principales\n\n\n\n\n\n\n\nCategoría\nInformación\n\n\n\n\nIdentificación\nPID, PPID, usuario y grupo\n\n\nEstado\nNuevo, listo, ejecución, bloqueado o terminado\n\n\nContexto de CPU\nRegistros, contador de programa y puntero de pila\n\n\nPlanificación\nPrioridad, política, tiempo utilizado y afinidad\n\n\nMemoria\nEspacio de direcciones y estructuras de administración\n\n\nEntrada/salida\nDispositivos, operaciones pendientes y archivos abiertos\n\n\nSeguridad\nCredenciales, privilegios y permisos\n\n\nContabilidad\nTiempo de CPU, fecha de creación y estadísticas\n\n\n\n\n\n\n\n\nflowchart TB\n    PCB[PCB]\n    PCB --&gt; I[Identificación&lt;br/&gt;PID · PPID]\n    PCB --&gt; E[Estado]\n    PCB --&gt; C[Contexto de CPU]\n    PCB --&gt; PL[Planificación]\n    PCB --&gt; M[Memoria]\n    PCB --&gt; IO[E/S y archivos]\n    PCB --&gt; S[Seguridad]\n    PCB --&gt; CT[Contabilidad]\n\n\n\n\n\n\n\n\n\n\n\n\nAdvertenciaModelo conceptual\n\n\n\nLos nombres y campos exactos varían entre sistemas operativos. “PCB” es una forma didáctica de agrupar la información; un kernel real puede distribuirla entre varias estructuras internas.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#del-mundo-real-al-sistema-operativo",
+    "href": "capitulos/05_control_procesos_concurrencia.html#del-mundo-real-al-sistema-operativo",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "14.1 Del mundo real al Sistema Operativo",
+    "text": "14.1 Del mundo real al Sistema Operativo\n\n\n\n\n\n\nTip🍽️ Analogía: El mesero del restaurante\n\n\n\nImagina un restaurante donde solo hay un mesero atendiendo varias mesas.\nEn la Mesa A una familia está haciendo su pedido, pero mientras el mesero la atiende, llega una nueva familia a la Mesa B.\nEl administrador le pide que primero reciba a los nuevos clientes.\nAntes de irse, el mesero anota exactamente en qué punto quedó atendiendo la Mesa A para no olvidar ningún detalle.\nDespués atiende la Mesa B y, cuando termina, regresa a la Mesa A. Gracias a las anotaciones de su libreta puede continuar exactamente donde había quedado.\nLa CPU realiza un proceso muy similar cuando cambia de un proceso a otro.\n\n\n\n\n\n\n\nflowchart LR\n%%| fig-width: 6.2\n%%| fig-height: 5.2\n%%| fig-align: center\nA[\"🍽️ Mesa A&lt;br&gt;&lt;br&gt;El mesero atiende a la familia\"]\n\nB[\"⏱️ Llega una nueva familia&lt;br&gt;o el administrador lo llama\"]\n\nC[\"📝 Guarda notas&lt;br&gt;en su libreta\"]\n\nD[\"🍽️ Atiende la Mesa B\"]\n\nE[\"📖 Revisa nuevamente&lt;br&gt;sus notas\"]\n\nF[\"🍽️ Continúa atendiendo&lt;br&gt;la Mesa A\"]\n\nA --&gt; B\nB --&gt; C\nC --&gt; D\nD --&gt; E\nE --&gt; F\n\n\n\n\n\n\nFlujo\n1. El mesero atiende a la **Mesa A**.\n2. Ocurre una **interrupción**.\n3. Guarda notas en su libreta.\n4. Atiende la **Mesa B**.\n5. Recupera sus notas.\n6. Continúa atendiendo la **Mesa A**.\n\n14.1.1 Relación entre el restaurante y el Sistema Operativo\n\n\n\nEn el restaurante\nEn el Sistema Operativo\n\n\n\n\nMesero\nCPU\n\n\nMesa A\nProceso A\n\n\nMesa B\nProceso B\n\n\nLibreta del mesero\nPCB (Process Control Block)\n\n\nAdministrador\nKernel\n\n\nCambiar de una mesa a otra\nCambio de contexto",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#ejemplo-contador-compartido",
+    "href": "capitulos/05_control_procesos_concurrencia.html#ejemplo-contador-compartido",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "15.1 Ejemplo: contador compartido",
+    "text": "15.1 Ejemplo: contador compartido\nSupongamos que:\ncontador = 10\nDos hilos ejecutan:\ncontador = contador + 1\nLa operación no siempre es indivisible. Puede implicar:\n\nleer contador;\nsumar uno;\nescribir el resultado.\n\nPosible intercalado:\n\n\n\nPaso\nHilo A\nHilo B\nValor\n\n\n\n\n1\nLee 10\n\n10\n\n\n2\n\nLee 10\n10\n\n\n3\nCalcula 11\n\n10\n\n\n4\n\nCalcula 11\n10\n\n\n5\nEscribe 11\n\n11\n\n\n6\n\nEscribe 11\n11\n\n\n\nEl resultado esperado era 12, pero se obtuvo 11.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#idea-general",
+    "href": "capitulos/05_control_procesos_concurrencia.html#idea-general",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "19.1 Idea general",
+    "text": "19.1 Idea general\nCada proceso indica que desea entrar. Si ambos quieren entrar al mismo tiempo, la variable turno resuelve quién cede temporalmente.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#pseudocódigo-conceptual",
+    "href": "capitulos/05_control_procesos_concurrencia.html#pseudocódigo-conceptual",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "19.2 Pseudocódigo conceptual",
+    "text": "19.2 Pseudocódigo conceptual\nbandera[0] = falso\nbandera[1] = falso\nturno = 0\n\nProceso i:\n    j = 1 - i\n\n    mientras verdadero:\n        bandera[i] = verdadero\n\n        mientras bandera[j]:\n            si turno == j:\n                bandera[i] = falso\n\n                mientras turno == j:\n                    esperar\n\n                bandera[i] = verdadero\n\n        sección crítica\n\n        turno = j\n        bandera[i] = falso\n\n        sección no crítica",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#explicación",
+    "href": "capitulos/05_control_procesos_concurrencia.html#explicación",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "19.3 Explicación",
+    "text": "19.3 Explicación\n\nbandera[i] = verdadero anuncia intención de entrar.\nSi el otro proceso no desea entrar, el proceso continúa.\nSi ambos desean entrar, turno decide quién espera.\nAl salir, se entrega el turno al otro proceso.\nLa bandera se desactiva.\n\n\n\n\n\n\n\nNotaImportancia histórica\n\n\n\nDekker demuestra que la exclusión mutua puede lograrse mediante coordinación lógica entre dos procesos.\n\n\n\n\n\n\n\n\nAdvertenciaLimitación práctica\n\n\n\nDekker es valioso para estudiar concurrencia, pero no debe implementarse como sustituto de mutex, semáforos u operaciones atómicas en aplicaciones modernas. Además, los modelos modernos de memoria y las optimizaciones del compilador requieren primitivas con garantías explícitas.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#ejemplo-de-interbloqueo",
+    "href": "capitulos/05_control_procesos_concurrencia.html#ejemplo-de-interbloqueo",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "20.1 Ejemplo de interbloqueo",
+    "text": "20.1 Ejemplo de interbloqueo\n\n\n\n\n\nflowchart LR\n    P1[Proceso 1&lt;br/&gt;retiene A] --&gt;|espera B| P2[Proceso 2&lt;br/&gt;retiene B]\n    P2 --&gt;|espera A| P1",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#áreas-de-aplicación",
+    "href": "capitulos/05_control_procesos_concurrencia.html#áreas-de-aplicación",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "21.1 Áreas de aplicación",
+    "text": "21.1 Áreas de aplicación\n\n21.1.1 Predicción de carga\nUn modelo puede estimar:\n\nconsumo futuro de CPU;\npresión de memoria;\ncomportamiento interactivo;\nráfagas de entrada/salida;\ndemanda de energía.\n\n\n\n21.1.2 Planificación adaptativa\nLa investigación explora planificadores capaces de ajustar políticas según:\n\ntipo de carga;\nlatencia;\nrendimiento;\nconsumo energético;\nafinidad entre tareas y núcleos;\nobjetivos de servicio.\n\n\n\n21.1.3 Detección de anomalías\nLos datos de procesos pueden utilizarse para detectar:\n\nconsumo inusual;\nprocesos que dejan de responder;\nfugas de memoria;\npatrones sospechosos;\ndegradación de rendimiento.\n\n\n\n21.1.4 Administración energética\nEn equipos móviles, servidores y centros de datos, modelos predictivos pueden apoyar decisiones sobre:\n\nfrecuencias;\nnúcleos activos;\ndistribución de carga;\nconsolidación de tareas;\nlímites térmicos.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#estado-actual-planificadores-extensibles",
+    "href": "capitulos/05_control_procesos_concurrencia.html#estado-actual-planificadores-extensibles",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "22.1 Estado actual: planificadores extensibles",
+    "text": "22.1 Estado actual: planificadores extensibles\nLinux dispone de sched_ext, una clase de planificación extensible basada en BPF que permite experimentar con algoritmos de planificación externos y regresar al planificador predeterminado cuando se detectan errores. Esta interfaz permite investigar políticas personalizadas, incluidas políticas que podrían integrar modelos predictivos, pero no implica que los sistemas operativos de escritorio utilicen IA de manera general para reemplazar su Scheduler. Documentación oficial del kernel de Linux.\n\n\n\n\n\n\nAdvertenciaNo confundir posibilidad con adopción\n\n\n\nQue una interfaz permita implementar una política inteligente no significa que todo sistema operativo actual utilice aprendizaje automático para planificar procesos.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#análisis",
+    "href": "capitulos/05_control_procesos_concurrencia.html#análisis",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "24.1 Análisis",
+    "text": "24.1 Análisis\n\nEl navegador puede utilizar varios procesos e hilos.\nEl Scheduler distribuye tiempo de CPU.\nCada hilo conserva su contexto de ejecución.\nLas operaciones de red o disco pueden bloquear temporalmente tareas.\nAl expirar el quantum, una tarea puede volver a READY.\nLos buffers y estructuras compartidas requieren sincronización.\nUna condición de carrera podría corromper datos.\nLos mutex y otras primitivas protegen secciones críticas.\nHerramientas de observabilidad pueden detectar consumo anómalo.\nUna política adaptativa podría ajustar prioridades, pero el kernel conserva el control.\n\n\n\n\n\n\nflowchart TB\n    U[Usuario] --&gt; N[Navegador]\n    N --&gt; P1[Proceso de interfaz]\n    N --&gt; P2[Proceso de contenido]\n    N --&gt; P3[Proceso de red]\n\n    P1 --&gt; T1[Hilo de eventos]\n    P2 --&gt; T2[Hilo de renderizado]\n    P3 --&gt; T3[Hilo de comunicación]\n\n    T1 --&gt; S[Scheduler]\n    T2 --&gt; S\n    T3 --&gt; S\n    S --&gt; CPU((CPU / Núcleos))\n\n    T2 --&gt; M[Memoria compartida]\n    T3 --&gt; M\n    M --&gt; X[Sincronización]",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#propósito",
+    "href": "capitulos/05_control_procesos_concurrencia.html#propósito",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "25.1 Propósito",
+    "text": "25.1 Propósito\nRelacionar los conceptos de procesos, hilos, estados, CPU y cambios de contexto con información real del sistema.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#parte-a.-windows",
+    "href": "capitulos/05_control_procesos_concurrencia.html#parte-a.-windows",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "25.2 Parte A. Windows",
+    "text": "25.2 Parte A. Windows\nAbra Administrador de tareas o Monitor de recursos.\nRegistre:\n\n\n\nElemento\nResultado\n\n\n\n\nProceso con mayor uso de CPU\n\n\n\nProceso con mayor uso de memoria\n\n\n\nNúmero aproximado de procesos\n\n\n\nNúmero aproximado de hilos\n\n\n\nAplicación con varios procesos relacionados\n\n\n\n\nOpcionalmente, en PowerShell:\nGet-Process |\n  Sort-Object CPU -Descending |\n  Select-Object -First 10 Name, Id, CPU, Threads, WorkingSet",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#parte-b.-macos",
+    "href": "capitulos/05_control_procesos_concurrencia.html#parte-b.-macos",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "25.3 Parte B. macOS",
+    "text": "25.3 Parte B. macOS\nAbra Monitor de Actividad.\nTambién puede utilizar:\nps -axo pid,ppid,state,%cpu,%mem,comm | head\ny:\ntop -l 1 -stats pid,command,cpu,mem,threads",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#parte-c.-gnulinux",
+    "href": "capitulos/05_control_procesos_concurrencia.html#parte-c.-gnulinux",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "25.4 Parte C. GNU/Linux",
+    "text": "25.4 Parte C. GNU/Linux\nUtilice:\nps -eo pid,ppid,stat,pri,ni,%cpu,%mem,comm --sort=-%cpu | head\nPara observar hilos:\nps -eLf | head\nTambién puede utilizar:\ntop\no, si está instalado:\nhtop\n\n\n\n\n\n\nAdvertenciaRegla de seguridad del laboratorio\n\n\n\nLa actividad es únicamente de observación. No finalice procesos del sistema, no cambie prioridades y no ejecute comandos con privilegios administrativos.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#preguntas-de-análisis",
+    "href": "capitulos/05_control_procesos_concurrencia.html#preguntas-de-análisis",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "25.5 Preguntas de análisis",
+    "text": "25.5 Preguntas de análisis\n\n¿Qué diferencia observa entre proceso e hilo?\n¿Qué proceso tiene más hilos?\n¿El proceso con mayor memoria también utiliza más CPU?\n¿Qué significan los estados observados?\n¿Por qué el uso de CPU cambia constantemente?\n¿Qué aplicación parece utilizar una arquitectura multiproceso?\n¿Qué riesgo tendría finalizar un proceso sin conocer su función?",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#materiales",
+    "href": "capitulos/05_control_procesos_concurrencia.html#materiales",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "26.1 Materiales",
+    "text": "26.1 Materiales\n\nCuatro tarjetas de procesos.\nUn cronómetro.\nUna tabla de seguimiento.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#datos",
+    "href": "capitulos/05_control_procesos_concurrencia.html#datos",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "26.2 Datos",
+    "text": "26.2 Datos\n\n\n\nProceso\nRáfaga\n\n\n\n\nP1\n7\n\n\nP2\n4\n\n\nP3\n9\n\n\nP4\n5\n\n\n\nUse:\nQuantum = 3",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#instrucciones",
+    "href": "capitulos/05_control_procesos_concurrencia.html#instrucciones",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "26.3 Instrucciones",
+    "text": "26.3 Instrucciones\n\nColoque los procesos en la cola.\nAsigne tres unidades al primero.\nSi no termina, envíelo al final.\nRegistre cada cambio.\nCalcule el tiempo de finalización.\nCuente los cambios de contexto.\nRepita con quantum 1 y quantum 6.\nCompare los resultados.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#tabla-de-resultados",
+    "href": "capitulos/05_control_procesos_concurrencia.html#tabla-de-resultados",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "26.4 Tabla de resultados",
+    "text": "26.4 Tabla de resultados\n\n\n\nQuantum\nCambios de contexto\nRespuesta percibida\nObservación\n\n\n\n\n1\n\n\n\n\n\n3\n\n\n\n\n\n6",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#selección-múltiple",
+    "href": "capitulos/05_control_procesos_concurrencia.html#selección-múltiple",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "28.1 Selección múltiple",
+    "text": "28.1 Selección múltiple\n\n¿Qué comparte normalmente un grupo de hilos del mismo proceso?\n\nÚnicamente el PID\n\nEspacio de direcciones y recursos\n\nNingún recurso\n\nProcesadores físicos\n\n¿Qué ocurre cuando expira el quantum?\n\nEl proceso siempre termina\n\nEl proceso se elimina\n\nEl kernel puede interrumpirlo y devolverlo a READY\n\nSe borra su PCB\n\n¿Qué caracteriza una condición de carrera?\n\nEl resultado depende del intercalado\n\nTodos los procesos terminan en orden\n\nNo existen recursos compartidos\n\nEl quantum es demasiado grande\n\n¿Qué busca garantizar un mutex?\n\nParalelismo ilimitado\n\nExclusión mutua\n\nEliminación del PCB\n\nMayor memoria RAM\n\n¿Para cuántos procesos fue diseñado Dekker?\n\nUno\n\nDos\n\nDiez\n\nUn número ilimitado\n\n¿Cuál afirmación sobre IA y PCB es más precisa?\n\nLa IA reemplaza siempre el PCB\n\nLa IA modifica directamente cualquier estructura del kernel\n\nUn modelo puede apoyar decisiones utilizando métricas observadas\n\nTodo sistema operativo utiliza redes neuronales\n\n\n\n\n\n\n\n\nNotaRespuestas\n\n\n\n\nb\n\nc\n\na\n\nb\n\nb\n\nc",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#preguntas-de-reflexión",
+    "href": "capitulos/05_control_procesos_concurrencia.html#preguntas-de-reflexión",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "28.2 Preguntas de reflexión",
+    "text": "28.2 Preguntas de reflexión\n\n¿Por qué un quantum demasiado pequeño puede reducir el rendimiento?\n¿Cuál es la diferencia entre concurrencia y paralelismo?\n¿Por qué los hilos son más ligeros, pero también menos aislados?\n¿Por qué una condición de carrera puede ser difícil de reproducir?\n¿Qué valor educativo tiene Dekker aunque no sea la opción usual en aplicaciones modernas?\n¿Qué riesgos introduce una política de planificación basada en aprendizaje automático?",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/05_control_procesos_concurrencia.html#qué-sucede-realmente",
+    "href": "capitulos/05_control_procesos_concurrencia.html#qué-sucede-realmente",
+    "title": "6  Clase 5. Control de Procesos y Concurrencia",
+    "section": "14.2 ¿Qué sucede realmente?",
+    "text": "14.2 ¿Qué sucede realmente?\nCuando la CPU está ejecutando un proceso y ocurre una interrupción o finaliza su quantum, el sistema operativo realiza un cambio de contexto.\n\n\n\n\n\n\nImportanteIdea clave\n\n\n\nLa CPU no recuerda por sí sola en qué punto quedó cada proceso.\nToda esa información se almacena en el PCB (Process Control Block), de la misma forma que un mesero utiliza su libreta para recordar qué estaba haciendo en cada mesa.\nPor eso, un cambio de contexto no significa volver a empezar un proceso, sino continuar exactamente desde el punto donde fue interrumpido.\n\n\n\n\n\n\n\n\nNota🧠 ¿Sabías que…?\n\n\n\nUn procesador moderno puede realizar miles o incluso millones de cambios de contexto por segundo, dependiendo de la carga del sistema y del sistema operativo.\nAunque cada cambio toma muy poco tiempo, también representa un costo, ya que durante ese instante la CPU no está ejecutando instrucciones útiles del programa, sino organizando cuál proceso continuará después.\n\n\nEste procedimiento consiste en:\n\nDetener temporalmente el proceso que se estaba ejecutando.\nGuardar su estado actual dentro del PCB.\nSeleccionar el siguiente proceso listo para ejecutarse.\nRecuperar el estado almacenado del nuevo proceso.\nReanudar la ejecución exactamente donde ese proceso había quedado anteriormente.\n\nGracias a este mecanismo, la CPU puede compartir su tiempo entre muchos procesos dando la impresión de que todos se ejecutan simultáneamente.\nDurante el cambio:\n\nse guarda el estado del proceso o hilo actual;\nse actualiza su información de control;\nse selecciona otra unidad;\nse restaura su contexto;\nse reanuda la ejecución.\n\n\n\n\n\n\nsequenceDiagram\n    participant A as Proceso A\n    participant K as Kernel\n    participant PA as PCB A\n    participant PB as PCB B\n    participant B as Proceso B\n\n    A-&gt;&gt;K: Expira quantum / interrupción\n    K-&gt;&gt;PA: Guardar registros y estado\n    K-&gt;&gt;PB: Recuperar registros y estado\n    K-&gt;&gt;B: Reanudar ejecución\n\n\n\n\n\n\nUn cambio de contexto tiene costo porque consume tiempo sin avanzar directamente el trabajo de la aplicación. Sin embargo, es indispensable para ofrecer multitarea, aislamiento y capacidad de respuesta.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Clase 5. Control de Procesos y Concurrencia</span>"
+    ]
+  }
+]

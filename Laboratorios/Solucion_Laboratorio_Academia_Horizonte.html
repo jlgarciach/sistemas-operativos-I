@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ing. Jorge Luis García Chacón">
+
+<title>Solución del laboratorio narrativo</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="Solucion_Laboratorio_Academia_Horizonte_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Solucion_Laboratorio_Academia_Horizonte_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="Solucion_Laboratorio_Academia_Horizonte_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="Solucion_Laboratorio_Academia_Horizonte_files/libs/quarto-html/popper.min.js"></script>
+<script src="Solucion_Laboratorio_Academia_Horizonte_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Solucion_Laboratorio_Academia_Horizonte_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Solucion_Laboratorio_Academia_Horizonte_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Solucion_Laboratorio_Academia_Horizonte_files/libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Solucion_Laboratorio_Academia_Horizonte_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Solucion_Laboratorio_Academia_Horizonte_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Solucion_Laboratorio_Academia_Horizonte_files/libs/bootstrap/bootstrap-8ffd5f67044e5306d9846f29df41dda5.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="Solucion_Laboratorio_Academia_Horizonte_files/libs/quarto-diagram/mermaid.min.js"></script>
+<script src="Solucion_Laboratorio_Academia_Horizonte_files/libs/quarto-diagram/mermaid-init.js"></script>
+<link href="Solucion_Laboratorio_Academia_Horizonte_files/libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Tabla de contenidos</h2>
+   
+  <ul>
+  <li><a href="#laboratorio-narrativo-diseñando-la-red-de-una-academia" id="toc-laboratorio-narrativo-diseñando-la-red-de-una-academia" class="nav-link active" data-scroll-target="#laboratorio-narrativo-diseñando-la-red-de-una-academia"><span class="header-section-number">1</span> Laboratorio narrativo: diseñando la red de una academia</a>
+  <ul class="collapse">
+  <li><a href="#situación" id="toc-situación" class="nav-link" data-scroll-target="#situación"><span class="header-section-number">1.1</span> Situación</a></li>
+  </ul></li>
+  <li><a href="#parte-1.-arquitectura-propuesta" id="toc-parte-1.-arquitectura-propuesta" class="nav-link" data-scroll-target="#parte-1.-arquitectura-propuesta"><span class="header-section-number">2</span> Parte 1. Arquitectura propuesta</a>
+  <ul class="collapse">
+  <li><a href="#tipo-de-arquitectura" id="toc-tipo-de-arquitectura" class="nav-link" data-scroll-target="#tipo-de-arquitectura"><span class="header-section-number">2.1</span> Tipo de arquitectura</a></li>
+  <li><a href="#justificación" id="toc-justificación" class="nav-link" data-scroll-target="#justificación"><span class="header-section-number">2.2</span> Justificación</a>
+  <ul class="collapse">
+  <li><a href="#administración-centralizada" id="toc-administración-centralizada" class="nav-link" data-scroll-target="#administración-centralizada"><span class="header-section-number">2.2.1</span> Administración centralizada</a></li>
+  <li><a href="#seguridad" id="toc-seguridad" class="nav-link" data-scroll-target="#seguridad"><span class="header-section-number">2.2.2</span> Seguridad</a></li>
+  <li><a href="#escalabilidad" id="toc-escalabilidad" class="nav-link" data-scroll-target="#escalabilidad"><span class="header-section-number">2.2.3</span> Escalabilidad</a></li>
+  <li><a href="#respaldo-y-recuperación" id="toc-respaldo-y-recuperación" class="nav-link" data-scroll-target="#respaldo-y-recuperación"><span class="header-section-number">2.2.4</span> Respaldo y recuperación</a></li>
+  <li><a href="#disponibilidad" id="toc-disponibilidad" class="nav-link" data-scroll-target="#disponibilidad"><span class="header-section-number">2.2.5</span> Disponibilidad</a></li>
+  </ul></li>
+  <li><a href="#riesgos-de-mantener-cuentas-locales-independientes" id="toc-riesgos-de-mantener-cuentas-locales-independientes" class="nav-link" data-scroll-target="#riesgos-de-mantener-cuentas-locales-independientes"><span class="header-section-number">2.3</span> Riesgos de mantener cuentas locales independientes</a></li>
+  </ul></li>
+  <li><a href="#parte-2.-roles-y-servicios-necesarios" id="toc-parte-2.-roles-y-servicios-necesarios" class="nav-link" data-scroll-target="#parte-2.-roles-y-servicios-necesarios"><span class="header-section-number">3</span> Parte 2. Roles y servicios necesarios</a>
+  <ul class="collapse">
+  <li><a href="#distribución-sugerida-de-roles" id="toc-distribución-sugerida-de-roles" class="nav-link" data-scroll-target="#distribución-sugerida-de-roles"><span class="header-section-number">3.1</span> Distribución sugerida de roles</a></li>
+  </ul></li>
+  <li><a href="#parte-3.-usuarios-y-grupos" id="toc-parte-3.-usuarios-y-grupos" class="nav-link" data-scroll-target="#parte-3.-usuarios-y-grupos"><span class="header-section-number">4</span> Parte 3. Usuarios y grupos</a>
+  <ul class="collapse">
+  <li><a href="#grupos-propuestos" id="toc-grupos-propuestos" class="nav-link" data-scroll-target="#grupos-propuestos"><span class="header-section-number">4.1</span> Grupos propuestos</a>
+  <ul class="collapse">
+  <li><a href="#administrativos" id="toc-administrativos" class="nav-link" data-scroll-target="#administrativos"><span class="header-section-number">4.1.1</span> Administrativos</a></li>
+  <li><a href="#docentes" id="toc-docentes" class="nav-link" data-scroll-target="#docentes"><span class="header-section-number">4.1.2</span> Docentes</a></li>
+  <li><a href="#estudiantes" id="toc-estudiantes" class="nav-link" data-scroll-target="#estudiantes"><span class="header-section-number">4.1.3</span> Estudiantes</a></li>
+  <li><a href="#soporte-técnico" id="toc-soporte-técnico" class="nav-link" data-scroll-target="#soporte-técnico"><span class="header-section-number">4.1.4</span> Soporte Técnico</a></li>
+  <li><a href="#dirección" id="toc-dirección" class="nav-link" data-scroll-target="#dirección"><span class="header-section-number">4.1.5</span> Dirección</a></li>
+  </ul></li>
+  <li><a href="#ejemplos-de-cuentas" id="toc-ejemplos-de-cuentas" class="nav-link" data-scroll-target="#ejemplos-de-cuentas"><span class="header-section-number">4.2</span> Ejemplos de cuentas</a></li>
+  </ul></li>
+  <li><a href="#parte-4.-matriz-de-permisos" id="toc-parte-4.-matriz-de-permisos" class="nav-link" data-scroll-target="#parte-4.-matriz-de-permisos"><span class="header-section-number">5</span> Parte 4. Matriz de permisos</a>
+  <ul class="collapse">
+  <li><a href="#aplicación-del-mínimo-privilegio" id="toc-aplicación-del-mínimo-privilegio" class="nav-link" data-scroll-target="#aplicación-del-mínimo-privilegio"><span class="header-section-number">5.1</span> Aplicación del mínimo privilegio</a></li>
+  </ul></li>
+  <li><a href="#parte-5.-medidas-de-seguridad" id="toc-parte-5.-medidas-de-seguridad" class="nav-link" data-scroll-target="#parte-5.-medidas-de-seguridad"><span class="header-section-number">6</span> Parte 5. Medidas de seguridad</a>
+  <ul class="collapse">
+  <li><a href="#contraseñas-y-autenticación" id="toc-contraseñas-y-autenticación" class="nav-link" data-scroll-target="#contraseñas-y-autenticación"><span class="header-section-number">6.1</span> Contraseñas y autenticación</a></li>
+  <li><a href="#respaldos" id="toc-respaldos" class="nav-link" data-scroll-target="#respaldos"><span class="header-section-number">6.2</span> Respaldos</a>
+  <ul class="collapse">
+  <li><a href="#esquema-sugerido" id="toc-esquema-sugerido" class="nav-link" data-scroll-target="#esquema-sugerido"><span class="header-section-number">6.2.1</span> Esquema sugerido</a></li>
+  </ul></li>
+  <li><a href="#actualizaciones" id="toc-actualizaciones" class="nav-link" data-scroll-target="#actualizaciones"><span class="header-section-number">6.3</span> Actualizaciones</a></li>
+  <li><a href="#auditoría" id="toc-auditoría" class="nav-link" data-scroll-target="#auditoría"><span class="header-section-number">6.4</span> Auditoría</a></li>
+  <li><a href="#seguridad-física" id="toc-seguridad-física" class="nav-link" data-scroll-target="#seguridad-física"><span class="header-section-number">6.5</span> Seguridad física</a></li>
+  <li><a href="#continuidad-operativa" id="toc-continuidad-operativa" class="nav-link" data-scroll-target="#continuidad-operativa"><span class="header-section-number">6.6</span> Continuidad operativa</a></li>
+  </ul></li>
+  <li><a href="#parte-6.-diagrama-de-la-infraestructura" id="toc-parte-6.-diagrama-de-la-infraestructura" class="nav-link" data-scroll-target="#parte-6.-diagrama-de-la-infraestructura"><span class="header-section-number">7</span> Parte 6. Diagrama de la infraestructura</a>
+  <ul class="collapse">
+  <li><a href="#explicación-del-diagrama" id="toc-explicación-del-diagrama" class="nav-link" data-scroll-target="#explicación-del-diagrama"><span class="header-section-number">7.1</span> Explicación del diagrama</a></li>
+  </ul></li>
+  <li><a href="#organización-lógica-de-archivos" id="toc-organización-lógica-de-archivos" class="nav-link" data-scroll-target="#organización-lógica-de-archivos"><span class="header-section-number">8</span> Organización lógica de archivos</a></li>
+  <li><a href="#producto-final-resumido" id="toc-producto-final-resumido" class="nav-link" data-scroll-target="#producto-final-resumido"><span class="header-section-number">9</span> Producto final resumido</a>
+  <ul class="collapse">
+  <li><a href="#arquitectura" id="toc-arquitectura" class="nav-link" data-scroll-target="#arquitectura"><span class="header-section-number">9.1</span> Arquitectura</a></li>
+  <li><a href="#roles-principales" id="toc-roles-principales" class="nav-link" data-scroll-target="#roles-principales"><span class="header-section-number">9.2</span> Roles principales</a></li>
+  <li><a href="#grupos" id="toc-grupos" class="nav-link" data-scroll-target="#grupos"><span class="header-section-number">9.3</span> Grupos</a></li>
+  <li><a href="#política-de-permisos" id="toc-política-de-permisos" class="nav-link" data-scroll-target="#política-de-permisos"><span class="header-section-number">9.4</span> Política de permisos</a></li>
+  <li><a href="#seguridad-1" id="toc-seguridad-1" class="nav-link" data-scroll-target="#seguridad-1"><span class="header-section-number">9.5</span> Seguridad</a></li>
+  <li><a href="#diagrama" id="toc-diagrama" class="nav-link" data-scroll-target="#diagrama"><span class="header-section-number">9.6</span> Diagrama</a></li>
+  </ul></li>
+  <li><a href="#conclusión" id="toc-conclusión" class="nav-link" data-scroll-target="#conclusión"><span class="header-section-number">10</span> Conclusión</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Otros formatos</h2><ul><li><a href="Solucion_Laboratorio_Academia_Horizonte.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Solución del laboratorio narrativo</h1>
+<p class="subtitle lead">Diseñando la red de la Academia Horizonte</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Autor/a</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ing. Jorge Luis García Chacón </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Fecha de publicación</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">22 de julio de 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="laboratorio-narrativo-diseñando-la-red-de-una-academia" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Laboratorio narrativo: diseñando la red de una academia</h1>
+<section id="situación" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="situación"><span class="header-section-number">1.1</span> Situación</h2>
+<p>La <strong>Academia Horizonte</strong> abrirá una nueva sede con la siguiente infraestructura:</p>
+<ul>
+<li>28 computadoras para estudiantes.</li>
+<li>4 computadoras administrativas.</li>
+<li>3 computadoras para docentes.</li>
+<li>2 impresoras.</li>
+<li>Una conexión a Internet.</li>
+<li>Una plataforma académica.</li>
+<li>Documentos financieros.</li>
+<li>Materiales de clase compartidos.</li>
+</ul>
+<p>Actualmente, cada computadora utiliza cuentas locales y los archivos se transfieren mediante memorias USB.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Propósito de la propuesta">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Propósito de la propuesta
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Diseñar una solución inicial que permita centralizar usuarios, servicios, archivos, permisos, respaldos y medidas de seguridad.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="parte-1.-arquitectura-propuesta" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Parte 1. Arquitectura propuesta</h1>
+<section id="tipo-de-arquitectura" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="tipo-de-arquitectura"><span class="header-section-number">2.1</span> Tipo de arquitectura</h2>
+<p>Se recomienda implementar una arquitectura <strong>Cliente/Servidor</strong>.</p>
+<p>La Academia Horizonte tendrá 35 computadoras, varios tipos de usuarios, información financiera, materiales compartidos, una plataforma académica y dos impresoras. Una red Punto a Punto sería difícil de administrar y aumentaría los riesgos de pérdida de información, accesos no autorizados y configuraciones inconsistentes.</p>
+</section>
+<section id="justificación" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="justificación"><span class="header-section-number">2.2</span> Justificación</h2>
+<section id="administración-centralizada" class="level3" data-number="2.2.1">
+<h3 data-number="2.2.1" class="anchored" data-anchor-id="administración-centralizada"><span class="header-section-number">2.2.1</span> Administración centralizada</h3>
+<p>Las cuentas, grupos, permisos y políticas podrán administrarse desde un servidor central. Esto evita configurar manualmente cada computadora.</p>
+</section>
+<section id="seguridad" class="level3" data-number="2.2.2">
+<h3 data-number="2.2.2" class="anchored" data-anchor-id="seguridad"><span class="header-section-number">2.2.2</span> Seguridad</h3>
+<p>Los documentos financieros y administrativos necesitan controles de acceso. La arquitectura Cliente/Servidor permite definir quién puede leer, modificar o administrar cada recurso.</p>
+</section>
+<section id="escalabilidad" class="level3" data-number="2.2.3">
+<h3 data-number="2.2.3" class="anchored" data-anchor-id="escalabilidad"><span class="header-section-number">2.2.3</span> Escalabilidad</h3>
+<p>La academia podrá agregar nuevos equipos, usuarios, cursos o servicios sin rediseñar completamente la red.</p>
+</section>
+<section id="respaldo-y-recuperación" class="level3" data-number="2.2.4">
+<h3 data-number="2.2.4" class="anchored" data-anchor-id="respaldo-y-recuperación"><span class="header-section-number">2.2.4</span> Respaldo y recuperación</h3>
+<p>Los archivos importantes estarán centralizados y podrán incluirse en un plan formal de copias de seguridad.</p>
+</section>
+<section id="disponibilidad" class="level3" data-number="2.2.5">
+<h3 data-number="2.2.5" class="anchored" data-anchor-id="disponibilidad"><span class="header-section-number">2.2.5</span> Disponibilidad</h3>
+<p>Los recursos no dependerán de que una computadora personal permanezca encendida. Los servicios estarán alojados en equipos destinados para ese propósito.</p>
+</section>
+</section>
+<section id="riesgos-de-mantener-cuentas-locales-independientes" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="riesgos-de-mantener-cuentas-locales-independientes"><span class="header-section-number">2.3</span> Riesgos de mantener cuentas locales independientes</h2>
+<ol type="1">
+<li>Contraseñas diferentes o compartidas en cada equipo.</li>
+<li>Dificultad para desactivar rápidamente a un usuario.</li>
+<li>Ausencia de una política uniforme de seguridad.</li>
+<li>Archivos dispersos y duplicados.</li>
+<li>Poca capacidad de auditoría.</li>
+<li>Respaldos incompletos o inexistentes.</li>
+<li>Uso frecuente de memorias USB, con riesgo de malware y pérdida de información.</li>
+<li>Permisos inconsistentes entre computadoras.</li>
+<li>Mayor tiempo de soporte técnico.</li>
+<li>Dependencia de cada equipo para acceder a recursos compartidos.</li>
+</ol>
+<div class="callout callout-style-default callout-important callout-titled" title="Decisión de ingeniería">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Importante</span>Decisión de ingeniería
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La arquitectura Cliente/Servidor no se elige únicamente porque sea más moderna, sino porque responde mejor a los requisitos de seguridad, administración, crecimiento y continuidad de la academia.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="parte-2.-roles-y-servicios-necesarios" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Parte 2. Roles y servicios necesarios</h1>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 45%">
+<col style="width: 27%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Rol o servicio</th>
+<th style="text-align: center;">¿Se necesita?</th>
+<th>Justificación</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>DNS</td>
+<td style="text-align: center;">Sí</td>
+<td>Permitirá localizar servidores y servicios mediante nombres, por ejemplo <code>campus.horizonte.local</code>.</td>
+</tr>
+<tr class="even">
+<td>DHCP</td>
+<td style="text-align: center;">Sí</td>
+<td>Asignará automáticamente direcciones IP, máscara, puerta de enlace y DNS a los equipos.</td>
+</tr>
+<tr class="odd">
+<td>Directorio</td>
+<td style="text-align: center;">Sí</td>
+<td>Centralizará usuarios, grupos, computadoras, autenticación y políticas.</td>
+</tr>
+<tr class="even">
+<td>Archivos</td>
+<td style="text-align: center;">Sí</td>
+<td>Guardará materiales docentes, entregas y documentos administrativos de manera centralizada.</td>
+</tr>
+<tr class="odd">
+<td>Impresión</td>
+<td style="text-align: center;">Sí</td>
+<td>Administrará las dos impresoras, sus colas y permisos de uso.</td>
+</tr>
+<tr class="even">
+<td>Web</td>
+<td style="text-align: center;">Sí</td>
+<td>Publicará la plataforma académica o el portal institucional.</td>
+</tr>
+<tr class="odd">
+<td>Base de datos</td>
+<td style="text-align: center;">Sí</td>
+<td>Almacenará usuarios, cursos, notas, pagos y otra información de la plataforma.</td>
+</tr>
+<tr class="even">
+<td>Respaldo</td>
+<td style="text-align: center;">Sí</td>
+<td>Mantendrá copias recuperables de archivos, configuraciones y bases de datos.</td>
+</tr>
+<tr class="odd">
+<td>Monitoreo</td>
+<td style="text-align: center;">Sí</td>
+<td>Vigilará disponibilidad, capacidad, errores, eventos y uso de recursos.</td>
+</tr>
+</tbody>
+</table>
+<section id="distribución-sugerida-de-roles" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="distribución-sugerida-de-roles"><span class="header-section-number">3.1</span> Distribución sugerida de roles</h2>
+<p>Para una academia de este tamaño se puede iniciar con <strong>dos servidores físicos o virtualizados</strong>, evitando concentrar absolutamente todos los servicios en un solo equipo.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Servidor</th>
+<th>Roles principales</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Servidor 1: Infraestructura</td>
+<td>Directorio, DNS, DHCP y políticas de usuarios/equipos</td>
+</tr>
+<tr class="even">
+<td>Servidor 2: Aplicaciones y datos</td>
+<td>Archivos, impresión, plataforma web y base de datos</td>
+</tr>
+<tr class="odd">
+<td>Sistema de respaldo</td>
+<td>Copias automáticas locales y copia externa o en nube</td>
+</tr>
+<tr class="even">
+<td>Sistema de monitoreo</td>
+<td>Supervisión de servicios, almacenamiento, red y alertas</td>
+</tr>
+</tbody>
+</table>
+<p>En una primera fase, el monitoreo podría ejecutarse como una máquina virtual de bajo consumo. El respaldo debe mantenerse separado del servidor que contiene los datos originales.</p>
+</section>
+</section>
+<section id="parte-3.-usuarios-y-grupos" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Parte 3. Usuarios y grupos</h1>
+<section id="grupos-propuestos" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="grupos-propuestos"><span class="header-section-number">4.1</span> Grupos propuestos</h2>
+<section id="administrativos" class="level3" data-number="4.1.1">
+<h3 data-number="4.1.1" class="anchored" data-anchor-id="administrativos"><span class="header-section-number">4.1.1</span> Administrativos</h3>
+<p>Incluye dirección, secretaría, contabilidad y personal administrativo.</p>
+<p><strong>Recursos principales:</strong></p>
+<ul>
+<li>Documentos administrativos.</li>
+<li>Sistema académico.</li>
+<li>Finanzas, según el puesto.</li>
+<li>Impresoras.</li>
+<li>Carpetas institucionales.</li>
+</ul>
+</section>
+<section id="docentes" class="level3" data-number="4.1.2">
+<h3 data-number="4.1.2" class="anchored" data-anchor-id="docentes"><span class="header-section-number">4.1.2</span> Docentes</h3>
+<p>Incluye a los profesores de la academia.</p>
+<p><strong>Recursos principales:</strong></p>
+<ul>
+<li>Materiales docentes.</li>
+<li>Carpetas de cursos.</li>
+<li>Entregas de estudiantes.</li>
+<li>Plataforma académica.</li>
+<li>Impresoras.</li>
+</ul>
+</section>
+<section id="estudiantes" class="level3" data-number="4.1.3">
+<h3 data-number="4.1.3" class="anchored" data-anchor-id="estudiantes"><span class="header-section-number">4.1.3</span> Estudiantes</h3>
+<p>Incluye a los alumnos inscritos.</p>
+<p><strong>Recursos principales:</strong></p>
+<ul>
+<li>Plataforma académica.</li>
+<li>Materiales de clase en lectura.</li>
+<li>Carpeta personal o de entregas.</li>
+<li>Impresoras, con restricciones.</li>
+</ul>
+</section>
+<section id="soporte-técnico" class="level3" data-number="4.1.4">
+<h3 data-number="4.1.4" class="anchored" data-anchor-id="soporte-técnico"><span class="header-section-number">4.1.4</span> Soporte Técnico</h3>
+<p>Incluye al personal responsable de equipos, red y servidores.</p>
+<p><strong>Recursos principales:</strong></p>
+<ul>
+<li>Configuración de equipos.</li>
+<li>Consolas de administración.</li>
+<li>Registros técnicos.</li>
+<li>Monitoreo.</li>
+<li>Respaldos y recuperación.</li>
+</ul>
+</section>
+<section id="dirección" class="level3" data-number="4.1.5">
+<h3 data-number="4.1.5" class="anchored" data-anchor-id="dirección"><span class="header-section-number">4.1.5</span> Dirección</h3>
+<p>Grupo adicional para autoridades de la academia.</p>
+<p><strong>Recursos principales:</strong></p>
+<ul>
+<li>Informes académicos.</li>
+<li>Informes administrativos.</li>
+<li>Consulta de información financiera.</li>
+<li>Reportes consolidados.</li>
+</ul>
+</section>
+</section>
+<section id="ejemplos-de-cuentas" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="ejemplos-de-cuentas"><span class="header-section-number">4.2</span> Ejemplos de cuentas</h2>
+<p>Las cuentas deben ser individuales. Una convención posible sería:</p>
+<pre class="text"><code>administrativo.mlopez
+docente.jperez
+estudiante.2026001
+soporte.crodriguez</code></pre>
+<p>No debe utilizarse una sola cuenta llamada <code>docente</code>, <code>estudiante</code> o <code>administracion</code> para varias personas.</p>
+</section>
+</section>
+<section id="parte-4.-matriz-de-permisos" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Parte 4. Matriz de permisos</h1>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Recurso</th>
+<th>Administrativos</th>
+<th>Docentes</th>
+<th>Estudiantes</th>
+<th>Soporte Técnico</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Finanzas</td>
+<td>Lectura y escritura según función</td>
+<td>Sin acceso</td>
+<td>Sin acceso</td>
+<td>Sin acceso al contenido; administración técnica únicamente</td>
+</tr>
+<tr class="even">
+<td>Materiales docentes</td>
+<td>Lectura</td>
+<td>Lectura y escritura</td>
+<td>Lectura</td>
+<td>Administración técnica</td>
+</tr>
+<tr class="odd">
+<td>Entregas estudiantiles</td>
+<td>Lectura según necesidad</td>
+<td>Lectura y escritura</td>
+<td>Crear y consultar sus propias entregas</td>
+<td>Administración técnica</td>
+</tr>
+<tr class="even">
+<td>Configuración de servidores</td>
+<td>Sin acceso</td>
+<td>Sin acceso</td>
+<td>Sin acceso</td>
+<td>Administración</td>
+</tr>
+<tr class="odd">
+<td>Impresoras</td>
+<td>Uso</td>
+<td>Uso</td>
+<td>Uso restringido</td>
+<td>Administración</td>
+</tr>
+<tr class="even">
+<td>Plataforma académica</td>
+<td>Gestión administrativa</td>
+<td>Gestión de cursos y notas</td>
+<td>Acceso a cursos y resultados propios</td>
+<td>Administración técnica</td>
+</tr>
+<tr class="odd">
+<td>Respaldos</td>
+<td>Sin acceso directo</td>
+<td>Sin acceso</td>
+<td>Sin acceso</td>
+<td>Administración y restauración</td>
+</tr>
+<tr class="even">
+<td>Reportes institucionales</td>
+<td>Lectura y escritura según función</td>
+<td>Lectura limitada</td>
+<td>Sin acceso</td>
+<td>Sin acceso al contenido</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-warning callout-titled" title="Separación de funciones">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Advertencia</span>Separación de funciones
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>El personal de soporte puede administrar servidores y respaldos, pero no debe consultar libremente información financiera o académica. Los privilegios técnicos no deben convertirse en acceso indiscriminado a los datos.</p>
+</div>
+</div>
+<section id="aplicación-del-mínimo-privilegio" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="aplicación-del-mínimo-privilegio"><span class="header-section-number">5.1</span> Aplicación del mínimo privilegio</h2>
+<p>Cada usuario recibirá únicamente los permisos necesarios para realizar su trabajo.</p>
+<p>Ejemplos:</p>
+<ul>
+<li>Un estudiante puede cargar su tarea, pero no modificar la de otro estudiante.</li>
+<li>Un docente puede administrar los cursos que imparte, pero no los documentos financieros.</li>
+<li>Un administrativo puede registrar pagos, pero no cambiar la configuración de los servidores.</li>
+<li>Soporte Técnico puede mantener los sistemas, pero no modificar calificaciones o transacciones.</li>
+</ul>
+</section>
+</section>
+<section id="parte-5.-medidas-de-seguridad" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Parte 5. Medidas de seguridad</h1>
+<section id="contraseñas-y-autenticación" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="contraseñas-y-autenticación"><span class="header-section-number">6.1</span> Contraseñas y autenticación</h2>
+<ul>
+<li>Utilizar contraseñas o frases largas.</li>
+<li>Prohibir cuentas compartidas.</li>
+<li>Cambiar contraseñas temporales en el primer ingreso.</li>
+<li>Activar autenticación multifactor para administradores y personal con acceso sensible.</li>
+<li>Bloquear temporalmente cuentas después de varios intentos fallidos.</li>
+<li>Deshabilitar de inmediato cuentas de personas que ya no pertenecen a la academia.</li>
+</ul>
+</section>
+<section id="respaldos" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="respaldos"><span class="header-section-number">6.2</span> Respaldos</h2>
+<p>Se propone aplicar la regla <strong>3-2-1</strong>:</p>
+<ul>
+<li>Tres copias de la información.</li>
+<li>Dos medios diferentes.</li>
+<li>Una copia fuera de la sede principal.</li>
+</ul>
+<section id="esquema-sugerido" class="level3" data-number="6.2.1">
+<h3 data-number="6.2.1" class="anchored" data-anchor-id="esquema-sugerido"><span class="header-section-number">6.2.1</span> Esquema sugerido</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Tipo de respaldo</th>
+<th>Frecuencia</th>
+<th>Conservación</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Incremental</td>
+<td>Diario</td>
+<td>14 días</td>
+</tr>
+<tr class="even">
+<td>Completo</td>
+<td>Semanal</td>
+<td>8 semanas</td>
+</tr>
+<tr class="odd">
+<td>Base de datos</td>
+<td>Cada noche</td>
+<td>30 días</td>
+</tr>
+<tr class="even">
+<td>Copia externa o nube</td>
+<td>Semanal</td>
+<td>3 meses</td>
+</tr>
+<tr class="odd">
+<td>Configuración de servidores</td>
+<td>Después de cada cambio importante</td>
+<td>Últimas 10 versiones</td>
+</tr>
+</tbody>
+</table>
+<p>Cada mes debe realizarse una prueba de restauración.</p>
+</section>
+</section>
+<section id="actualizaciones" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="actualizaciones"><span class="header-section-number">6.3</span> Actualizaciones</h2>
+<ol type="1">
+<li>Revisar actualizaciones disponibles.</li>
+<li>Probarlas antes de instalarlas en producción.</li>
+<li>Programar una ventana de mantenimiento.</li>
+<li>Respaldar configuraciones antes del cambio.</li>
+<li>Aplicar las actualizaciones.</li>
+<li>Verificar DNS, DHCP, directorio, archivos, impresión y plataforma.</li>
+<li>Documentar el resultado.</li>
+</ol>
+</section>
+<section id="auditoría" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="auditoría"><span class="header-section-number">6.4</span> Auditoría</h2>
+<ul>
+<li>Registrar inicios de sesión y fallos de autenticación.</li>
+<li>Registrar cambios de permisos.</li>
+<li>Registrar accesos a documentos sensibles.</li>
+<li>Registrar creación, eliminación y modificación de cuentas.</li>
+<li>Revisar periódicamente eventos críticos.</li>
+<li>Mantener sincronizada la hora de servidores y equipos.</li>
+</ul>
+</section>
+<section id="seguridad-física" class="level2" data-number="6.5">
+<h2 data-number="6.5" class="anchored" data-anchor-id="seguridad-física"><span class="header-section-number">6.5</span> Seguridad física</h2>
+<ul>
+<li>Ubicar los servidores en un espacio cerrado.</li>
+<li>Restringir el acceso mediante llave o control de ingreso.</li>
+<li>Utilizar UPS para proteger contra cortes eléctricos.</li>
+<li>Mantener ventilación y temperatura adecuadas.</li>
+<li>Proteger el equipo de humedad, polvo e incendios.</li>
+<li>Evitar que personas no autorizadas conecten dispositivos al switch o a los servidores.</li>
+</ul>
+</section>
+<section id="continuidad-operativa" class="level2" data-number="6.6">
+<h2 data-number="6.6" class="anchored" data-anchor-id="continuidad-operativa"><span class="header-section-number">6.6</span> Continuidad operativa</h2>
+<ul>
+<li>Documentar la configuración de la red.</li>
+<li>Mantener contactos del proveedor de Internet y soporte.</li>
+<li>Disponer de un procedimiento de recuperación.</li>
+<li>Mantener copias de configuración de router, firewall y servidores.</li>
+<li>Definir responsables para incidentes.</li>
+<li>Considerar un segundo enlace de Internet en una fase futura.</li>
+<li>Preparar un procedimiento temporal para continuar clases si la plataforma no está disponible.</li>
+</ul>
+</section>
+</section>
+<section id="parte-6.-diagrama-de-la-infraestructura" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Parte 6. Diagrama de la infraestructura</h1>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TB
+    I[Internet] --&gt; F[Firewall / Router]
+    F --&gt; SW[Switch principal]
+
+    SW --&gt; S1[Servidor de infraestructura&lt;br/&gt;Directorio · DNS · DHCP]
+    SW --&gt; S2[Servidor de aplicaciones&lt;br/&gt;Web · Base de datos · Archivos · Impresión]
+    SW --&gt; BK[Servidor o dispositivo de respaldo]
+    SW --&gt; MON[Monitoreo y registros]
+
+    SW --&gt; LAB[28 computadoras&lt;br/&gt;de estudiantes]
+    SW --&gt; ADM[4 computadoras&lt;br/&gt;administrativas]
+    SW --&gt; DOC[3 computadoras&lt;br/&gt;docentes]
+    SW --&gt; IMP[2 impresoras de red]
+
+    S2 -. copia programada .-&gt; BK
+    BK -. copia externa cifrada .-&gt; NUBE[(Respaldo externo / nube)]
+    MON -. supervisa .-&gt; S1
+    MON -. supervisa .-&gt; S2
+    MON -. supervisa .-&gt; F
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<section id="explicación-del-diagrama" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="explicación-del-diagrama"><span class="header-section-number">7.1</span> Explicación del diagrama</h2>
+<ol type="1">
+<li>La conexión a Internet llega al firewall o router.</li>
+<li>El firewall controla la comunicación entre Internet y la red interna.</li>
+<li>El switch conecta servidores, computadoras e impresoras.</li>
+<li>El servidor de infraestructura proporciona identidad, DNS y DHCP.</li>
+<li>El servidor de aplicaciones aloja archivos, impresión, plataforma y base de datos.</li>
+<li>El sistema de respaldo conserva copias separadas.</li>
+<li>El monitoreo verifica el estado de los servicios.</li>
+<li>La copia externa permite recuperar información aun cuando la sede principal sufra un incidente.</li>
+</ol>
+</section>
+</section>
+<section id="organización-lógica-de-archivos" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Organización lógica de archivos</h1>
+<p>Una estructura inicial puede ser:</p>
+<pre class="text"><code>Academia_Horizonte
+├── Administracion
+│   ├── Direccion
+│   ├── Secretaria
+│   └── Finanzas
+├── Docentes
+│   ├── Materiales
+│   └── Planificaciones
+├── Estudiantes
+│   ├── Entregas
+│   └── Carpetas_Personales
+├── Cursos
+├── Biblioteca
+└── Soporte
+    ├── Documentacion
+    ├── Inventario
+    └── Registros</code></pre>
+<p>Los permisos se asignarán principalmente a grupos y no usuario por usuario.</p>
+</section>
+<section id="producto-final-resumido" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> Producto final resumido</h1>
+<section id="arquitectura" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="arquitectura"><span class="header-section-number">9.1</span> Arquitectura</h2>
+<p>Cliente/Servidor, con administración centralizada.</p>
+</section>
+<section id="roles-principales" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="roles-principales"><span class="header-section-number">9.2</span> Roles principales</h2>
+<p>DNS, DHCP, directorio, archivos, impresión, web, base de datos, respaldo y monitoreo.</p>
+</section>
+<section id="grupos" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="grupos"><span class="header-section-number">9.3</span> Grupos</h2>
+<p>Administrativos, docentes, estudiantes, soporte técnico y dirección.</p>
+</section>
+<section id="política-de-permisos" class="level2" data-number="9.4">
+<h2 data-number="9.4" class="anchored" data-anchor-id="política-de-permisos"><span class="header-section-number">9.4</span> Política de permisos</h2>
+<p>Permisos asignados por grupos y bajo el principio del mínimo privilegio.</p>
+</section>
+<section id="seguridad-1" class="level2" data-number="9.5">
+<h2 data-number="9.5" class="anchored" data-anchor-id="seguridad-1"><span class="header-section-number">9.5</span> Seguridad</h2>
+<p>Contraseñas robustas, autenticación multifactor, actualizaciones controladas, auditoría, protección física y copias 3-2-1.</p>
+</section>
+<section id="diagrama" class="level2" data-number="9.6">
+<h2 data-number="9.6" class="anchored" data-anchor-id="diagrama"><span class="header-section-number">9.6</span> Diagrama</h2>
+<p>Incluye Internet, firewall, switch, servidores, computadoras, impresoras, monitoreo y respaldo externo.</p>
+</section>
+</section>
+<section id="conclusión" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> Conclusión</h1>
+<p>La propuesta transforma una colección de computadoras independientes en una infraestructura organizada. La centralización permitirá administrar usuarios, permisos, archivos, impresoras y servicios de forma coherente.</p>
+<p>El diseño también reduce la dependencia de memorias USB, mejora la protección de los documentos financieros, facilita el respaldo de la información y prepara a la Academia Horizonte para crecer sin perder control sobre su red.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Consejo final del Ingeniero">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Consejo final del Ingeniero
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Una red funcional no se mide únicamente porque los equipos tengan Internet. Una buena infraestructura debe permitir identificar usuarios, proteger información, recuperar datos y mantener disponibles los servicios importantes.</p>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiado");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiado");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

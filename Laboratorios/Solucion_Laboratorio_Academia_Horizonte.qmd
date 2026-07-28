@@ -1,0 +1,391 @@
+---
+title: "Solución del laboratorio narrativo"
+subtitle: "Diseñando la red de la Academia Horizonte"
+author: "Ing. Jorge Luis García Chacón"
+date: today
+lang: es
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    theme: cosmo
+    code-fold: false
+  pdf:
+    toc: true
+    number-sections: true
+    documentclass: scrreprt
+    geometry:
+      - top=2.3cm
+      - bottom=2.3cm
+      - left=2.5cm
+      - right=2.5cm
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+# Laboratorio narrativo: diseñando la red de una academia
+
+## Situación
+
+La **Academia Horizonte** abrirá una nueva sede con la siguiente infraestructura:
+
+- 28 computadoras para estudiantes.
+- 4 computadoras administrativas.
+- 3 computadoras para docentes.
+- 2 impresoras.
+- Una conexión a Internet.
+- Una plataforma académica.
+- Documentos financieros.
+- Materiales de clase compartidos.
+
+Actualmente, cada computadora utiliza cuentas locales y los archivos se transfieren mediante memorias USB.
+
+::: {.callout-note title="Propósito de la propuesta"}
+Diseñar una solución inicial que permita centralizar usuarios, servicios, archivos, permisos, respaldos y medidas de seguridad.
+:::
+
+# Parte 1. Arquitectura propuesta
+
+## Tipo de arquitectura
+
+Se recomienda implementar una arquitectura **Cliente/Servidor**.
+
+La Academia Horizonte tendrá 35 computadoras, varios tipos de usuarios, información financiera, materiales compartidos, una plataforma académica y dos impresoras. Una red Punto a Punto sería difícil de administrar y aumentaría los riesgos de pérdida de información, accesos no autorizados y configuraciones inconsistentes.
+
+## Justificación
+
+### Administración centralizada
+
+Las cuentas, grupos, permisos y políticas podrán administrarse desde un servidor central. Esto evita configurar manualmente cada computadora.
+
+### Seguridad
+
+Los documentos financieros y administrativos necesitan controles de acceso. La arquitectura Cliente/Servidor permite definir quién puede leer, modificar o administrar cada recurso.
+
+### Escalabilidad
+
+La academia podrá agregar nuevos equipos, usuarios, cursos o servicios sin rediseñar completamente la red.
+
+### Respaldo y recuperación
+
+Los archivos importantes estarán centralizados y podrán incluirse en un plan formal de copias de seguridad.
+
+### Disponibilidad
+
+Los recursos no dependerán de que una computadora personal permanezca encendida. Los servicios estarán alojados en equipos destinados para ese propósito.
+
+## Riesgos de mantener cuentas locales independientes
+
+1. Contraseñas diferentes o compartidas en cada equipo.
+2. Dificultad para desactivar rápidamente a un usuario.
+3. Ausencia de una política uniforme de seguridad.
+4. Archivos dispersos y duplicados.
+5. Poca capacidad de auditoría.
+6. Respaldos incompletos o inexistentes.
+7. Uso frecuente de memorias USB, con riesgo de malware y pérdida de información.
+8. Permisos inconsistentes entre computadoras.
+9. Mayor tiempo de soporte técnico.
+10. Dependencia de cada equipo para acceder a recursos compartidos.
+
+::: {.callout-important title="Decisión de ingeniería"}
+La arquitectura Cliente/Servidor no se elige únicamente porque sea más moderna, sino porque responde mejor a los requisitos de seguridad, administración, crecimiento y continuidad de la academia.
+:::
+
+# Parte 2. Roles y servicios necesarios
+
+| Rol o servicio | ¿Se necesita? | Justificación |
+|---|:---:|---|
+| DNS | Sí | Permitirá localizar servidores y servicios mediante nombres, por ejemplo `campus.horizonte.local`. |
+| DHCP | Sí | Asignará automáticamente direcciones IP, máscara, puerta de enlace y DNS a los equipos. |
+| Directorio | Sí | Centralizará usuarios, grupos, computadoras, autenticación y políticas. |
+| Archivos | Sí | Guardará materiales docentes, entregas y documentos administrativos de manera centralizada. |
+| Impresión | Sí | Administrará las dos impresoras, sus colas y permisos de uso. |
+| Web | Sí | Publicará la plataforma académica o el portal institucional. |
+| Base de datos | Sí | Almacenará usuarios, cursos, notas, pagos y otra información de la plataforma. |
+| Respaldo | Sí | Mantendrá copias recuperables de archivos, configuraciones y bases de datos. |
+| Monitoreo | Sí | Vigilará disponibilidad, capacidad, errores, eventos y uso de recursos. |
+
+## Distribución sugerida de roles
+
+Para una academia de este tamaño se puede iniciar con **dos servidores físicos o virtualizados**, evitando concentrar absolutamente todos los servicios en un solo equipo.
+
+| Servidor | Roles principales |
+|---|---|
+| Servidor 1: Infraestructura | Directorio, DNS, DHCP y políticas de usuarios/equipos |
+| Servidor 2: Aplicaciones y datos | Archivos, impresión, plataforma web y base de datos |
+| Sistema de respaldo | Copias automáticas locales y copia externa o en nube |
+| Sistema de monitoreo | Supervisión de servicios, almacenamiento, red y alertas |
+
+En una primera fase, el monitoreo podría ejecutarse como una máquina virtual de bajo consumo. El respaldo debe mantenerse separado del servidor que contiene los datos originales.
+
+# Parte 3. Usuarios y grupos
+
+## Grupos propuestos
+
+### Administrativos
+
+Incluye dirección, secretaría, contabilidad y personal administrativo.
+
+**Recursos principales:**
+
+- Documentos administrativos.
+- Sistema académico.
+- Finanzas, según el puesto.
+- Impresoras.
+- Carpetas institucionales.
+
+### Docentes
+
+Incluye a los profesores de la academia.
+
+**Recursos principales:**
+
+- Materiales docentes.
+- Carpetas de cursos.
+- Entregas de estudiantes.
+- Plataforma académica.
+- Impresoras.
+
+### Estudiantes
+
+Incluye a los alumnos inscritos.
+
+**Recursos principales:**
+
+- Plataforma académica.
+- Materiales de clase en lectura.
+- Carpeta personal o de entregas.
+- Impresoras, con restricciones.
+
+### Soporte Técnico
+
+Incluye al personal responsable de equipos, red y servidores.
+
+**Recursos principales:**
+
+- Configuración de equipos.
+- Consolas de administración.
+- Registros técnicos.
+- Monitoreo.
+- Respaldos y recuperación.
+
+### Dirección
+
+Grupo adicional para autoridades de la academia.
+
+**Recursos principales:**
+
+- Informes académicos.
+- Informes administrativos.
+- Consulta de información financiera.
+- Reportes consolidados.
+
+## Ejemplos de cuentas
+
+Las cuentas deben ser individuales. Una convención posible sería:
+
+```text
+administrativo.mlopez
+docente.jperez
+estudiante.2026001
+soporte.crodriguez
+```
+
+No debe utilizarse una sola cuenta llamada `docente`, `estudiante` o `administracion` para varias personas.
+
+# Parte 4. Matriz de permisos
+
+| Recurso | Administrativos | Docentes | Estudiantes | Soporte Técnico |
+|---|---|---|---|---|
+| Finanzas | Lectura y escritura según función | Sin acceso | Sin acceso | Sin acceso al contenido; administración técnica únicamente |
+| Materiales docentes | Lectura | Lectura y escritura | Lectura | Administración técnica |
+| Entregas estudiantiles | Lectura según necesidad | Lectura y escritura | Crear y consultar sus propias entregas | Administración técnica |
+| Configuración de servidores | Sin acceso | Sin acceso | Sin acceso | Administración |
+| Impresoras | Uso | Uso | Uso restringido | Administración |
+| Plataforma académica | Gestión administrativa | Gestión de cursos y notas | Acceso a cursos y resultados propios | Administración técnica |
+| Respaldos | Sin acceso directo | Sin acceso | Sin acceso | Administración y restauración |
+| Reportes institucionales | Lectura y escritura según función | Lectura limitada | Sin acceso | Sin acceso al contenido |
+
+::: {.callout-warning title="Separación de funciones"}
+El personal de soporte puede administrar servidores y respaldos, pero no debe consultar libremente información financiera o académica. Los privilegios técnicos no deben convertirse en acceso indiscriminado a los datos.
+:::
+
+## Aplicación del mínimo privilegio
+
+Cada usuario recibirá únicamente los permisos necesarios para realizar su trabajo.
+
+Ejemplos:
+
+- Un estudiante puede cargar su tarea, pero no modificar la de otro estudiante.
+- Un docente puede administrar los cursos que imparte, pero no los documentos financieros.
+- Un administrativo puede registrar pagos, pero no cambiar la configuración de los servidores.
+- Soporte Técnico puede mantener los sistemas, pero no modificar calificaciones o transacciones.
+
+# Parte 5. Medidas de seguridad
+
+## Contraseñas y autenticación
+
+- Utilizar contraseñas o frases largas.
+- Prohibir cuentas compartidas.
+- Cambiar contraseñas temporales en el primer ingreso.
+- Activar autenticación multifactor para administradores y personal con acceso sensible.
+- Bloquear temporalmente cuentas después de varios intentos fallidos.
+- Deshabilitar de inmediato cuentas de personas que ya no pertenecen a la academia.
+
+## Respaldos
+
+Se propone aplicar la regla **3-2-1**:
+
+- Tres copias de la información.
+- Dos medios diferentes.
+- Una copia fuera de la sede principal.
+
+### Esquema sugerido
+
+| Tipo de respaldo | Frecuencia | Conservación |
+|---|---|---|
+| Incremental | Diario | 14 días |
+| Completo | Semanal | 8 semanas |
+| Base de datos | Cada noche | 30 días |
+| Copia externa o nube | Semanal | 3 meses |
+| Configuración de servidores | Después de cada cambio importante | Últimas 10 versiones |
+
+Cada mes debe realizarse una prueba de restauración.
+
+## Actualizaciones
+
+1. Revisar actualizaciones disponibles.
+2. Probarlas antes de instalarlas en producción.
+3. Programar una ventana de mantenimiento.
+4. Respaldar configuraciones antes del cambio.
+5. Aplicar las actualizaciones.
+6. Verificar DNS, DHCP, directorio, archivos, impresión y plataforma.
+7. Documentar el resultado.
+
+## Auditoría
+
+- Registrar inicios de sesión y fallos de autenticación.
+- Registrar cambios de permisos.
+- Registrar accesos a documentos sensibles.
+- Registrar creación, eliminación y modificación de cuentas.
+- Revisar periódicamente eventos críticos.
+- Mantener sincronizada la hora de servidores y equipos.
+
+## Seguridad física
+
+- Ubicar los servidores en un espacio cerrado.
+- Restringir el acceso mediante llave o control de ingreso.
+- Utilizar UPS para proteger contra cortes eléctricos.
+- Mantener ventilación y temperatura adecuadas.
+- Proteger el equipo de humedad, polvo e incendios.
+- Evitar que personas no autorizadas conecten dispositivos al switch o a los servidores.
+
+## Continuidad operativa
+
+- Documentar la configuración de la red.
+- Mantener contactos del proveedor de Internet y soporte.
+- Disponer de un procedimiento de recuperación.
+- Mantener copias de configuración de router, firewall y servidores.
+- Definir responsables para incidentes.
+- Considerar un segundo enlace de Internet en una fase futura.
+- Preparar un procedimiento temporal para continuar clases si la plataforma no está disponible.
+
+# Parte 6. Diagrama de la infraestructura
+
+```{mermaid}
+flowchart TB
+    I[Internet] --> F[Firewall / Router]
+    F --> SW[Switch principal]
+
+    SW --> S1[Servidor de infraestructura<br/>Directorio · DNS · DHCP]
+    SW --> S2[Servidor de aplicaciones<br/>Web · Base de datos · Archivos · Impresión]
+    SW --> BK[Servidor o dispositivo de respaldo]
+    SW --> MON[Monitoreo y registros]
+
+    SW --> LAB[28 computadoras<br/>de estudiantes]
+    SW --> ADM[4 computadoras<br/>administrativas]
+    SW --> DOC[3 computadoras<br/>docentes]
+    SW --> IMP[2 impresoras de red]
+
+    S2 -. copia programada .-> BK
+    BK -. copia externa cifrada .-> NUBE[(Respaldo externo / nube)]
+    MON -. supervisa .-> S1
+    MON -. supervisa .-> S2
+    MON -. supervisa .-> F
+```
+
+## Explicación del diagrama
+
+1. La conexión a Internet llega al firewall o router.
+2. El firewall controla la comunicación entre Internet y la red interna.
+3. El switch conecta servidores, computadoras e impresoras.
+4. El servidor de infraestructura proporciona identidad, DNS y DHCP.
+5. El servidor de aplicaciones aloja archivos, impresión, plataforma y base de datos.
+6. El sistema de respaldo conserva copias separadas.
+7. El monitoreo verifica el estado de los servicios.
+8. La copia externa permite recuperar información aun cuando la sede principal sufra un incidente.
+
+# Organización lógica de archivos
+
+Una estructura inicial puede ser:
+
+```text
+Academia_Horizonte
+├── Administracion
+│   ├── Direccion
+│   ├── Secretaria
+│   └── Finanzas
+├── Docentes
+│   ├── Materiales
+│   └── Planificaciones
+├── Estudiantes
+│   ├── Entregas
+│   └── Carpetas_Personales
+├── Cursos
+├── Biblioteca
+└── Soporte
+    ├── Documentacion
+    ├── Inventario
+    └── Registros
+```
+
+Los permisos se asignarán principalmente a grupos y no usuario por usuario.
+
+# Producto final resumido
+
+## Arquitectura
+
+Cliente/Servidor, con administración centralizada.
+
+## Roles principales
+
+DNS, DHCP, directorio, archivos, impresión, web, base de datos, respaldo y monitoreo.
+
+## Grupos
+
+Administrativos, docentes, estudiantes, soporte técnico y dirección.
+
+## Política de permisos
+
+Permisos asignados por grupos y bajo el principio del mínimo privilegio.
+
+## Seguridad
+
+Contraseñas robustas, autenticación multifactor, actualizaciones controladas, auditoría, protección física y copias 3-2-1.
+
+## Diagrama
+
+Incluye Internet, firewall, switch, servidores, computadoras, impresoras, monitoreo y respaldo externo.
+
+# Conclusión
+
+La propuesta transforma una colección de computadoras independientes en una infraestructura organizada. La centralización permitirá administrar usuarios, permisos, archivos, impresoras y servicios de forma coherente.
+
+El diseño también reduce la dependencia de memorias USB, mejora la protección de los documentos financieros, facilita el respaldo de la información y prepara a la Academia Horizonte para crecer sin perder control sobre su red.
+
+::: {.callout-tip title="Consejo final del Ingeniero"}
+Una red funcional no se mide únicamente porque los equipos tengan Internet. Una buena infraestructura debe permitir identificar usuarios, proteger información, recuperar datos y mantener disponibles los servicios importantes.
+:::

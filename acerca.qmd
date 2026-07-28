@@ -1,0 +1,7 @@
+# Acerca de este volumen
+
+Este libro forma parte de la colección **Editorial Académica de Ingeniería en Sistemas**.
+
+Su propósito es proporcionar material de estudio moderno, visual y práctico para apoyar el proceso de enseñanza y aprendizaje.
+
+Cada capítulo ha sido diseñado para combinar teoría, ejemplos, diagramas, laboratorios y ejercicios que permitan al estudiante comprender los conceptos y aplicarlos en situaciones reales.

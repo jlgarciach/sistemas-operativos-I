@@ -1,0 +1,423 @@
+
+---
+title: "Clase 4. Administración de Procesos"
+author: "Editorial Académica de Ingeniería en Sistemas"
+format:
+  html:
+    toc: true
+    number-sections: true
+---
+
+# Presentación
+
+Cada vez que abrimos un navegador, reproducimos música o editamos un documento, el Sistema Operativo crea y administra procesos. Aunque parezca que todas las aplicaciones trabajan al mismo tiempo, en realidad el procesador distribuye su tiempo entre ellas de forma extremadamente rápida.
+
+::: {.callout-tip}
+## Objetivos
+
+- Comprender qué es un proceso.
+- Diferenciar programa y proceso.
+- Explicar el modelo de procesos.
+- Comprender los estados de un proceso.
+- Interpretar el funcionamiento del PCB.
+:::
+
+# ¿Qué es un proceso?
+
+Un **proceso** es un programa que se encuentra en ejecución junto con todos los recursos que necesita para funcionar: memoria, registros, archivos abiertos y tiempo de CPU.
+
+| Programa | Proceso |
+|-----------|----------|
+| Archivo almacenado | Programa en ejecución |
+| Pasivo | Dinámico |
+| No consume recursos | Consume CPU, memoria y E/S |
+
+## Analogía
+
+Una receta de cocina representa un **programa**. Preparar la receta utilizando ingredientes, tiempo y utensilios representa el **proceso**.
+
+# Modelo de Procesos
+
+El Sistema Operativo crea la ilusión de que cada aplicación posee su propio procesador. En realidad, el **Scheduler** distribuye pequeños intervalos de tiempo entre todos los procesos.
+
+```{mermaid}
+flowchart LR
+A[Proceso A] --> CPU((CPU))
+B[Proceso B] --> CPU
+C[Proceso C] --> CPU
+CPU --> A
+CPU --> B
+CPU --> C
+```
+
+::: {.callout-note}
+## Idea clave
+
+La multitarea es posible porque el Sistema Operativo cambia rápidamente entre procesos mediante el **Cambio de Contexto (Context Switch)**.
+:::
+
+# Programa vs. Proceso
+
+Un único programa puede generar múltiples procesos independientes.
+
+```{mermaid}
+flowchart TB
+P[Microsoft Word.exe]
+P --> A[Proceso 1]
+P --> B[Proceso 2]
+P --> C[Proceso 3]
+```
+
+# Espacio de Direcciones
+
+Cada proceso dispone de un espacio de memoria independiente.
+
+```{mermaid}
+flowchart TB
+A[Código]
+B[Datos]
+C[Heap]
+D[Stack]
+
+A --> B --> C --> D
+```
+
+# Bloque de Control del Proceso (PCB)
+
+El PCB es el expediente administrativo del proceso.
+
+| Campo | Descripción |
+|-------|-------------|
+| PID | Identificador único |
+| Estado | Estado actual |
+| Program Counter | Próxima instrucción |
+| Registros | Contexto de CPU |
+| Memoria | Espacio asignado |
+| Archivos | Recursos abiertos |
+
+```{mermaid}
+flowchart LR
+PCB[PCB]
+PCB --> PID
+PCB --> Estado
+PCB --> Registros
+PCB --> Memoria
+PCB --> Archivos
+```
+
+# Tabla de Procesos
+
+El kernel mantiene una tabla donde registra todos los PCB existentes.
+
+::: {.callout-tip title="Estructura simplificada de una Tabla de Procesos"}
+
+```{mermaid}
+%%{init: {'flowchart': {'htmlLabels': true}} }%%
+
+%%| fig-width: 7.0
+%%| fig-height: 5.0
+%%| fig-align: center
+
+flowchart TB
+
+TP["<b>TABLA DE PROCESOS</b><br/><span style='font-size:0.9em'>(Kernel)</span>"]
+
+TP --> P1
+TP --> P2
+TP --> P3
+TP --> P4
+TP --> P5
+
+P1["<b>PID: 1001</b><br/><br/>
+<b>Estado:</b><br/>
+<span style='color:#2E7D32'><b>Running</b></span><hr/>
+Prioridad: 5<br/>
+CPU: 12%<br/>
+Memoria: 128 MB"]
+
+P2["<b>PID: 1002</b><br/><br/>
+<b>Estado:</b><br/>
+<span style='color:#E69F00'><b>Ready</b></span><hr/>
+Prioridad: 8<br/>
+CPU: 0%<br/>
+Memoria: 64 MB"]
+
+P3["<b>PID: 1003</b><br/><br/>
+<b>Estado:</b><br/>
+<span style='color:#C62828'><b>Waiting</b></span><hr/>
+Evento: Disco<br/>
+Espera: 120 ms<br/>
+Memoria: 96 MB"]
+
+P4["<b>PID: 1004</b><br/><br/>
+<b>Estado:</b><br/>
+<span style='color:#E69F00'><b>Ready</b></span><hr/>
+Prioridad: 6<br/>
+CPU: 0%<br/>
+Memoria: 32 MB"]
+
+P5["<b>PID: 1005</b><br/><br/>
+<b>Estado:</b><br/>
+<span style='color:#2E7D32'><b>Running</b></span><hr/>
+Prioridad: 4<br/>
+CPU: 25%<br/>
+Memoria: 256 MB"]
+
+style TP fill:#1F4E79,color:#ffffff,stroke:#0B3558,stroke-width:3px
+
+style P1 fill:#EAF7EA,stroke:#66BB6A,stroke-width:2px
+style P2 fill:#FFF8E1,stroke:#FBC02D,stroke-width:2px
+style P3 fill:#FDECEC,stroke:#E57373,stroke-width:2px
+style P4 fill:#FFF8E1,stroke:#FBC02D,stroke-width:2px
+style P5 fill:#EAF7EA,stroke:#66BB6A,stroke-width:2px
+
+linkStyle default stroke:#0B3558,stroke-width:2px
+```
+
+La tabla de procesos es una estructura interna mantenida por el **Kernel**, donde se almacena el **PCB (Process Control Block)** de todos los procesos existentes en el sistema. Cada entrada contiene la información necesaria para que el sistema operativo pueda administrar correctamente cada proceso.
+
+:::
+
+### Ejemplo de una Tabla de Procesos
+
+| PID | Nombre del proceso | Estado | Prioridad | Memoria (MB) | CPU (%) | Archivos abiertos |
+|:---:|--------------------|:-------:|:---------:|-------------:|--------:|------------------:|
+| 1001 | Chrome.exe | Running | Alta | 245 | 18 | 27 |
+| 1002 | Word.exe | Ready | Media | 132 | 0 | 12 |
+| 1003 | Spotify.exe | Waiting | Baja | 95 | 0 | 8 |
+| 1004 | Teams.exe | Ready | Alta | 318 | 0 | 34 |
+| 1005 | Explorer.exe | Running | Alta | 76 | 5 | 19 |
+
+**Interpretación**
+
+- **PID:** Identificador único asignado por el sistema operativo.
+- **Nombre del proceso:** Aplicación o servicio que se encuentra en ejecución.
+- **Estado:** Situación actual del proceso (Running, Ready o Waiting).
+- **Prioridad:** Nivel de importancia utilizado por el Scheduler.
+- **Memoria:** Cantidad de memoria RAM reservada por el proceso.
+- **CPU:** Porcentaje de utilización del procesador en ese instante.
+- **Archivos abiertos:** Número de archivos o recursos que el proceso mantiene abiertos.
+
+
+# Módelos de Estados de un Proceso
+
+## Evolución de los modelos de estados
+
+| Modelo | Estados | ¿Dónde se utiliza? |
+|---------|---------|--------------------|
+| Dos estados | Listo y Ejecución | Sistemas muy simples o con fines didácticos. |
+| Cinco estados | Nuevo, Listo, Ejecución, Bloqueado y Terminado | Es el modelo más utilizado para explicar la administración de procesos. |
+| Siete estados | Cinco estados + Listo Suspendido + Bloqueado Suspendido | Sistemas operativos modernos que utilizan memoria virtual y Swap. |
+
+## Modelo de cinco estados
+
+El modelo de cinco estados es uno de los más utilizados para explicar el ciclo de vida de un proceso en un sistema operativo. En este modelo, un proceso puede encontrarse en uno de cinco estados bien definidos, y el sistema operativo controla las transiciones entre ellos.
+
+```{mermaid}
+stateDiagram-v2
+
+[*] --> Nuevo
+
+Nuevo --> Listo: Admitir
+
+Listo --> Ejecucion: Scheduler
+
+Ejecucion --> Listo: Fin del quantum
+
+Ejecucion --> Bloqueado: Espera E/S
+
+Bloqueado --> Listo: Evento completado
+
+Ejecucion --> Terminado: Finaliza
+
+Terminado --> [*]
+```
+
+### Descripción de los estados
+
+| Estado | Descripción |
+|---------|-------------|
+| **Nuevo** | El proceso acaba de ser creado y aún no está listo para ejecutarse. |
+| **Listo (Ready)** | El proceso posee todos los recursos necesarios excepto la CPU. Espera su turno para ejecutarse. |
+| **Ejecución (Running)** | El proceso está utilizando el procesador y ejecutando instrucciones. |
+| **Bloqueado (Waiting)** | El proceso espera la finalización de una operación de entrada/salida o algún evento externo. |
+| **Terminado (Exit)** | El proceso concluyó su ejecución y el sistema operativo libera los recursos utilizados. |
+
+::: {.callout-tip title="Idea clave"}
+
+Todo proceso pasa necesariamente por los estados **Nuevo** y **Terminado**, mientras que los estados **Listo**, **Ejecución** y **Bloqueado** pueden repetirse varias veces durante su ciclo de vida.
+
+:::
+
+## Modelo con procesos suspendidos (Swap)
+
+En sistemas multitarea es posible que la memoria principal no sea suficiente para mantener todos los procesos cargados simultáneamente. En estos casos, el sistema operativo puede mover temporalmente algunos procesos al almacenamiento secundario mediante una técnica denominada **Swap** o **Intercambio de memoria**.
+
+Cuando esto ocurre aparecen dos nuevos estados:
+
+- **Listo y Suspendido**
+- **Bloqueado y Suspendido**
+
+```{mermaid}
+stateDiagram-v2
+
+[*] --> Nuevo
+
+Nuevo --> Listo
+
+Nuevo --> ListoSuspendido
+
+Listo --> Ejecucion
+
+Ejecucion --> Listo
+
+Ejecucion --> Bloqueado
+
+Bloqueado --> Listo
+
+Listo --> ListoSuspendido: Suspender
+
+ListoSuspendido --> Listo: Activar
+
+Bloqueado --> BloqueadoSuspendido: Suspender
+
+BloqueadoSuspendido --> Bloqueado: Activar
+
+BloqueadoSuspendido --> ListoSuspendido: Evento completado
+
+Ejecucion --> Terminado
+
+Terminado --> [*]
+```
+
+### Nuevos estados
+
+| Estado | Descripción |
+|---------|-------------|
+| **Listo y Suspendido** | El proceso está preparado para ejecutarse, pero fue trasladado al disco porque no existe memoria RAM suficiente. |
+| **Bloqueado y Suspendido** | El proceso permanece esperando un evento y, además, fue movido temporalmente al almacenamiento secundario. |
+
+::: {.callout-note title="¿Qué es el Swap?"}
+
+El **Swap** consiste en mover procesos completos o parte de su memoria desde la RAM hacia un área especial del disco duro o del SSD para liberar memoria física y permitir que otros procesos continúen ejecutándose.
+
+Aunque esta técnica incrementa la capacidad de ejecución del sistema, también reduce el rendimiento, ya que acceder al disco es mucho más lento que acceder a la memoria RAM.
+
+:::
+
+# Resumen
+
+- Un programa se convierte en proceso al ejecutarse.
+- Cada proceso posee memoria y recursos propios.
+- El PCB almacena toda la información necesaria para administrarlo.
+- El Scheduler comparte el procesador entre todos los procesos.
+- En la siguiente sección estudiaremos el ciclo de vida y los estados de un proceso.
+
+
+# Scheduler y Dispatcher
+
+El **Scheduler** decide qué proceso obtendrá el procesador cuando existen varios procesos listos para ejecutarse. Para tomar esta decisión puede considerar la prioridad, el tiempo de espera o el algoritmo de planificación configurado por el sistema operativo.
+
+```{mermaid}
+flowchart LR
+A[Procesos en READY] --> B[Scheduler]
+B --> C[Dispatcher]
+C --> D[CPU]
+```
+
+El **Dispatcher** es el componente encargado de entregar realmente la CPU al proceso seleccionado y realizar el cambio de contexto.
+
+# Cambio de contexto (Context Switch)
+
+Un cambio de contexto ocurre cuando el sistema operativo detiene temporalmente un proceso, guarda su estado en el PCB y restaura el estado de otro proceso.
+
+```{mermaid}
+sequenceDiagram
+participant CPU
+participant PCB1 as PCB Proceso A
+participant PCB2 as PCB Proceso B
+CPU->>PCB1: Guarda registros
+CPU->>PCB2: Recupera registros
+CPU->>CPU: Continúa Proceso B
+```
+
+# Ejemplo completo: Microsoft Word
+
+1. El usuario hace doble clic sobre **Word.exe**.
+2. El Kernel crea el proceso y asigna un PID.
+3. El proceso entra al estado **NEW**.
+4. Se reserva memoria y se crea el PCB.
+5. El proceso pasa a **READY**.
+6. El Scheduler selecciona el proceso.
+7. El Dispatcher entrega la CPU.
+8. El proceso entra en **RUNNING**.
+9. Al guardar un archivo, espera la respuesta del disco (**WAITING**).
+10. Finalizada la operación de E/S vuelve a **READY**.
+11. El Scheduler le asigna nuevamente la CPU.
+12. Al cerrar Word, el proceso entra en **EXIT** y el sistema libera memoria, archivos y demás recursos.
+
+```{mermaid}
+%%| fig-width: 6.2
+%%| fig-height: 8.4
+%%| fig-align: center
+
+sequenceDiagram
+    autonumber
+
+    actor Usuario
+    participant SO as Sistema Operativo
+    participant PCB
+    participant SCH as Scheduler
+    participant DSP as Dispatcher
+    participant CPU
+    participant Disco
+
+    Usuario->>SO: Doble clic en Word.exe
+
+    SO->>PCB: Crear PCB
+    SO->>SO: Asignar PID
+    SO->>SO: Estado = NEW
+
+    SO->>SO: Reservar memoria
+    SO->>SO: Estado = READY
+
+    SCH->>SO: Seleccionar proceso READY
+    SCH->>DSP: Entregar proceso
+
+    DSP->>CPU: Asignar CPU
+
+    CPU->>SO: Estado = RUNNING
+
+    CPU->>Disco: Guardar documento
+
+    Disco-->>CPU: Esperando E/S
+
+    CPU->>SO: Estado = WAITING
+
+    Disco-->>SO: Operación completada
+
+    SO->>SO: Estado = READY
+
+    SCH->>DSP: Seleccionar nuevamente
+
+    DSP->>CPU: Continuar ejecución
+
+    CPU->>SO: Estado = RUNNING
+
+    Usuario->>SO: Cerrar Word
+
+    SO->>CPU: Finalizar proceso
+
+    SO->>PCB: Liberar PCB
+
+    SO->>SO: Estado = EXIT
+```
+
+
+## Autoevaluación
+
+1. ¿Cuál es la diferencia entre un programa y un proceso?
+2. ¿Qué información almacena el PCB?
+3. ¿Qué función cumple el Scheduler?
+4. ¿Cuándo ocurre un cambio de contexto?
+5. Explique el recorrido NEW → READY → RUNNING → WAITING → READY → EXIT con sus propias palabras.

@@ -1,0 +1,25 @@
+::: {.content-visible when-format="html"}
+
+<div class="editorial-creditos">
+
+# Créditos Editoriales
+
+**Autor**
+
+Ing. Jorge Luis García Chacón
+
+**Editorial**
+
+Editorial Académica de Ingeniería en Sistemas
+
+**Arquitectura Editorial**
+
+OpenAI · ChatGPT
+
+**Edición**
+
+2026
+
+</div>
+
+:::

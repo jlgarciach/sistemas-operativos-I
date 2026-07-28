@@ -1,0 +1,1039 @@
+---
+title: "Clase 5. Control de Procesos y Concurrencia"
+
+format:
+  html:
+    theme: ../../editorial/assets/scss/editorial.scss
+
+  pdf:
+    documentclass: scrreprt
+    toc: true
+    number-sections: true
+    fig-width: 6.2
+    mermaid-format: png
+---
+
+# Clase 5. Control de Procesos y Concurrencia
+
+## Presentación de la clase
+
+En la clase anterior estudiamos cómo el sistema operativo crea, registra y administra los procesos mediante estructuras como el **PCB**, la tabla de procesos, el **Scheduler**, el **Dispatcher** y los cambios de contexto.
+
+En esta clase ampliaremos esa base para comprender cómo el sistema operativo controla varios procesos e hilos que avanzan de forma concurrente, cómo distribuye el tiempo del procesador y qué problemas aparecen cuando varias unidades de ejecución comparten datos o recursos.
+
+También analizaremos el papel real que puede desempeñar la inteligencia artificial en la administración de recursos. La IA no sustituye al kernel ni modifica por sí misma el PCB; puede emplearse como apoyo para construir políticas de planificación, predicción y detección de anomalías.
+
+::: {.callout-note title="Pregunta detonadora"}
+Cuando un navegador reproduce música, descarga un archivo, muestra varias pestañas y responde al teclado casi al mismo tiempo, ¿cómo evita el sistema operativo que todas esas actividades interfieran entre sí?
+:::
+
+## Objetivos de aprendizaje
+
+Al finalizar la clase, el estudiante será capaz de:
+
+1. Explicar qué significa controlar un proceso.
+2. Diferenciar procesos e hilos.
+3. Comprender la relación entre concurrencia y paralelismo.
+4. Explicar el propósito del quantum de tiempo.
+5. Relacionar el quantum con la planificación Round Robin.
+6. Identificar los componentes principales del PCB.
+7. Reconocer una sección crítica y una condición de carrera.
+8. Explicar la finalidad de la exclusión mutua.
+9. Interpretar el algoritmo de Dekker como una solución histórica para dos procesos.
+10. Analizar, con criterio técnico, posibles aplicaciones de inteligencia artificial en la administración de recursos.
+
+## Ruta de aprendizaje
+
+La clase seguirá esta secuencia:
+
+1. Control del ciclo de vida de los procesos.
+2. Diferencia entre proceso e hilo.
+3. Concurrencia y paralelismo.
+4. Quantum y planificación Round Robin.
+5. PCB y cambio de contexto.
+6. Recursos compartidos y condiciones de carrera.
+7. Sección crítica y exclusión mutua.
+8. Algoritmo de Dekker.
+9. IA aplicada a planificación y observabilidad.
+10. Caso integrador, laboratorio y autoevaluación.
+
+# ¿Qué es el control de procesos?
+
+El **control de procesos** es el conjunto de mecanismos utilizados por el sistema operativo para crear, registrar, planificar, pausar, reanudar, sincronizar y finalizar procesos.
+
+El sistema operativo no se limita a “abrir programas”. Debe mantener una visión organizada de todo lo que se encuentra en ejecución.
+
+Entre sus responsabilidades están:
+
+- crear el proceso;
+- asignarle un identificador;
+- reservar memoria;
+- crear y actualizar su PCB;
+- ubicarlo en una cola de planificación;
+- asignarle tiempo de CPU;
+- atender solicitudes de entrada y salida;
+- proteger sus recursos;
+- coordinar su comunicación con otros procesos;
+- finalizarlo y liberar los recursos utilizados.
+
+```{mermaid}
+%%| fig-width: 6.2
+%%| fig-height: 4.2
+%%| fig-align: center
+flowchart LR
+    A[Crear proceso] --> B[Registrar PCB]
+    B --> C[Asignar recursos]
+    C --> D[Cola de listos]
+    D --> E[Ejecutar]
+    E --> F{¿Qué ocurre?}
+    F -->|Espera E/S| G[Bloquear]
+    G --> D
+    F -->|Fin de quantum| D
+    F -->|Termina| H[Liberar recursos]
+```
+
+::: {.callout-tip title="Idea central"}
+Controlar un proceso significa conservar suficiente información para detenerlo, reanudarlo y finalizarlo sin perder la coherencia de su ejecución.
+:::
+
+# Proceso e hilo
+
+## Proceso
+
+Un **proceso** es una instancia de un programa en ejecución. Posee su propio espacio de direcciones y los recursos que el sistema operativo le ha asignado.
+
+Un proceso normalmente incluye:
+
+- código;
+- datos;
+- heap;
+- stack;
+- archivos abiertos;
+- credenciales y permisos;
+- uno o más hilos;
+- un PCB o estructura equivalente mantenida por el kernel.
+
+## Hilo
+
+Un **hilo** o **thread** es una unidad de ejecución dentro de un proceso.
+
+Los hilos de un mismo proceso suelen compartir:
+
+- código;
+- datos globales;
+- heap;
+- archivos abiertos;
+- espacio de direcciones.
+
+Cada hilo conserva elementos propios, como:
+
+- contador de programa;
+- registros;
+- stack;
+- estado de ejecución;
+- identificador del hilo.
+
+```{mermaid}
+%%| fig-width: 6.2
+%%| fig-height: 4.5
+%%| fig-align: center
+flowchart TB
+    P[Proceso]
+    P --> M[Memoria compartida]
+    P --> A[Archivos abiertos]
+    P --> T1[Thread 1<br/>Registros + Stack]
+    P --> T2[Thread 2<br/>Registros + Stack]
+    P --> T3[Thread 3<br/>Registros + Stack]
+```
+
+## Comparación
+
+| Característica | Proceso | Hilo |
+|---|---|---|
+| Espacio de memoria | Generalmente independiente | Comparte el espacio del proceso |
+| Costo de creación | Mayor | Menor |
+| Comunicación | Requiere mecanismos de IPC | Puede compartir variables y estructuras |
+| Aislamiento | Mayor | Menor |
+| Fallo | Puede quedar aislado | Puede afectar al proceso completo |
+| Uso típico | Aplicaciones o servicios separados | Tareas relacionadas dentro de una aplicación |
+
+::: {.callout-warning title="Precisión importante"}
+No debe afirmarse que cada pestaña de un navegador siempre corresponde a un hilo. Los navegadores modernos pueden utilizar una arquitectura multiproceso y, dentro de cada proceso, varios hilos. La implementación exacta depende del navegador y de su modelo de aislamiento.
+:::
+
+# Concurrencia y paralelismo
+
+Estos conceptos están relacionados, pero no significan lo mismo.
+
+## Concurrencia
+
+Existe **concurrencia** cuando varias tareas progresan durante un mismo período, aunque no necesariamente se ejecuten exactamente al mismo tiempo.
+
+En una CPU de un solo núcleo, el sistema puede intercalar rápidamente la ejecución:
+
+```text
+Proceso A → Proceso B → Proceso C → Proceso A → ...
+```
+
+## Paralelismo
+
+Existe **paralelismo** cuando dos o más tareas se ejecutan físicamente al mismo tiempo, por ejemplo, en núcleos diferentes.
+
+```{mermaid}
+%%| fig-width: 6.2
+%%| fig-height: 4.5
+%%| fig-align: center
+flowchart TB
+    subgraph C[Concurrencia en un núcleo]
+      A1[A] --> B1[B] --> C1[C] --> A2[A]
+    end
+
+    subgraph P[Paralelismo en varios núcleos]
+      N1[Núcleo 1<br/>Proceso A]
+      N2[Núcleo 2<br/>Proceso B]
+      N3[Núcleo 3<br/>Proceso C]
+    end
+```
+
+| Concepto | Pregunta clave |
+|---|---|
+| Concurrencia | ¿Varias tareas avanzan durante el mismo período? |
+| Paralelismo | ¿Varias tareas se ejecutan simultáneamente en hardware distinto? |
+
+::: {.callout-note title="Ejemplo"}
+Una persona puede atender concurrentemente varias conversaciones alternando entre ellas. Dos personas pueden atender conversaciones en paralelo.
+:::
+
+# Quantum de tiempo
+
+El **quantum**, también llamado **time slice**, es el intervalo máximo durante el cual un proceso puede conservar la CPU antes de ser interrumpido por el planificador, siempre que no se bloquee o termine antes.
+
+El quantum es especialmente importante en algoritmos de planificación apropiativos como **Round Robin**.
+
+## ¿Qué ocurre cuando termina el quantum?
+
+1. El reloj genera una interrupción.
+2. El kernel recupera el control.
+3. Se guarda el contexto del proceso.
+4. El proceso pasa de Ejecución a Listo.
+5. El Scheduler selecciona otro proceso.
+6. El Dispatcher restaura su contexto.
+7. El nuevo proceso continúa ejecutándose.
+
+```{mermaid}
+%%| fig-width: 6.2
+%%| fig-height: 4.1
+%%| fig-align: center
+flowchart LR
+    Q[Cola READY] --> P1[Proceso A]
+    P1 -->|Quantum| CPU((CPU))
+    CPU -->|Expira| Q
+    Q --> P2[Proceso B]
+    P2 -->|Quantum| CPU
+```
+
+## Efecto del tamaño del quantum
+
+| Quantum | Ventaja | Riesgo |
+|---|---|---|
+| Muy pequeño | Mayor sensación de respuesta | Más cambios de contexto |
+| Moderado | Equilibrio entre respuesta y costo | Debe adaptarse al sistema |
+| Muy grande | Menos cambios de contexto | Se aproxima a FCFS y reduce interactividad |
+
+::: {.callout-important title="No existe un quantum universal"}
+El valor apropiado depende de la carga, el hardware, los objetivos de respuesta y la política del sistema operativo.
+:::
+
+# Planificación Round Robin
+
+**Round Robin** organiza los procesos listos en una cola y asigna a cada uno un quantum de CPU.
+
+Supongamos:
+
+```text
+Quantum = 4 unidades
+```
+
+y tres procesos:
+
+| Proceso | Ráfaga de CPU |
+|---|---:|
+| P1 | 9 |
+| P2 | 5 |
+| P3 | 3 |
+
+La ejecución inicial sería:
+
+```text
+0       4       8      11      15      16      17
+|  P1   |  P2   | P3  |  P1   |  P2  | P1 |
+```
+
+### Interpretación
+
+- P1 utiliza 4 unidades y necesita 5 más.
+- P2 utiliza 4 unidades y necesita 1 más.
+- P3 necesita solo 3 y termina en su primer turno.
+- P1 utiliza otras 4 y necesita 1.
+- P2 termina.
+- P1 termina.
+
+::: {.callout-tip title="Ventaja de Round Robin"}
+Todos los procesos listos reciben oportunidades periódicas de ejecución, lo que favorece la interactividad y evita que uno monopolice indefinidamente la CPU.
+:::
+
+# PCB y control del proceso
+
+El **Process Control Block** es la estructura mediante la cual el sistema operativo conserva la información necesaria para administrar un proceso.
+
+## Componentes principales
+
+| Categoría | Información |
+|---|---|
+| Identificación | PID, PPID, usuario y grupo |
+| Estado | Nuevo, listo, ejecución, bloqueado o terminado |
+| Contexto de CPU | Registros, contador de programa y puntero de pila |
+| Planificación | Prioridad, política, tiempo utilizado y afinidad |
+| Memoria | Espacio de direcciones y estructuras de administración |
+| Entrada/salida | Dispositivos, operaciones pendientes y archivos abiertos |
+| Seguridad | Credenciales, privilegios y permisos |
+| Contabilidad | Tiempo de CPU, fecha de creación y estadísticas |
+
+```{mermaid}
+%%| fig-width: 6.2
+%%| fig-height: 5.2
+%%| fig-align: center
+flowchart TB
+    PCB[PCB]
+    PCB --> I[Identificación<br/>PID · PPID]
+    PCB --> E[Estado]
+    PCB --> C[Contexto de CPU]
+    PCB --> PL[Planificación]
+    PCB --> M[Memoria]
+    PCB --> IO[E/S y archivos]
+    PCB --> S[Seguridad]
+    PCB --> CT[Contabilidad]
+```
+
+::: {.callout-warning title="Modelo conceptual"}
+Los nombres y campos exactos varían entre sistemas operativos. “PCB” es una forma didáctica de agrupar la información; un kernel real puede distribuirla entre varias estructuras internas.
+:::
+
+# Cambio de contexto
+
+Un **cambio de contexto** ocurre cuando la CPU deja de ejecutar una unidad de trabajo y comienza otra.
+
+## Del mundo real al Sistema Operativo
+
+::: {.callout-tip appearance="simple" icon="false"}
+## 🍽️ Analogía: El mesero del restaurante
+
+Imagina un restaurante donde **solo hay un mesero** atendiendo varias mesas.
+
+En la **Mesa A** una familia está haciendo su pedido, pero mientras el mesero la atiende, llega una nueva familia a la **Mesa B**.
+
+El administrador le pide que primero reciba a los nuevos clientes.
+
+Antes de irse, el mesero **anota exactamente en qué punto quedó atendiendo la Mesa A** para no olvidar ningún detalle.
+
+Después atiende la Mesa B y, cuando termina, regresa a la Mesa A. Gracias a las anotaciones de su libreta puede continuar exactamente donde había quedado.
+
+La CPU realiza un proceso muy similar cuando cambia de un proceso a otro.
+:::
+
+```{mermaid}
+flowchart LR
+%%| fig-width: 6.2
+%%| fig-height: 5.2
+%%| fig-align: center
+A["🍽️ Mesa A<br><br>El mesero atiende a la familia"]
+
+B["⏱️ Llega una nueva familia<br>o el administrador lo llama"]
+
+C["📝 Guarda notas<br>en su libreta"]
+
+D["🍽️ Atiende la Mesa B"]
+
+E["📖 Revisa nuevamente<br>sus notas"]
+
+F["🍽️ Continúa atendiendo<br>la Mesa A"]
+
+A --> B
+B --> C
+C --> D
+D --> E
+E --> F
+```
+
+*Flujo*
+```
+1. El mesero atiende a la **Mesa A**.
+2. Ocurre una **interrupción**.
+3. Guarda notas en su libreta.
+4. Atiende la **Mesa B**.
+5. Recupera sus notas.
+6. Continúa atendiendo la **Mesa A**.
+```
+
+### Relación entre el restaurante y el Sistema Operativo
+
+| En el restaurante | En el Sistema Operativo |
+|-------------------|-------------------------|
+| Mesero | CPU |
+| Mesa A | Proceso A |
+| Mesa B | Proceso B |
+| Libreta del mesero | PCB (Process Control Block) |
+| Administrador | Kernel |
+| Cambiar de una mesa a otra | Cambio de contexto |
+
+## ¿Qué sucede realmente?
+
+Cuando la CPU está ejecutando un proceso y ocurre una interrupción o finaliza su **quantum**, el sistema operativo realiza un **cambio de contexto**.
+
+::: {.callout-important appearance="simple" icon="false"}
+## Idea clave
+
+La CPU **no recuerda** por sí sola en qué punto quedó cada proceso.
+
+Toda esa información se almacena en el **PCB (Process Control Block)**, de la misma forma que un mesero utiliza su libreta para recordar qué estaba haciendo en cada mesa.
+
+Por eso, un cambio de contexto no significa volver a empezar un proceso, sino **continuar exactamente desde el punto donde fue interrumpido**.
+:::
+
+::: {.callout-note appearance="simple" icon="false"}
+## 🧠 ¿Sabías que...?
+
+Un procesador moderno puede realizar **miles o incluso millones de cambios de contexto por segundo**, dependiendo de la carga del sistema y del sistema operativo.
+
+Aunque cada cambio toma muy poco tiempo, también representa un costo, ya que durante ese instante la CPU no está ejecutando instrucciones útiles del programa, sino organizando cuál proceso continuará después.
+:::
+
+Este procedimiento consiste en:
+
+1. Detener temporalmente el proceso que se estaba ejecutando.
+2. Guardar su estado actual dentro del **PCB**.
+3. Seleccionar el siguiente proceso listo para ejecutarse.
+4. Recuperar el estado almacenado del nuevo proceso.
+5. Reanudar la ejecución exactamente donde ese proceso había quedado anteriormente.
+
+Gracias a este mecanismo, la CPU puede compartir su tiempo entre muchos procesos dando la impresión de que todos se ejecutan simultáneamente.
+
+Durante el cambio:
+
+1. se guarda el estado del proceso o hilo actual;
+2. se actualiza su información de control;
+3. se selecciona otra unidad;
+4. se restaura su contexto;
+5. se reanuda la ejecución.
+
+```{mermaid}
+%%| fig-width: 6.2
+%%| fig-height: 4.4
+%%| fig-align: center
+sequenceDiagram
+    participant A as Proceso A
+    participant K as Kernel
+    participant PA as PCB A
+    participant PB as PCB B
+    participant B as Proceso B
+
+    A->>K: Expira quantum / interrupción
+    K->>PA: Guardar registros y estado
+    K->>PB: Recuperar registros y estado
+    K->>B: Reanudar ejecución
+```
+
+Un cambio de contexto tiene costo porque consume tiempo sin avanzar directamente el trabajo de la aplicación. Sin embargo, es indispensable para ofrecer multitarea, aislamiento y capacidad de respuesta.
+
+# Recursos compartidos
+
+La concurrencia se vuelve delicada cuando procesos o hilos acceden a un mismo recurso.
+
+Ejemplos:
+
+- una variable;
+- un archivo;
+- una impresora;
+- una estructura en memoria;
+- un registro de base de datos;
+- una cola;
+- un dispositivo;
+- un contador.
+
+## Ejemplo: contador compartido
+
+Supongamos que:
+
+```text
+contador = 10
+```
+
+Dos hilos ejecutan:
+
+```text
+contador = contador + 1
+```
+
+La operación no siempre es indivisible. Puede implicar:
+
+1. leer contador;
+2. sumar uno;
+3. escribir el resultado.
+
+Posible intercalado:
+
+| Paso | Hilo A | Hilo B | Valor |
+|---:|---|---|---:|
+| 1 | Lee 10 | | 10 |
+| 2 | | Lee 10 | 10 |
+| 3 | Calcula 11 | | 10 |
+| 4 | | Calcula 11 | 10 |
+| 5 | Escribe 11 | | 11 |
+| 6 | | Escribe 11 | 11 |
+
+El resultado esperado era 12, pero se obtuvo 11.
+
+# Condición de carrera
+
+Una **condición de carrera** ocurre cuando el resultado depende del orden o del momento en que varias unidades concurrentes acceden a datos compartidos.
+
+Sus características habituales son:
+
+- es intermitente;
+- puede desaparecer al depurar;
+- depende de la planificación;
+- puede producir pérdida o corrupción de datos;
+- es difícil de reproducir;
+- puede convertirse en vulnerabilidad.
+
+::: {.callout-warning title="Error común"}
+Concurrencia no significa automáticamente condición de carrera. El problema aparece cuando existe acceso compartido sin una coordinación correcta.
+:::
+
+# Sección crítica
+
+Una **sección crítica** es la parte del programa que accede o modifica un recurso compartido y que debe protegerse para evitar interferencias.
+
+```text
+Entrada a la sección crítica
+
+    modificar recurso compartido
+
+Salida de la sección crítica
+```
+
+Una solución correcta para la sección crítica busca cumplir:
+
+1. **Exclusión mutua:** solo una unidad entra a la vez.
+2. **Progreso:** si nadie está dentro, debe poder seleccionarse quién entra.
+3. **Espera limitada:** ninguna unidad debe esperar indefinidamente.
+
+```{mermaid}
+%%| fig-width: 6.2
+%%| fig-height: 4.0
+%%| fig-align: center
+flowchart LR
+    A[Proceso A] --> M{Mecanismo de<br/>exclusión mutua}
+    B[Proceso B] --> M
+    M --> C[Sección crítica]
+    C --> R[Recurso compartido]
+```
+
+# Mecanismos de sincronización
+
+Los sistemas modernos ofrecen mecanismos como:
+
+| Mecanismo | Uso general |
+|---|---|
+| Mutex | Exclusión mutua |
+| Semáforo | Control de acceso y señalización |
+| Monitor | Encapsulación de estado y sincronización |
+| Variable de condición | Esperar hasta que ocurra una condición |
+| Spinlock | Espera activa breve en contextos apropiados |
+| Operación atómica | Actualización indivisible de datos simples |
+
+::: {.callout-important title="Criterio profesional"}
+No debe improvisarse un mecanismo de sincronización cuando el lenguaje o el sistema operativo ya ofrece primitivas probadas.
+:::
+
+# Algoritmo de Dekker
+
+El **algoritmo de Dekker** es una solución histórica de software para lograr exclusión mutua entre **dos procesos**.
+
+Utiliza:
+
+- una bandera por proceso;
+- una variable de turno;
+- espera activa.
+
+## Idea general
+
+Cada proceso indica que desea entrar. Si ambos quieren entrar al mismo tiempo, la variable `turno` resuelve quién cede temporalmente.
+
+## Pseudocódigo conceptual
+
+```text
+bandera[0] = falso
+bandera[1] = falso
+turno = 0
+
+Proceso i:
+    j = 1 - i
+
+    mientras verdadero:
+        bandera[i] = verdadero
+
+        mientras bandera[j]:
+            si turno == j:
+                bandera[i] = falso
+
+                mientras turno == j:
+                    esperar
+
+                bandera[i] = verdadero
+
+        sección crítica
+
+        turno = j
+        bandera[i] = falso
+
+        sección no crítica
+```
+
+## Explicación
+
+1. `bandera[i] = verdadero` anuncia intención de entrar.
+2. Si el otro proceso no desea entrar, el proceso continúa.
+3. Si ambos desean entrar, `turno` decide quién espera.
+4. Al salir, se entrega el turno al otro proceso.
+5. La bandera se desactiva.
+
+::: {.callout-note title="Importancia histórica"}
+Dekker demuestra que la exclusión mutua puede lograrse mediante coordinación lógica entre dos procesos.
+:::
+
+::: {.callout-warning title="Limitación práctica"}
+Dekker es valioso para estudiar concurrencia, pero no debe implementarse como sustituto de mutex, semáforos u operaciones atómicas en aplicaciones modernas. Además, los modelos modernos de memoria y las optimizaciones del compilador requieren primitivas con garantías explícitas.
+:::
+
+# Interbloqueo, inanición y livelock
+
+Estos problemas no son iguales.
+
+| Problema | Descripción |
+|---|---|
+| Interbloqueo | Dos o más procesos esperan recursos retenidos entre sí |
+| Inanición | Un proceso espera indefinidamente porque otros reciben preferencia |
+| Livelock | Los procesos cambian de estado, pero no progresan |
+| Condición de carrera | El resultado depende del intercalado no controlado |
+
+## Ejemplo de interbloqueo
+
+```{mermaid}
+%%| fig-width: 5.8
+%%| fig-height: 3.8
+%%| fig-align: center
+flowchart LR
+    P1[Proceso 1<br/>retiene A] -->|espera B| P2[Proceso 2<br/>retiene B]
+    P2 -->|espera A| P1
+```
+
+# Inteligencia artificial y control de procesos
+
+La IA puede utilizarse para analizar métricas y apoyar políticas de administración. Sin embargo, debe distinguirse entre:
+
+- funciones presentes en sistemas de producción;
+- mecanismos experimentales;
+- investigación académica;
+- posibilidades futuras.
+
+::: {.callout-important title="Aclaración"}
+La IA no “entra al PCB” ni sustituye las estructuras del kernel. Un modelo puede analizar información derivada de procesos y recomendar o ejecutar decisiones mediante interfaces controladas.
+:::
+
+## Áreas de aplicación
+
+### Predicción de carga
+
+Un modelo puede estimar:
+
+- consumo futuro de CPU;
+- presión de memoria;
+- comportamiento interactivo;
+- ráfagas de entrada/salida;
+- demanda de energía.
+
+### Planificación adaptativa
+
+La investigación explora planificadores capaces de ajustar políticas según:
+
+- tipo de carga;
+- latencia;
+- rendimiento;
+- consumo energético;
+- afinidad entre tareas y núcleos;
+- objetivos de servicio.
+
+### Detección de anomalías
+
+Los datos de procesos pueden utilizarse para detectar:
+
+- consumo inusual;
+- procesos que dejan de responder;
+- fugas de memoria;
+- patrones sospechosos;
+- degradación de rendimiento.
+
+### Administración energética
+
+En equipos móviles, servidores y centros de datos, modelos predictivos pueden apoyar decisiones sobre:
+
+- frecuencias;
+- núcleos activos;
+- distribución de carga;
+- consolidación de tareas;
+- límites térmicos.
+
+# IA, PCB y Scheduler: relación correcta
+
+```{mermaid}
+%%| fig-width: 6.2
+%%| fig-height: 4.6
+%%| fig-align: center
+flowchart LR
+    PCB[Datos del proceso<br/>estado · prioridad · uso] --> M[Métricas y observabilidad]
+    M --> IA[Modelo o política adaptativa]
+    IA --> D[Recomendación o decisión]
+    D --> S[Scheduler / gestor de recursos]
+    S --> PCB2[Actualización normal<br/>por el kernel]
+```
+
+La secuencia correcta es:
+
+1. El kernel conserva y actualiza las estructuras del proceso.
+2. Herramientas de observabilidad obtienen métricas.
+3. Un modelo puede analizar esas métricas.
+4. La política entrega una decisión a través de una interfaz válida.
+5. El sistema operativo aplica la decisión y actualiza sus estructuras.
+
+## Estado actual: planificadores extensibles
+
+Linux dispone de `sched_ext`, una clase de planificación extensible basada en BPF que permite experimentar con algoritmos de planificación externos y regresar al planificador predeterminado cuando se detectan errores. Esta interfaz permite investigar políticas personalizadas, incluidas políticas que podrían integrar modelos predictivos, pero no implica que los sistemas operativos de escritorio utilicen IA de manera general para reemplazar su Scheduler. [Documentación oficial del kernel de Linux](https://docs.kernel.org/scheduler/sched-ext.html).
+
+::: {.callout-warning title="No confundir posibilidad con adopción"}
+Que una interfaz permita implementar una política inteligente no significa que todo sistema operativo actual utilice aprendizaje automático para planificar procesos.
+:::
+
+# Comparación: planificación clásica y adaptativa
+
+| Aspecto | Planificación clásica | Enfoque adaptativo o basado en datos |
+|---|---|---|
+| Reglas | Definidas previamente | Ajustadas según métricas o predicciones |
+| Interpretación | Generalmente clara | Puede ser más compleja |
+| Costo | Predecible | Incluye inferencia y recolección de datos |
+| Verificación | Más directa | Requiere validar modelo y política |
+| Robustez | Amplia experiencia acumulada | Depende de entrenamiento y límites |
+| Uso | Generalizado | Investigación y escenarios especializados |
+
+# Caso integrador: navegador durante una videoclase
+
+Un estudiante participa en una videoclase mientras:
+
+- reproduce audio y video;
+- escribe en el chat;
+- descarga un documento;
+- mantiene varias pestañas;
+- guarda apuntes;
+- recibe notificaciones.
+
+## Análisis
+
+1. El navegador puede utilizar varios procesos e hilos.
+2. El Scheduler distribuye tiempo de CPU.
+3. Cada hilo conserva su contexto de ejecución.
+4. Las operaciones de red o disco pueden bloquear temporalmente tareas.
+5. Al expirar el quantum, una tarea puede volver a READY.
+6. Los buffers y estructuras compartidas requieren sincronización.
+7. Una condición de carrera podría corromper datos.
+8. Los mutex y otras primitivas protegen secciones críticas.
+9. Herramientas de observabilidad pueden detectar consumo anómalo.
+10. Una política adaptativa podría ajustar prioridades, pero el kernel conserva el control.
+
+```{mermaid}
+%%| fig-width: 6.2
+%%| fig-height: 5.4
+%%| fig-align: center
+flowchart TB
+    U[Usuario] --> N[Navegador]
+    N --> P1[Proceso de interfaz]
+    N --> P2[Proceso de contenido]
+    N --> P3[Proceso de red]
+
+    P1 --> T1[Hilo de eventos]
+    P2 --> T2[Hilo de renderizado]
+    P3 --> T3[Hilo de comunicación]
+
+    T1 --> S[Scheduler]
+    T2 --> S
+    T3 --> S
+    S --> CPU((CPU / Núcleos))
+
+    T2 --> M[Memoria compartida]
+    T3 --> M
+    M --> X[Sincronización]
+```
+
+# Laboratorio: observando procesos e hilos
+
+## Propósito
+
+Relacionar los conceptos de procesos, hilos, estados, CPU y cambios de contexto con información real del sistema.
+
+## Parte A. Windows
+
+Abra **Administrador de tareas** o **Monitor de recursos**.
+
+Registre:
+
+| Elemento | Resultado |
+|---|---|
+| Proceso con mayor uso de CPU | |
+| Proceso con mayor uso de memoria | |
+| Número aproximado de procesos | |
+| Número aproximado de hilos | |
+| Aplicación con varios procesos relacionados | |
+
+Opcionalmente, en PowerShell:
+
+```powershell
+Get-Process |
+  Sort-Object CPU -Descending |
+  Select-Object -First 10 Name, Id, CPU, Threads, WorkingSet
+```
+
+## Parte B. macOS
+
+Abra **Monitor de Actividad**.
+
+También puede utilizar:
+
+```bash
+ps -axo pid,ppid,state,%cpu,%mem,comm | head
+```
+
+y:
+
+```bash
+top -l 1 -stats pid,command,cpu,mem,threads
+```
+
+## Parte C. GNU/Linux
+
+Utilice:
+
+```bash
+ps -eo pid,ppid,stat,pri,ni,%cpu,%mem,comm --sort=-%cpu | head
+```
+
+Para observar hilos:
+
+```bash
+ps -eLf | head
+```
+
+También puede utilizar:
+
+```bash
+top
+```
+
+o, si está instalado:
+
+```bash
+htop
+```
+
+::: {.callout-warning title="Regla de seguridad del laboratorio"}
+La actividad es únicamente de observación. No finalice procesos del sistema, no cambie prioridades y no ejecute comandos con privilegios administrativos.
+:::
+
+## Preguntas de análisis
+
+1. ¿Qué diferencia observa entre proceso e hilo?
+2. ¿Qué proceso tiene más hilos?
+3. ¿El proceso con mayor memoria también utiliza más CPU?
+4. ¿Qué significan los estados observados?
+5. ¿Por qué el uso de CPU cambia constantemente?
+6. ¿Qué aplicación parece utilizar una arquitectura multiproceso?
+7. ¿Qué riesgo tendría finalizar un proceso sin conocer su función?
+
+# Actividad en clase: simulación de Round Robin
+
+## Materiales
+
+- Cuatro tarjetas de procesos.
+- Un cronómetro.
+- Una tabla de seguimiento.
+
+## Datos
+
+| Proceso | Ráfaga |
+|---|---:|
+| P1 | 7 |
+| P2 | 4 |
+| P3 | 9 |
+| P4 | 5 |
+
+Use:
+
+```text
+Quantum = 3
+```
+
+## Instrucciones
+
+1. Coloque los procesos en la cola.
+2. Asigne tres unidades al primero.
+3. Si no termina, envíelo al final.
+4. Registre cada cambio.
+5. Calcule el tiempo de finalización.
+6. Cuente los cambios de contexto.
+7. Repita con quantum 1 y quantum 6.
+8. Compare los resultados.
+
+## Tabla de resultados
+
+| Quantum | Cambios de contexto | Respuesta percibida | Observación |
+|---:|---:|---|---|
+| 1 | | | |
+| 3 | | | |
+| 6 | | | |
+
+# Reto del Ingeniero
+
+Una aplicación bancaria ejecuta varios hilos:
+
+- interfaz;
+- validación;
+- consulta de saldo;
+- registro de transacciones;
+- generación de comprobantes.
+
+Dos hilos actualizan simultáneamente el saldo de una cuenta.
+
+Responda:
+
+1. ¿Cuál es el recurso compartido?
+2. ¿Dónde existe una sección crítica?
+3. ¿Qué condición de carrera podría ocurrir?
+4. ¿Qué mecanismo de sincronización propondría?
+5. ¿Qué información del proceso conservaría el sistema operativo?
+6. ¿Qué métricas permitirían detectar comportamiento anómalo?
+7. ¿Qué decisión nunca debería dejarse únicamente a un modelo de IA sin controles?
+
+# Autoevaluación
+
+## Selección múltiple
+
+1. ¿Qué comparte normalmente un grupo de hilos del mismo proceso?
+
+   a. Únicamente el PID  
+   b. Espacio de direcciones y recursos  
+   c. Ningún recurso  
+   d. Procesadores físicos
+
+2. ¿Qué ocurre cuando expira el quantum?
+
+   a. El proceso siempre termina  
+   b. El proceso se elimina  
+   c. El kernel puede interrumpirlo y devolverlo a READY  
+   d. Se borra su PCB
+
+3. ¿Qué caracteriza una condición de carrera?
+
+   a. El resultado depende del intercalado  
+   b. Todos los procesos terminan en orden  
+   c. No existen recursos compartidos  
+   d. El quantum es demasiado grande
+
+4. ¿Qué busca garantizar un mutex?
+
+   a. Paralelismo ilimitado  
+   b. Exclusión mutua  
+   c. Eliminación del PCB  
+   d. Mayor memoria RAM
+
+5. ¿Para cuántos procesos fue diseñado Dekker?
+
+   a. Uno  
+   b. Dos  
+   c. Diez  
+   d. Un número ilimitado
+
+6. ¿Cuál afirmación sobre IA y PCB es más precisa?
+
+   a. La IA reemplaza siempre el PCB  
+   b. La IA modifica directamente cualquier estructura del kernel  
+   c. Un modelo puede apoyar decisiones utilizando métricas observadas  
+   d. Todo sistema operativo utiliza redes neuronales
+
+::: {.callout-note title="Respuestas"}
+1. b  
+2. c  
+3. a  
+4. b  
+5. b  
+6. c
+:::
+
+## Preguntas de reflexión
+
+1. ¿Por qué un quantum demasiado pequeño puede reducir el rendimiento?
+2. ¿Cuál es la diferencia entre concurrencia y paralelismo?
+3. ¿Por qué los hilos son más ligeros, pero también menos aislados?
+4. ¿Por qué una condición de carrera puede ser difícil de reproducir?
+5. ¿Qué valor educativo tiene Dekker aunque no sea la opción usual en aplicaciones modernas?
+6. ¿Qué riesgos introduce una política de planificación basada en aprendizaje automático?
+
+# Resumen de la clase
+
+En esta clase aprendimos que:
+
+- El control de procesos abarca creación, planificación, sincronización y finalización.
+- Un proceso posee recursos propios y puede contener varios hilos.
+- La concurrencia permite que varias tareas progresen durante un mismo período.
+- El paralelismo requiere ejecución simultánea en hardware distinto.
+- El quantum limita temporalmente el uso de CPU.
+- Round Robin distribuye turnos entre los procesos listos.
+- El PCB conserva la información necesaria para administrar un proceso.
+- Los cambios de contexto permiten alternar entre unidades de ejecución.
+- Los recursos compartidos pueden producir condiciones de carrera.
+- Las secciones críticas deben protegerse mediante sincronización.
+- Dekker es una solución histórica para dos procesos.
+- La IA puede apoyar predicción, observabilidad y políticas adaptativas, pero no reemplaza automáticamente al kernel.
+
+::: {.callout-tip title="Consejo final del Ingeniero"}
+La concurrencia no se domina memorizando nombres. Se comprende siguiendo el orden exacto de las operaciones y preguntando qué datos comparten las unidades de ejecución.
+:::
+
+# Tarea sugerida
+
+1. Dibuje el modelo de cinco estados.
+2. Dibuje y explique los componentes principales del PCB.
+3. Resuelva manualmente un ejercicio Round Robin con cuatro procesos.
+4. Describa una condición de carrera de la vida real.
+5. Compare mutex, semáforo y monitor.
+6. Explique el algoritmo de Dekker con sus propias palabras.
+7. Redacte una conclusión sobre el uso responsable de IA en la planificación de procesos.
+
+# Referencias y actualización
+
+- Material base de la Clase 5: *Control de Procesos y Concurrencia*. fileciteturn8file0
+- Linux Kernel Documentation. *Extensible Scheduler Class (sched_ext)*.
+- Silberschatz, A., Galvin, P. B., & Gagne, G. *Operating System Concepts*.
+- Stallings, W. *Operating Systems: Internals and Design Principles*.
+- Tanenbaum, A. S., & Bos, H. *Modern Operating Systems*.
+
+::: {.callout-note title="Nota editorial"}
+La sección de inteligencia artificial se presenta como panorama técnico y línea de investigación. Las afirmaciones deben revisarse periódicamente porque los mecanismos de planificación y observabilidad evolucionan con rapidez.
+:::

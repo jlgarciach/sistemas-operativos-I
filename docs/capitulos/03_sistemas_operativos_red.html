@@ -1,0 +1,2379 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ing. Jorge Luis García Chacón">
+
+<title>4&nbsp; Clase 3. Sistemas Operativos de Red – Sistemas Operativos I</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../capitulos/04_administracion_procesos.html" rel="next">
+<link href="../capitulos/02_administracion_sistema_archivos.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-00cb48ef4f8381ff23467c959274e61b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-663c59e08f2ec96d6b2ddc79a12e8e5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No se han encontrado resultados",
+    "search-matching-documents-text": "documentos encontrados",
+    "search-copy-link-title": "Copiar el enlace en la búsqueda",
+    "search-hide-matches-text": "Ocultar resultados adicionales",
+    "search-more-match-text": "resultado adicional en este documento",
+    "search-more-matches-text": "resultados adicionales en este documento",
+    "search-clear-button-title": "Borrar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Buscar"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../capitulos/03_sistemas_operativos_red.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Clase 3. Sistemas Operativos de Red</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Buscar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Sistemas Operativos I</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Buscar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">index.html</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/01_introduccion_sistemas_operativos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Presentación de la clase</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/02_administracion_sistema_archivos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Administración del sistema de archivos desde la línea de comandos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/03_sistemas_operativos_red.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Clase 3. Sistemas Operativos de Red</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/04_administracion_procesos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Clase 4. Administración de Procesos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/05_control_procesos_concurrencia.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Clase 5. Control de Procesos y Concurrencia</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/99_cierre.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Cierre de la clase</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Tabla de contenidos</h2>
+   
+  <ul>
+  <li><a href="#presentación-de-la-clase" id="toc-presentación-de-la-clase" class="nav-link active" data-scroll-target="#presentación-de-la-clase"><span class="header-section-number">5</span> Presentación de la clase</a></li>
+  <li><a href="#objetivos-de-aprendizaje" id="toc-objetivos-de-aprendizaje" class="nav-link" data-scroll-target="#objetivos-de-aprendizaje"><span class="header-section-number">6</span> Objetivos de aprendizaje</a></li>
+  <li><a href="#ruta-de-aprendizaje" id="toc-ruta-de-aprendizaje" class="nav-link" data-scroll-target="#ruta-de-aprendizaje"><span class="header-section-number">7</span> Ruta de aprendizaje</a></li>
+  <li><a href="#por-qué-existen-los-sistemas-operativos-de-red" id="toc-por-qué-existen-los-sistemas-operativos-de-red" class="nav-link" data-scroll-target="#por-qué-existen-los-sistemas-operativos-de-red"><span class="header-section-number">8</span> ¿Por qué existen los Sistemas Operativos de Red?</a>
+  <ul class="collapse">
+  <li><a href="#qué-es-un-sistema-operativo-de-red" id="toc-qué-es-un-sistema-operativo-de-red" class="nav-link" data-scroll-target="#qué-es-un-sistema-operativo-de-red"><span class="header-section-number">8.1</span> ¿Qué es un Sistema Operativo de Red?</a></li>
+  <li><a href="#sistema-operativo-de-escritorio-y-sistema-operativo-de-red" id="toc-sistema-operativo-de-escritorio-y-sistema-operativo-de-red" class="nav-link" data-scroll-target="#sistema-operativo-de-escritorio-y-sistema-operativo-de-red"><span class="header-section-number">8.2</span> Sistema operativo de escritorio y Sistema Operativo de Red</a></li>
+  </ul></li>
+  <li><a href="#evolución-de-los-sistemas-operativos-de-red" id="toc-evolución-de-los-sistemas-operativos-de-red" class="nav-link" data-scroll-target="#evolución-de-los-sistemas-operativos-de-red"><span class="header-section-number">9</span> Evolución de los Sistemas Operativos de Red</a>
+  <ul class="collapse">
+  <li><a href="#los-primeros-sistemas-multiusuario" id="toc-los-primeros-sistemas-multiusuario" class="nav-link" data-scroll-target="#los-primeros-sistemas-multiusuario"><span class="header-section-number">9.1</span> Los primeros sistemas multiusuario</a></li>
+  <li><a href="#tcpip-y-la-expansión-de-las-redes" id="toc-tcpip-y-la-expansión-de-las-redes" class="nav-link" data-scroll-target="#tcpip-y-la-expansión-de-las-redes"><span class="header-section-number">9.2</span> TCP/IP y la expansión de las redes</a></li>
+  <li><a href="#redes-locales-y-novell-netware" id="toc-redes-locales-y-novell-netware" class="nav-link" data-scroll-target="#redes-locales-y-novell-netware"><span class="header-section-number">9.3</span> Redes locales y Novell NetWare</a></li>
+  <li><a href="#windows-nt-y-windows-server" id="toc-windows-nt-y-windows-server" class="nav-link" data-scroll-target="#windows-nt-y-windows-server"><span class="header-section-number">9.4</span> Windows NT y Windows Server</a></li>
+  <li><a href="#el-crecimiento-de-linux" id="toc-el-crecimiento-de-linux" class="nav-link" data-scroll-target="#el-crecimiento-de-linux"><span class="header-section-number">9.5</span> El crecimiento de Linux</a></li>
+  <li><a href="#virtualización-contenedores-y-nube" id="toc-virtualización-contenedores-y-nube" class="nav-link" data-scroll-target="#virtualización-contenedores-y-nube"><span class="header-section-number">9.6</span> Virtualización, contenedores y nube</a></li>
+  </ul></li>
+  <li><a href="#arquitecturas-de-red" id="toc-arquitecturas-de-red" class="nav-link" data-scroll-target="#arquitecturas-de-red"><span class="header-section-number">10</span> Arquitecturas de red</a></li>
+  <li><a href="#arquitectura-punto-a-punto" id="toc-arquitectura-punto-a-punto" class="nav-link" data-scroll-target="#arquitectura-punto-a-punto"><span class="header-section-number">11</span> Arquitectura Punto a Punto</a>
+  <ul class="collapse">
+  <li><a href="#ejemplo" id="toc-ejemplo" class="nav-link" data-scroll-target="#ejemplo"><span class="header-section-number">11.1</span> Ejemplo</a></li>
+  <li><a href="#ventajas" id="toc-ventajas" class="nav-link" data-scroll-target="#ventajas"><span class="header-section-number">11.2</span> Ventajas</a></li>
+  <li><a href="#limitaciones" id="toc-limitaciones" class="nav-link" data-scroll-target="#limitaciones"><span class="header-section-number">11.3</span> Limitaciones</a></li>
+  <li><a href="#cuándo-puede-utilizarse" id="toc-cuándo-puede-utilizarse" class="nav-link" data-scroll-target="#cuándo-puede-utilizarse"><span class="header-section-number">11.4</span> ¿Cuándo puede utilizarse?</a></li>
+  </ul></li>
+  <li><a href="#arquitectura-clienteservidor" id="toc-arquitectura-clienteservidor" class="nav-link" data-scroll-target="#arquitectura-clienteservidor"><span class="header-section-number">12</span> Arquitectura Cliente/Servidor</a>
+  <ul class="collapse">
+  <li><a href="#ejemplo-universitario" id="toc-ejemplo-universitario" class="nav-link" data-scroll-target="#ejemplo-universitario"><span class="header-section-number">12.1</span> Ejemplo universitario</a></li>
+  <li><a href="#ventajas-1" id="toc-ventajas-1" class="nav-link" data-scroll-target="#ventajas-1"><span class="header-section-number">12.2</span> Ventajas</a></li>
+  <li><a href="#limitaciones-1" id="toc-limitaciones-1" class="nav-link" data-scroll-target="#limitaciones-1"><span class="header-section-number">12.3</span> Limitaciones</a></li>
+  <li><a href="#comparación-general" id="toc-comparación-general" class="nav-link" data-scroll-target="#comparación-general"><span class="header-section-number">12.4</span> Comparación general</a></li>
+  </ul></li>
+  <li><a href="#servicios-que-ofrece-un-sistema-operativo-de-red" id="toc-servicios-que-ofrece-un-sistema-operativo-de-red" class="nav-link" data-scroll-target="#servicios-que-ofrece-un-sistema-operativo-de-red"><span class="header-section-number">13</span> Servicios que ofrece un Sistema Operativo de Red</a></li>
+  <li><a href="#servicio-de-autenticación" id="toc-servicio-de-autenticación" class="nav-link" data-scroll-target="#servicio-de-autenticación"><span class="header-section-number">14</span> Servicio de autenticación</a>
+  <ul class="collapse">
+  <li><a href="#autenticación-y-autorización" id="toc-autenticación-y-autorización" class="nav-link" data-scroll-target="#autenticación-y-autorización"><span class="header-section-number">14.1</span> Autenticación y autorización</a></li>
+  </ul></li>
+  <li><a href="#servicio-dns" id="toc-servicio-dns" class="nav-link" data-scroll-target="#servicio-dns"><span class="header-section-number">15</span> Servicio DNS</a>
+  <ul class="collapse">
+  <li><a href="#ejemplo-de-funcionamiento" id="toc-ejemplo-de-funcionamiento" class="nav-link" data-scroll-target="#ejemplo-de-funcionamiento"><span class="header-section-number">15.1</span> Ejemplo de funcionamiento</a></li>
+  <li><a href="#qué-ocurriría-sin-dns" id="toc-qué-ocurriría-sin-dns" class="nav-link" data-scroll-target="#qué-ocurriría-sin-dns"><span class="header-section-number">15.2</span> ¿Qué ocurriría sin DNS?</a></li>
+  </ul></li>
+  <li><a href="#servicio-dhcp" id="toc-servicio-dhcp" class="nav-link" data-scroll-target="#servicio-dhcp"><span class="header-section-number">16</span> Servicio DHCP</a>
+  <ul class="collapse">
+  <li><a href="#beneficios" id="toc-beneficios" class="nav-link" data-scroll-target="#beneficios"><span class="header-section-number">16.1</span> Beneficios</a></li>
+  <li><a href="#concesión-o-lease" id="toc-concesión-o-lease" class="nav-link" data-scroll-target="#concesión-o-lease"><span class="header-section-number">16.2</span> Concesión o <em>lease</em></a></li>
+  </ul></li>
+  <li><a href="#servicio-de-archivos" id="toc-servicio-de-archivos" class="nav-link" data-scroll-target="#servicio-de-archivos"><span class="header-section-number">17</span> Servicio de archivos</a>
+  <ul class="collapse">
+  <li><a href="#ventajas-2" id="toc-ventajas-2" class="nav-link" data-scroll-target="#ventajas-2"><span class="header-section-number">17.1</span> Ventajas</a></li>
+  <li><a href="#ejemplo-de-estructura" id="toc-ejemplo-de-estructura" class="nav-link" data-scroll-target="#ejemplo-de-estructura"><span class="header-section-number">17.2</span> Ejemplo de estructura</a></li>
+  <li><a href="#riesgos-que-deben-administrarse" id="toc-riesgos-que-deben-administrarse" class="nav-link" data-scroll-target="#riesgos-que-deben-administrarse"><span class="header-section-number">17.3</span> Riesgos que deben administrarse</a></li>
+  </ul></li>
+  <li><a href="#servicio-de-impresión" id="toc-servicio-de-impresión" class="nav-link" data-scroll-target="#servicio-de-impresión"><span class="header-section-number">18</span> Servicio de impresión</a></li>
+  <li><a href="#servicio-de-directorio" id="toc-servicio-de-directorio" class="nav-link" data-scroll-target="#servicio-de-directorio"><span class="header-section-number">19</span> Servicio de directorio</a></li>
+  <li><a href="#administración-remota" id="toc-administración-remota" class="nav-link" data-scroll-target="#administración-remota"><span class="header-section-number">20</span> Administración remota</a></li>
+  <li><a href="#qué-ocurre-detrás-de-escena-al-iniciar-sesión" id="toc-qué-ocurre-detrás-de-escena-al-iniciar-sesión" class="nav-link" data-scroll-target="#qué-ocurre-detrás-de-escena-al-iniciar-sesión"><span class="header-section-number">21</span> ¿Qué ocurre detrás de escena al iniciar sesión?</a></li>
+  <li><a href="#usuarios-grupos-y-permisos" id="toc-usuarios-grupos-y-permisos" class="nav-link" data-scroll-target="#usuarios-grupos-y-permisos"><span class="header-section-number">22</span> Usuarios, grupos y permisos</a></li>
+  <li><a href="#usuarios" id="toc-usuarios" class="nav-link" data-scroll-target="#usuarios"><span class="header-section-number">23</span> Usuarios</a>
+  <ul class="collapse">
+  <li><a href="#por-qué-evitar-cuentas-compartidas" id="toc-por-qué-evitar-cuentas-compartidas" class="nav-link" data-scroll-target="#por-qué-evitar-cuentas-compartidas"><span class="header-section-number">23.1</span> ¿Por qué evitar cuentas compartidas?</a></li>
+  </ul></li>
+  <li><a href="#grupos" id="toc-grupos" class="nav-link" data-scroll-target="#grupos"><span class="header-section-number">24</span> Grupos</a>
+  <ul class="collapse">
+  <li><a href="#ventaja-administrativa" id="toc-ventaja-administrativa" class="nav-link" data-scroll-target="#ventaja-administrativa"><span class="header-section-number">24.1</span> Ventaja administrativa</a></li>
+  </ul></li>
+  <li><a href="#permisos" id="toc-permisos" class="nav-link" data-scroll-target="#permisos"><span class="header-section-number">25</span> Permisos</a>
+  <ul class="collapse">
+  <li><a href="#caso-carpeta-de-calificaciones" id="toc-caso-carpeta-de-calificaciones" class="nav-link" data-scroll-target="#caso-carpeta-de-calificaciones"><span class="header-section-number">25.1</span> Caso: carpeta de calificaciones</a></li>
+  </ul></li>
+  <li><a href="#principio-del-mínimo-privilegio" id="toc-principio-del-mínimo-privilegio" class="nav-link" data-scroll-target="#principio-del-mínimo-privilegio"><span class="header-section-number">26</span> Principio del mínimo privilegio</a>
+  <ul class="collapse">
+  <li><a href="#ejemplos" id="toc-ejemplos" class="nav-link" data-scroll-target="#ejemplos"><span class="header-section-number">26.1</span> Ejemplos</a></li>
+  </ul></li>
+  <li><a href="#plataformas-de-sistemas-operativos-de-red" id="toc-plataformas-de-sistemas-operativos-de-red" class="nav-link" data-scroll-target="#plataformas-de-sistemas-operativos-de-red"><span class="header-section-number">27</span> Plataformas de Sistemas Operativos de Red</a></li>
+  <li><a href="#windows-server" id="toc-windows-server" class="nav-link" data-scroll-target="#windows-server"><span class="header-section-number">28</span> Windows Server</a>
+  <ul class="collapse">
+  <li><a href="#fortalezas" id="toc-fortalezas" class="nav-link" data-scroll-target="#fortalezas"><span class="header-section-number">28.1</span> Fortalezas</a></li>
+  <li><a href="#consideraciones" id="toc-consideraciones" class="nav-link" data-scroll-target="#consideraciones"><span class="header-section-number">28.2</span> Consideraciones</a></li>
+  </ul></li>
+  <li><a href="#linux-server" id="toc-linux-server" class="nav-link" data-scroll-target="#linux-server"><span class="header-section-number">29</span> Linux Server</a>
+  <ul class="collapse">
+  <li><a href="#fortalezas-1" id="toc-fortalezas-1" class="nav-link" data-scroll-target="#fortalezas-1"><span class="header-section-number">29.1</span> Fortalezas</a></li>
+  <li><a href="#consideraciones-1" id="toc-consideraciones-1" class="nav-link" data-scroll-target="#consideraciones-1"><span class="header-section-number">29.2</span> Consideraciones</a></li>
+  </ul></li>
+  <li><a href="#unix" id="toc-unix" class="nav-link" data-scroll-target="#unix"><span class="header-section-number">30</span> UNIX</a></li>
+  <li><a href="#infraestructuras-híbridas" id="toc-infraestructuras-híbridas" class="nav-link" data-scroll-target="#infraestructuras-híbridas"><span class="header-section-number">31</span> Infraestructuras híbridas</a></li>
+  <li><a href="#roles-de-un-servidor" id="toc-roles-de-un-servidor" class="nav-link" data-scroll-target="#roles-de-un-servidor"><span class="header-section-number">32</span> Roles de un servidor</a></li>
+  <li><a href="#servidor-de-archivos" id="toc-servidor-de-archivos" class="nav-link" data-scroll-target="#servidor-de-archivos"><span class="header-section-number">33</span> Servidor de archivos</a></li>
+  <li><a href="#servidor-de-impresión" id="toc-servidor-de-impresión" class="nav-link" data-scroll-target="#servidor-de-impresión"><span class="header-section-number">34</span> Servidor de impresión</a></li>
+  <li><a href="#servidor-web" id="toc-servidor-web" class="nav-link" data-scroll-target="#servidor-web"><span class="header-section-number">35</span> Servidor web</a></li>
+  <li><a href="#servidor-de-bases-de-datos" id="toc-servidor-de-bases-de-datos" class="nav-link" data-scroll-target="#servidor-de-bases-de-datos"><span class="header-section-number">36</span> Servidor de bases de datos</a></li>
+  <li><a href="#servidor-de-correo" id="toc-servidor-de-correo" class="nav-link" data-scroll-target="#servidor-de-correo"><span class="header-section-number">37</span> Servidor de correo</a></li>
+  <li><a href="#servidor-dns" id="toc-servidor-dns" class="nav-link" data-scroll-target="#servidor-dns"><span class="header-section-number">38</span> Servidor DNS</a></li>
+  <li><a href="#servidor-dhcp" id="toc-servidor-dhcp" class="nav-link" data-scroll-target="#servidor-dhcp"><span class="header-section-number">39</span> Servidor DHCP</a></li>
+  <li><a href="#controlador-de-dominio-o-servidor-de-identidad" id="toc-controlador-de-dominio-o-servidor-de-identidad" class="nav-link" data-scroll-target="#controlador-de-dominio-o-servidor-de-identidad"><span class="header-section-number">40</span> Controlador de dominio o servidor de identidad</a></li>
+  <li><a href="#servidor-de-aplicaciones" id="toc-servidor-de-aplicaciones" class="nav-link" data-scroll-target="#servidor-de-aplicaciones"><span class="header-section-number">41</span> Servidor de aplicaciones</a></li>
+  <li><a href="#servidor-de-respaldo" id="toc-servidor-de-respaldo" class="nav-link" data-scroll-target="#servidor-de-respaldo"><span class="header-section-number">42</span> Servidor de respaldo</a></li>
+  <li><a href="#servidor-de-monitoreo" id="toc-servidor-de-monitoreo" class="nav-link" data-scroll-target="#servidor-de-monitoreo"><span class="header-section-number">43</span> Servidor de monitoreo</a></li>
+  <li><a href="#un-servidor-puede-tener-varios-roles" id="toc-un-servidor-puede-tener-varios-roles" class="nav-link" data-scroll-target="#un-servidor-puede-tener-varios-roles"><span class="header-section-number">44</span> ¿Un servidor puede tener varios roles?</a></li>
+  <li><a href="#infraestructura-simplificada-de-una-universidad" id="toc-infraestructura-simplificada-de-una-universidad" class="nav-link" data-scroll-target="#infraestructura-simplificada-de-una-universidad"><span class="header-section-number">45</span> Infraestructura simplificada de una universidad</a></li>
+  <li><a href="#seguridad-en-los-sistemas-operativos-de-red" id="toc-seguridad-en-los-sistemas-operativos-de-red" class="nav-link" data-scroll-target="#seguridad-en-los-sistemas-operativos-de-red"><span class="header-section-number">46</span> Seguridad en los Sistemas Operativos de Red</a></li>
+  <li><a href="#triada-de-la-seguridad" id="toc-triada-de-la-seguridad" class="nav-link" data-scroll-target="#triada-de-la-seguridad"><span class="header-section-number">47</span> Triada de la seguridad</a>
+  <ul class="collapse">
+  <li><a href="#confidencialidad" id="toc-confidencialidad" class="nav-link" data-scroll-target="#confidencialidad"><span class="header-section-number">47.1</span> Confidencialidad</a></li>
+  <li><a href="#integridad" id="toc-integridad" class="nav-link" data-scroll-target="#integridad"><span class="header-section-number">47.2</span> Integridad</a></li>
+  <li><a href="#disponibilidad" id="toc-disponibilidad" class="nav-link" data-scroll-target="#disponibilidad"><span class="header-section-number">47.3</span> Disponibilidad</a></li>
+  </ul></li>
+  <li><a href="#contraseñas-y-autenticación-multifactor" id="toc-contraseñas-y-autenticación-multifactor" class="nav-link" data-scroll-target="#contraseñas-y-autenticación-multifactor"><span class="header-section-number">48</span> Contraseñas y autenticación multifactor</a></li>
+  <li><a href="#actualizaciones" id="toc-actualizaciones" class="nav-link" data-scroll-target="#actualizaciones"><span class="header-section-number">49</span> Actualizaciones</a></li>
+  <li><a href="#copias-de-seguridad" id="toc-copias-de-seguridad" class="nav-link" data-scroll-target="#copias-de-seguridad"><span class="header-section-number">50</span> Copias de seguridad</a>
+  <ul class="collapse">
+  <li><a href="#regla-3-2-1" id="toc-regla-3-2-1" class="nav-link" data-scroll-target="#regla-3-2-1"><span class="header-section-number">50.1</span> Regla 3-2-1</a></li>
+  <li><a href="#un-respaldo-debe-probarse" id="toc-un-respaldo-debe-probarse" class="nav-link" data-scroll-target="#un-respaldo-debe-probarse"><span class="header-section-number">50.2</span> Un respaldo debe probarse</a></li>
+  </ul></li>
+  <li><a href="#registros-y-auditoría" id="toc-registros-y-auditoría" class="nav-link" data-scroll-target="#registros-y-auditoría"><span class="header-section-number">51</span> Registros y auditoría</a></li>
+  <li><a href="#seguridad-física" id="toc-seguridad-física" class="nav-link" data-scroll-target="#seguridad-física"><span class="header-section-number">52</span> Seguridad física</a></li>
+  <li><a href="#continuidad-operativa" id="toc-continuidad-operativa" class="nav-link" data-scroll-target="#continuidad-operativa"><span class="header-section-number">53</span> Continuidad operativa</a></li>
+  <li><a href="#ingeniería-en-la-vida-real-1" id="toc-ingeniería-en-la-vida-real-1" class="nav-link" data-scroll-target="#ingeniería-en-la-vida-real-1"><span class="header-section-number">54</span> Ingeniería en la vida real</a></li>
+  <li><a href="#verifica-tu-comprensión" id="toc-verifica-tu-comprensión" class="nav-link" data-scroll-target="#verifica-tu-comprensión"><span class="header-section-number">55</span> Verifica tu comprensión</a>
+  <ul class="collapse">
+  <li><a href="#pregunta-1" id="toc-pregunta-1" class="nav-link" data-scroll-target="#pregunta-1"><span class="header-section-number">55.1</span> Pregunta 1</a></li>
+  <li><a href="#pregunta-2" id="toc-pregunta-2" class="nav-link" data-scroll-target="#pregunta-2"><span class="header-section-number">55.2</span> Pregunta 2</a></li>
+  <li><a href="#pregunta-3" id="toc-pregunta-3" class="nav-link" data-scroll-target="#pregunta-3"><span class="header-section-number">55.3</span> Pregunta 3</a></li>
+  <li><a href="#pregunta-4" id="toc-pregunta-4" class="nav-link" data-scroll-target="#pregunta-4"><span class="header-section-number">55.4</span> Pregunta 4</a></li>
+  <li><a href="#pregunta-5" id="toc-pregunta-5" class="nav-link" data-scroll-target="#pregunta-5"><span class="header-section-number">55.5</span> Pregunta 5</a></li>
+  <li><a href="#pregunta-6" id="toc-pregunta-6" class="nav-link" data-scroll-target="#pregunta-6"><span class="header-section-number">55.6</span> Pregunta 6</a></li>
+  </ul></li>
+  <li><a href="#laboratorio-narrativo-diseñando-la-red-de-una-academia" id="toc-laboratorio-narrativo-diseñando-la-red-de-una-academia" class="nav-link" data-scroll-target="#laboratorio-narrativo-diseñando-la-red-de-una-academia"><span class="header-section-number">56</span> Laboratorio narrativo: diseñando la red de una academia</a>
+  <ul class="collapse">
+  <li><a href="#situación" id="toc-situación" class="nav-link" data-scroll-target="#situación"><span class="header-section-number">56.1</span> Situación</a></li>
+  <li><a href="#misión" id="toc-misión" class="nav-link" data-scroll-target="#misión"><span class="header-section-number">56.2</span> Misión</a></li>
+  <li><a href="#parte-1.-arquitectura" id="toc-parte-1.-arquitectura" class="nav-link" data-scroll-target="#parte-1.-arquitectura"><span class="header-section-number">56.3</span> Parte 1. Arquitectura</a></li>
+  <li><a href="#parte-2.-roles" id="toc-parte-2.-roles" class="nav-link" data-scroll-target="#parte-2.-roles"><span class="header-section-number">56.4</span> Parte 2. Roles</a></li>
+  <li><a href="#parte-3.-usuarios-y-grupos" id="toc-parte-3.-usuarios-y-grupos" class="nav-link" data-scroll-target="#parte-3.-usuarios-y-grupos"><span class="header-section-number">56.5</span> Parte 3. Usuarios y grupos</a></li>
+  <li><a href="#parte-4.-permisos" id="toc-parte-4.-permisos" class="nav-link" data-scroll-target="#parte-4.-permisos"><span class="header-section-number">56.6</span> Parte 4. Permisos</a></li>
+  <li><a href="#parte-5.-seguridad" id="toc-parte-5.-seguridad" class="nav-link" data-scroll-target="#parte-5.-seguridad"><span class="header-section-number">56.7</span> Parte 5. Seguridad</a></li>
+  <li><a href="#parte-6.-diagrama" id="toc-parte-6.-diagrama" class="nav-link" data-scroll-target="#parte-6.-diagrama"><span class="header-section-number">56.8</span> Parte 6. Diagrama</a></li>
+  <li><a href="#producto-esperado" id="toc-producto-esperado" class="nav-link" data-scroll-target="#producto-esperado"><span class="header-section-number">56.9</span> Producto esperado</a></li>
+  </ul></li>
+  <li><a href="#reto-del-ingeniero" id="toc-reto-del-ingeniero" class="nav-link" data-scroll-target="#reto-del-ingeniero"><span class="header-section-number">57</span> Reto del Ingeniero</a></li>
+  <li><a href="#resumen-de-la-clase" id="toc-resumen-de-la-clase" class="nav-link" data-scroll-target="#resumen-de-la-clase"><span class="header-section-number">58</span> Resumen de la clase</a></li>
+  <li><a href="#cierre-de-la-clase" id="toc-cierre-de-la-clase" class="nav-link" data-scroll-target="#cierre-de-la-clase"><span class="header-section-number">59</span> Cierre de la clase</a></li>
+  <li><a href="#referencias" id="toc-referencias" class="nav-link" data-scroll-target="#referencias"><span class="header-section-number">60</span> Referencias</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Clase 3. Sistemas Operativos de Red</span></h1>
+<p class="subtitle lead">Administración centralizada, servicios y seguridad</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Autor/a</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ing. Jorge Luis García Chacón </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="presentación-de-la-clase" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Presentación de la clase</h1>
+<p>Cuando una computadora trabaja de forma aislada, su sistema operativo administra los recursos del equipo: procesador, memoria, archivos, dispositivos y aplicaciones. Sin embargo, en cuanto varias computadoras deben compartir información, impresoras, usuarios o aplicaciones, aparece una necesidad diferente: <strong>administrar la red como un sistema organizado</strong>.</p>
+<p>Un laboratorio universitario, una clínica, una empresa o una institución pública no puede depender de que cada usuario configure manualmente su equipo, guarde los archivos donde quiera y decida por su cuenta qué información comparte. Conforme aumenta el número de computadoras, también crecen los riesgos, los errores y el esfuerzo de administración.</p>
+<p>Los <strong>Sistemas Operativos de Red</strong> surgieron para resolver este problema. Permiten centralizar usuarios, permisos, servicios y recursos, de manera que una organización pueda trabajar con mayor seguridad, orden y continuidad.</p>
+<div class="callout callout-style-simple callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Pregunta detonadora
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Cuando un estudiante enciende una computadora del laboratorio e inicia sesión con su cuenta institucional, ¿quién valida su contraseña, le asigna una dirección IP, localiza los servidores y determina qué carpetas puede consultar?</p>
+</div>
+</div>
+<p>La respuesta no depende de un único programa. Detrás de esa acción participan varios servicios coordinados por uno o más servidores. Esta clase explica cómo funciona esa infraestructura y por qué constituye una pieza esencial de cualquier organización moderna.</p>
+</section>
+<section id="objetivos-de-aprendizaje" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Objetivos de aprendizaje</h1>
+<p>Al finalizar esta clase, el estudiante será capaz de:</p>
+<ol type="1">
+<li>Explicar qué es un Sistema Operativo de Red y por qué es necesario.</li>
+<li>Describir la evolución de los Sistemas Operativos de Red.</li>
+<li>Diferenciar las arquitecturas Punto a Punto y Cliente/Servidor.</li>
+<li>Identificar los principales servicios que operan dentro de una red.</li>
+<li>Explicar la relación entre usuarios, grupos y permisos.</li>
+<li>Reconocer los roles más comunes de un servidor.</li>
+<li>Comparar, de manera general, Windows Server, Linux y UNIX.</li>
+<li>Aplicar principios básicos de seguridad y continuidad operativa.</li>
+<li>Diseñar una propuesta elemental de infraestructura para un caso real.</li>
+</ol>
+</section>
+<section id="ruta-de-aprendizaje" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Ruta de aprendizaje</h1>
+<p>La clase seguirá la siguiente secuencia:</p>
+<ol type="1">
+<li>Comprenderemos por qué surgieron los Sistemas Operativos de Red.</li>
+<li>Revisaremos su evolución histórica.</li>
+<li>Compararemos las arquitecturas Punto a Punto y Cliente/Servidor.</li>
+<li>Estudiaremos servicios como DNS, DHCP, autenticación y archivos.</li>
+<li>Analizaremos usuarios, grupos y permisos.</li>
+<li>Identificaremos plataformas y roles de servidor.</li>
+<li>Relacionaremos la infraestructura con la seguridad.</li>
+<li>Resolveremos un laboratorio basado en una organización real.</li>
+</ol>
+</section>
+<section id="por-qué-existen-los-sistemas-operativos-de-red" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> ¿Por qué existen los Sistemas Operativos de Red?</h1>
+<p>Imaginemos una oficina pequeña con tres computadoras. Cada usuario guarda sus documentos localmente y comparte algunos archivos mediante una carpeta. Esta solución puede funcionar al inicio.</p>
+<p>Ahora imaginemos que la oficina crece hasta tener cincuenta empleados, varias sedes, impresoras compartidas, una base de datos y aplicaciones institucionales. Administrar cada computadora por separado se vuelve lento, inseguro y difícil de controlar.</p>
+<p>Sin una administración centralizada pueden aparecer problemas como los siguientes:</p>
+<ul>
+<li>Usuarios con contraseñas débiles o compartidas.</li>
+<li>Archivos duplicados en distintas computadoras.</li>
+<li>Información importante sin respaldo.</li>
+<li>Permisos asignados de manera inconsistente.</li>
+<li>Direcciones IP repetidas.</li>
+<li>Equipos sin actualizaciones.</li>
+<li>Dificultad para identificar quién realizó una acción.</li>
+<li>Interrupciones prolongadas cuando falla un equipo.</li>
+</ul>
+<p>Un Sistema Operativo de Red proporciona los mecanismos necesarios para organizar estos recursos y servicios.</p>
+<section id="qué-es-un-sistema-operativo-de-red" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="qué-es-un-sistema-operativo-de-red"><span class="header-section-number">8.1</span> ¿Qué es un Sistema Operativo de Red?</h2>
+<p>Un <strong>Sistema Operativo de Red</strong>, también llamado <em>Network Operating System</em> o NOS, es un sistema diseñado para administrar los recursos y servicios compartidos dentro de una red de computadoras.</p>
+<p>Entre sus responsabilidades se encuentran:</p>
+<ul>
+<li>Administrar usuarios y equipos.</li>
+<li>Controlar el acceso a los recursos.</li>
+<li>Compartir archivos e impresoras.</li>
+<li>Proporcionar servicios de comunicación.</li>
+<li>Registrar eventos y actividades.</li>
+<li>Aplicar políticas de seguridad.</li>
+<li>Facilitar la administración remota.</li>
+<li>Mantener disponibles las aplicaciones institucionales.</li>
+</ul>
+<div class="callout callout-style-simple callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Idea central
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Un Sistema Operativo de Red no se limita a conectar computadoras. Su función principal es <strong>organizar, proteger y administrar los recursos compartidos de una organización</strong>.</p>
+</div>
+</div>
+</section>
+<section id="sistema-operativo-de-escritorio-y-sistema-operativo-de-red" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="sistema-operativo-de-escritorio-y-sistema-operativo-de-red"><span class="header-section-number">8.2</span> Sistema operativo de escritorio y Sistema Operativo de Red</h2>
+<p>Un sistema operativo de escritorio está orientado principalmente a la experiencia de una persona frente a un equipo. Un Sistema Operativo de Red está orientado a ofrecer servicios a muchos usuarios y dispositivos.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Aspecto</th>
+<th>Sistema de escritorio</th>
+<th>Sistema Operativo de Red</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Enfoque principal</td>
+<td>Uso individual</td>
+<td>Servicios compartidos</td>
+</tr>
+<tr class="even">
+<td>Número de usuarios</td>
+<td>Uno o pocos</td>
+<td>Decenas, cientos o miles</td>
+</tr>
+<tr class="odd">
+<td>Administración</td>
+<td>Local</td>
+<td>Centralizada</td>
+</tr>
+<tr class="even">
+<td>Disponibilidad esperada</td>
+<td>Variable</td>
+<td>Alta</td>
+</tr>
+<tr class="odd">
+<td>Seguridad</td>
+<td>Centrada en el equipo</td>
+<td>Centrada en usuarios, servicios y datos</td>
+</tr>
+<tr class="even">
+<td>Acceso remoto</td>
+<td>Complementario</td>
+<td>Fundamental</td>
+</tr>
+<tr class="odd">
+<td>Escalabilidad</td>
+<td>Limitada</td>
+<td>Diseñada para crecer</td>
+</tr>
+</tbody>
+</table>
+<p>En la práctica, ambos pueden compartir tecnologías. Un sistema moderno de escritorio puede compartir archivos y un servidor puede incluir interfaz gráfica. La diferencia principal está en el <strong>propósito</strong>, la <strong>configuración</strong> y el nivel de administración requerido.</p>
+</section>
+</section>
+<section id="evolución-de-los-sistemas-operativos-de-red" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> Evolución de los Sistemas Operativos de Red</h1>
+<p>Los Sistemas Operativos de Red no aparecieron de forma repentina. Son el resultado de décadas de evolución en la forma de compartir recursos y procesar información.</p>
+<div id="fig-evolucion" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-evolucion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/clase_03/fig_03_01_evolucion.svg" class="img-fluid figure-img" style="width:95.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-evolucion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;9.1: Evolución de los Sistemas Operativos de Red
+</figcaption>
+</figure>
+</div>
+<section id="los-primeros-sistemas-multiusuario" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="los-primeros-sistemas-multiusuario"><span class="header-section-number">9.1</span> Los primeros sistemas multiusuario</h2>
+<p>Durante las décadas de 1960 y 1970, las computadoras eran equipos costosos y de gran tamaño. Para aprovecharlas, varios usuarios se conectaban mediante terminales. En este contexto, UNIX introdujo conceptos fundamentales:</p>
+<ul>
+<li>Multiusuario.</li>
+<li>Multitarea.</li>
+<li>Sistemas de archivos jerárquicos.</li>
+<li>Permisos.</li>
+<li>Administración remota.</li>
+<li>Herramientas pequeñas que podían combinarse.</li>
+</ul>
+<p>Estas ideas influyeron en numerosos sistemas posteriores.</p>
+</section>
+<section id="tcpip-y-la-expansión-de-las-redes" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="tcpip-y-la-expansión-de-las-redes"><span class="header-section-number">9.2</span> TCP/IP y la expansión de las redes</h2>
+<p>En la década de 1980, las implementaciones derivadas de BSD incorporaron herramientas de comunicación basadas en TCP/IP y sockets. Esto facilitó que diferentes equipos pudieran intercambiar información utilizando estándares comunes.</p>
+<p>TCP/IP terminó convirtiéndose en la base de Internet y de la mayoría de redes actuales.</p>
+</section>
+<section id="redes-locales-y-novell-netware" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="redes-locales-y-novell-netware"><span class="header-section-number">9.3</span> Redes locales y Novell NetWare</h2>
+<p>Con la expansión de las redes locales, empresas y universidades comenzaron a compartir archivos e impresoras. Novell NetWare se convirtió en una plataforma muy importante para estas tareas.</p>
+<p>Su éxito se debió a que ofrecía:</p>
+<ul>
+<li>Buen rendimiento como servidor de archivos.</li>
+<li>Administración de usuarios.</li>
+<li>Servicios de impresión.</li>
+<li>Compatibilidad con diferentes clientes.</li>
+<li>Capacidad para operar en redes empresariales.</li>
+</ul>
+<p>Aunque perdió presencia con el crecimiento de Windows Server y Linux, NetWare representa una etapa clave en la historia de las redes.</p>
+</section>
+<section id="windows-nt-y-windows-server" class="level2" data-number="9.4">
+<h2 data-number="9.4" class="anchored" data-anchor-id="windows-nt-y-windows-server"><span class="header-section-number">9.4</span> Windows NT y Windows Server</h2>
+<p>Microsoft desarrolló Windows NT como una plataforma orientada a entornos empresariales. Posteriormente evolucionó hacia la familia Windows Server.</p>
+<p>Estas plataformas incorporaron servicios como:</p>
+<ul>
+<li>Administración de dominios.</li>
+<li>Active Directory.</li>
+<li>Políticas de grupo.</li>
+<li>Servicios de archivos e impresión.</li>
+<li>DNS y DHCP.</li>
+<li>Virtualización.</li>
+<li>Administración remota.</li>
+</ul>
+<p>Su integración con equipos Windows facilitó su adopción en muchas organizaciones.</p>
+</section>
+<section id="el-crecimiento-de-linux" class="level2" data-number="9.5">
+<h2 data-number="9.5" class="anchored" data-anchor-id="el-crecimiento-de-linux"><span class="header-section-number">9.5</span> El crecimiento de Linux</h2>
+<p>Linux heredó la filosofía de UNIX y se desarrolló mediante una comunidad internacional. Su estabilidad, flexibilidad y capacidad de adaptación lo convirtieron en una opción ampliamente utilizada para servidores.</p>
+<p>Hoy es común encontrar Linux en:</p>
+<ul>
+<li>Servidores web.</li>
+<li>Bases de datos.</li>
+<li>Centros de datos.</li>
+<li>Plataformas de nube.</li>
+<li>Dispositivos de red.</li>
+<li>Supercomputadoras.</li>
+<li>Sistemas embebidos.</li>
+</ul>
+</section>
+<section id="virtualización-contenedores-y-nube" class="level2" data-number="9.6">
+<h2 data-number="9.6" class="anchored" data-anchor-id="virtualización-contenedores-y-nube"><span class="header-section-number">9.6</span> Virtualización, contenedores y nube</h2>
+<p>Durante muchos años se instalaba un servidor físico para cada servicio. Esto provocaba altos costos de energía, espacio y mantenimiento.</p>
+<p>La virtualización permitió ejecutar varios servidores virtuales dentro de un mismo equipo físico. Posteriormente, los contenedores facilitaron empaquetar aplicaciones y dependencias de forma más ligera.</p>
+<p>La computación en la nube añadió otra posibilidad: utilizar infraestructura administrada por proveedores externos y pagar según la capacidad consumida.</p>
+<div class="callout callout-style-simple callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Ingeniería en la vida real
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Una universidad que antes necesitaba comprar un servidor físico para cada aplicación puede ejecutar varios servidores virtuales en un clúster local, mantener respaldos fuera del campus y utilizar servicios en la nube para atender períodos de alta demanda.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="arquitecturas-de-red" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> Arquitecturas de red</h1>
+<p>Una arquitectura de red describe cómo se organizan los equipos y cómo solicitan o proporcionan servicios. Dos modelos fundamentales son:</p>
+<ul>
+<li>Punto a Punto.</li>
+<li>Cliente/Servidor.</li>
+</ul>
+</section>
+<section id="arquitectura-punto-a-punto" class="level1" data-number="11">
+<h1 data-number="11"><span class="header-section-number">11</span> Arquitectura Punto a Punto</h1>
+<p>En una red <strong>Punto a Punto</strong>, también llamada <em>Peer to Peer</em> o P2P, los equipos poseen un nivel semejante. Cada computadora puede solicitar recursos y también compartir los propios.</p>
+<div id="fig-p2p" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-p2p-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/clase_03/fig_03_02_p2p.svg" class="img-fluid figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-p2p-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;11.1: Arquitectura Punto a Punto
+</figcaption>
+</figure>
+</div>
+<section id="ejemplo" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="ejemplo"><span class="header-section-number">11.1</span> Ejemplo</h2>
+<p>Un pequeño despacho posee cuatro computadoras. Una comparte la impresora, otra contiene una carpeta de proyectos y las demás permiten consultar ciertos documentos.</p>
+<p>No existe un servidor central. Cada usuario decide qué comparte y con quién.</p>
+</section>
+<section id="ventajas" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="ventajas"><span class="header-section-number">11.2</span> Ventajas</h2>
+<ul>
+<li>Bajo costo inicial.</li>
+<li>Configuración relativamente sencilla.</li>
+<li>No requiere un servidor dedicado.</li>
+<li>Puede ser suficiente para pocos usuarios.</li>
+<li>Permite compartir recursos rápidamente.</li>
+</ul>
+</section>
+<section id="limitaciones" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="limitaciones"><span class="header-section-number">11.3</span> Limitaciones</h2>
+<ul>
+<li>La administración depende de cada equipo.</li>
+<li>Es difícil mantener permisos consistentes.</li>
+<li>Los respaldos quedan dispersos.</li>
+<li>La seguridad es limitada.</li>
+<li>Un recurso deja de estar disponible si se apaga el equipo que lo comparte.</li>
+<li>El crecimiento aumenta rápidamente la complejidad.</li>
+</ul>
+</section>
+<section id="cuándo-puede-utilizarse" class="level2" data-number="11.4">
+<h2 data-number="11.4" class="anchored" data-anchor-id="cuándo-puede-utilizarse"><span class="header-section-number">11.4</span> ¿Cuándo puede utilizarse?</h2>
+<p>Puede ser apropiada cuando:</p>
+<ul>
+<li>Hay pocos equipos.</li>
+<li>La información no es crítica.</li>
+<li>El presupuesto es muy reducido.</li>
+<li>No se requiere administración centralizada.</li>
+<li>La red es temporal o doméstica.</li>
+</ul>
+<div class="callout callout-style-simple callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Advertencia</span>Cuidado
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Que una red Punto a Punto sea fácil de instalar no significa que sea adecuada para cualquier organización. Cuando existen datos sensibles, muchos usuarios o necesidad de auditoría, este modelo suele quedarse corto.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="arquitectura-clienteservidor" class="level1" data-number="12">
+<h1 data-number="12"><span class="header-section-number">12</span> Arquitectura Cliente/Servidor</h1>
+<p>En una arquitectura <strong>Cliente/Servidor</strong>, uno o varios servidores proporcionan servicios especializados y los equipos cliente los solicitan.</p>
+<div id="fig-cliente-servidor" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cliente-servidor-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/clase_03/fig_03_03_cliente_servidor.svg" class="img-fluid figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cliente-servidor-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;12.1: Arquitectura Cliente/Servidor
+</figcaption>
+</figure>
+</div>
+<p>Un cliente puede ser:</p>
+<ul>
+<li>Una computadora de escritorio.</li>
+<li>Una computadora portátil.</li>
+<li>Un teléfono.</li>
+<li>Una tableta.</li>
+<li>Una aplicación.</li>
+<li>Otro servidor.</li>
+</ul>
+<p>El servidor procesa las solicitudes y responde de acuerdo con las reglas, permisos y recursos disponibles.</p>
+<section id="ejemplo-universitario" class="level2" data-number="12.1">
+<h2 data-number="12.1" class="anchored" data-anchor-id="ejemplo-universitario"><span class="header-section-number">12.1</span> Ejemplo universitario</h2>
+<p>En un laboratorio, los estudiantes inician sesión desde diferentes computadoras. Un servidor valida las credenciales, otro aloja el Campus Virtual y otro contiene las bases de datos.</p>
+<p>El estudiante observa una experiencia sencilla, pero la infraestructura se encuentra distribuida y administrada.</p>
+</section>
+<section id="ventajas-1" class="level2" data-number="12.2">
+<h2 data-number="12.2" class="anchored" data-anchor-id="ventajas-1"><span class="header-section-number">12.2</span> Ventajas</h2>
+<ul>
+<li>Administración centralizada.</li>
+<li>Mayor control de usuarios.</li>
+<li>Permisos consistentes.</li>
+<li>Respaldos más sencillos.</li>
+<li>Mejor capacidad de crecimiento.</li>
+<li>Posibilidad de alta disponibilidad.</li>
+<li>Auditoría y monitoreo centralizados.</li>
+</ul>
+</section>
+<section id="limitaciones-1" class="level2" data-number="12.3">
+<h2 data-number="12.3" class="anchored" data-anchor-id="limitaciones-1"><span class="header-section-number">12.3</span> Limitaciones</h2>
+<ul>
+<li>Mayor inversión inicial.</li>
+<li>Requiere personal capacitado.</li>
+<li>Los servidores son componentes críticos.</li>
+<li>Una mala configuración puede afectar a muchos usuarios.</li>
+<li>Se necesita planificar respaldo, redundancia y recuperación.</li>
+</ul>
+</section>
+<section id="comparación-general" class="level2" data-number="12.4">
+<h2 data-number="12.4" class="anchored" data-anchor-id="comparación-general"><span class="header-section-number">12.4</span> Comparación general</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Característica</th>
+<th>Punto a Punto</th>
+<th>Cliente/Servidor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Servidor dedicado</td>
+<td>No es necesario</td>
+<td>Generalmente sí</td>
+</tr>
+<tr class="even">
+<td>Administración</td>
+<td>Distribuida</td>
+<td>Centralizada</td>
+</tr>
+<tr class="odd">
+<td>Seguridad</td>
+<td>Básica</td>
+<td>Mayor control</td>
+</tr>
+<tr class="even">
+<td>Escalabilidad</td>
+<td>Baja</td>
+<td>Alta</td>
+</tr>
+<tr class="odd">
+<td>Respaldos</td>
+<td>Dispersos</td>
+<td>Centralizados</td>
+</tr>
+<tr class="even">
+<td>Costo inicial</td>
+<td>Bajo</td>
+<td>Medio o alto</td>
+</tr>
+<tr class="odd">
+<td>Disponibilidad</td>
+<td>Depende de cada equipo</td>
+<td>Puede diseñarse con redundancia</td>
+</tr>
+<tr class="even">
+<td>Uso típico</td>
+<td>Hogares y oficinas pequeñas</td>
+<td>Organizaciones medianas y grandes</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-simple callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Criterio de ingeniería
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La arquitectura adecuada no es la más costosa ni la más moderna. Es la que responde a los requerimientos de seguridad, capacidad, disponibilidad, presupuesto y crecimiento de la organización.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="servicios-que-ofrece-un-sistema-operativo-de-red" class="level1" data-number="13">
+<h1 data-number="13"><span class="header-section-number">13</span> Servicios que ofrece un Sistema Operativo de Red</h1>
+<p>Los servidores proporcionan <strong>servicios</strong>. Cada servicio resuelve una necesidad específica de la red.</p>
+<p>Entre los más importantes se encuentran:</p>
+<ul>
+<li>Autenticación.</li>
+<li>DNS.</li>
+<li>DHCP.</li>
+<li>Compartición de archivos.</li>
+<li>Impresión.</li>
+<li>Directorio.</li>
+<li>Bases de datos.</li>
+<li>Aplicaciones web.</li>
+<li>Correo electrónico.</li>
+<li>Administración remota.</li>
+</ul>
+</section>
+<section id="servicio-de-autenticación" class="level1" data-number="14">
+<h1 data-number="14"><span class="header-section-number">14</span> Servicio de autenticación</h1>
+<p>La autenticación verifica la identidad de una persona o sistema.</p>
+<p>El proceso básico es:</p>
+<ol type="1">
+<li>El usuario proporciona una identidad.</li>
+<li>Presenta una credencial.</li>
+<li>El servidor valida la información.</li>
+<li>Autoriza o rechaza el acceso.</li>
+<li>Registra el evento.</li>
+</ol>
+<p>La contraseña es una credencial común, pero no es la única. También pueden utilizarse:</p>
+<ul>
+<li>Códigos temporales.</li>
+<li>Aplicaciones de autenticación.</li>
+<li>Certificados.</li>
+<li>Llaves físicas.</li>
+<li>Datos biométricos.</li>
+</ul>
+<section id="autenticación-y-autorización" class="level2" data-number="14.1">
+<h2 data-number="14.1" class="anchored" data-anchor-id="autenticación-y-autorización"><span class="header-section-number">14.1</span> Autenticación y autorización</h2>
+<p>Estos conceptos no significan lo mismo.</p>
+<ul>
+<li><strong>Autenticación:</strong> confirma quién es el usuario.</li>
+<li><strong>Autorización:</strong> determina qué puede hacer.</li>
+</ul>
+<p>Una persona puede autenticarse correctamente y aun así no tener permiso para abrir una carpeta financiera.</p>
+</section>
+</section>
+<section id="servicio-dns" class="level1" data-number="15">
+<h1 data-number="15"><span class="header-section-number">15</span> Servicio DNS</h1>
+<p>Las computadoras se comunican mediante direcciones IP, pero las personas recuerdan mejor los nombres.</p>
+<p>El <strong>Domain Name System</strong> traduce nombres como:</p>
+<pre class="text"><code>campus.umg.edu.gt</code></pre>
+<p>en una dirección IP asociada al servidor.</p>
+<div id="fig-dns" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-dns-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/clase_03/fig_03_04_dns.svg" class="img-fluid figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dns-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;15.1: Proceso simplificado de resolución DNS
+</figcaption>
+</figure>
+</div>
+<section id="ejemplo-de-funcionamiento" class="level2" data-number="15.1">
+<h2 data-number="15.1" class="anchored" data-anchor-id="ejemplo-de-funcionamiento"><span class="header-section-number">15.1</span> Ejemplo de funcionamiento</h2>
+<ol type="1">
+<li>El usuario escribe una dirección en el navegador.</li>
+<li>El equipo consulta al servidor DNS.</li>
+<li>El servidor DNS busca la dirección IP.</li>
+<li>La respuesta regresa al equipo.</li>
+<li>El navegador se comunica con el servidor web.</li>
+</ol>
+<div class="callout callout-style-simple callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Idea central
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>DNS responde a la pregunta: <strong>¿qué dirección IP corresponde a este nombre?</strong></p>
+</div>
+</div>
+</section>
+<section id="qué-ocurriría-sin-dns" class="level2" data-number="15.2">
+<h2 data-number="15.2" class="anchored" data-anchor-id="qué-ocurriría-sin-dns"><span class="header-section-number">15.2</span> ¿Qué ocurriría sin DNS?</h2>
+<p>Los usuarios tendrían que memorizar direcciones IP. Además, cualquier cambio de dirección obligaría a comunicar la nueva configuración a todas las personas y aplicaciones.</p>
+<p>DNS desacopla el nombre lógico de la dirección física utilizada en un momento determinado.</p>
+</section>
+</section>
+<section id="servicio-dhcp" class="level1" data-number="16">
+<h1 data-number="16"><span class="header-section-number">16</span> Servicio DHCP</h1>
+<p>Cada dispositivo necesita una configuración de red. Entre otros datos:</p>
+<ul>
+<li>Dirección IP.</li>
+<li>Máscara de subred.</li>
+<li>Puerta de enlace.</li>
+<li>Servidor DNS.</li>
+</ul>
+<p>El <strong>Dynamic Host Configuration Protocol</strong> entrega estos valores automáticamente.</p>
+<div id="fig-dhcp" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-dhcp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/clase_03/fig_03_05_dhcp.svg" class="img-fluid figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dhcp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;16.1: Asignación automática mediante DHCP
+</figcaption>
+</figure>
+</div>
+<section id="beneficios" class="level2" data-number="16.1">
+<h2 data-number="16.1" class="anchored" data-anchor-id="beneficios"><span class="header-section-number">16.1</span> Beneficios</h2>
+<ul>
+<li>Reduce errores manuales.</li>
+<li>Evita direcciones duplicadas.</li>
+<li>Facilita la incorporación de equipos.</li>
+<li>Permite cambiar la configuración de forma centralizada.</li>
+<li>Ahorra tiempo al personal técnico.</li>
+</ul>
+</section>
+<section id="concesión-o-lease" class="level2" data-number="16.2">
+<h2 data-number="16.2" class="anchored" data-anchor-id="concesión-o-lease"><span class="header-section-number">16.2</span> Concesión o <em>lease</em></h2>
+<p>DHCP normalmente asigna una dirección durante un período determinado. El equipo puede renovarla mientras permanece conectado.</p>
+<p>Esto permite reutilizar las direcciones disponibles cuando los dispositivos abandonan la red.</p>
+<div class="callout callout-style-simple callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>DNS y DHCP trabajan juntos
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>DHCP puede entregar al equipo la dirección del servidor DNS. DNS permite localizar servicios por nombre. Uno configura la comunicación y el otro facilita encontrar los recursos.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="servicio-de-archivos" class="level1" data-number="17">
+<h1 data-number="17"><span class="header-section-number">17</span> Servicio de archivos</h1>
+<p>Un servidor de archivos almacena información de forma centralizada y la comparte según los permisos definidos.</p>
+<section id="ventajas-2" class="level2" data-number="17.1">
+<h2 data-number="17.1" class="anchored" data-anchor-id="ventajas-2"><span class="header-section-number">17.1</span> Ventajas</h2>
+<ul>
+<li>Facilita los respaldos.</li>
+<li>Reduce la dispersión de documentos.</li>
+<li>Permite trabajo colaborativo.</li>
+<li>Mejora el control de acceso.</li>
+<li>Facilita auditoría y recuperación.</li>
+<li>Evita depender de un equipo personal.</li>
+</ul>
+</section>
+<section id="ejemplo-de-estructura" class="level2" data-number="17.2">
+<h2 data-number="17.2" class="anchored" data-anchor-id="ejemplo-de-estructura"><span class="header-section-number">17.2</span> Ejemplo de estructura</h2>
+<pre class="text"><code>/Institución
+├── Dirección
+├── Administración
+├── Docentes
+├── Estudiantes
+├── Biblioteca
+└── Soporte</code></pre>
+<p>Cada carpeta puede tener permisos distintos.</p>
+</section>
+<section id="riesgos-que-deben-administrarse" class="level2" data-number="17.3">
+<h2 data-number="17.3" class="anchored" data-anchor-id="riesgos-que-deben-administrarse"><span class="header-section-number">17.3</span> Riesgos que deben administrarse</h2>
+<ul>
+<li>Eliminación accidental.</li>
+<li>Modificaciones no autorizadas.</li>
+<li>Uso excesivo del almacenamiento.</li>
+<li>Archivos maliciosos.</li>
+<li>Acceso desde dispositivos no autorizados.</li>
+<li>Falta de versiones o respaldos.</li>
+</ul>
+</section>
+</section>
+<section id="servicio-de-impresión" class="level1" data-number="18">
+<h1 data-number="18"><span class="header-section-number">18</span> Servicio de impresión</h1>
+<p>El servidor de impresión administra impresoras compartidas y las colas de trabajos.</p>
+<p>Puede:</p>
+<ul>
+<li>Publicar impresoras.</li>
+<li>Controlar quién puede imprimir.</li>
+<li>Priorizar trabajos.</li>
+<li>Registrar consumo.</li>
+<li>Instalar controladores.</li>
+<li>Pausar o cancelar documentos.</li>
+</ul>
+<p>En una organización grande, esta administración evita instalar y configurar cada impresora de forma independiente en todos los equipos.</p>
+</section>
+<section id="servicio-de-directorio" class="level1" data-number="19">
+<h1 data-number="19"><span class="header-section-number">19</span> Servicio de directorio</h1>
+<p>Un servicio de directorio almacena y organiza objetos de la red.</p>
+<p>Entre ellos:</p>
+<ul>
+<li>Usuarios.</li>
+<li>Grupos.</li>
+<li>Equipos.</li>
+<li>Impresoras.</li>
+<li>Unidades organizativas.</li>
+<li>Políticas.</li>
+<li>Recursos compartidos.</li>
+</ul>
+<p>Active Directory es una implementación conocida en entornos Microsoft. En otros contextos pueden utilizarse LDAP y herramientas compatibles.</p>
+<p>Un directorio no es únicamente una lista de nombres. Permite consultar relaciones, aplicar políticas y administrar identidades a gran escala.</p>
+</section>
+<section id="administración-remota" class="level1" data-number="20">
+<h1 data-number="20"><span class="header-section-number">20</span> Administración remota</h1>
+<p>Los servidores suelen encontrarse en centros de datos, cuartos técnicos o servicios en la nube. Por eso deben poder administrarse sin estar físicamente frente a ellos.</p>
+<p>La administración remota permite:</p>
+<ul>
+<li>Revisar el estado del sistema.</li>
+<li>Instalar actualizaciones.</li>
+<li>Consultar registros.</li>
+<li>Reiniciar servicios.</li>
+<li>Modificar configuraciones.</li>
+<li>Automatizar tareas.</li>
+<li>Atender incidentes.</li>
+</ul>
+<p>Debe utilizar canales seguros, cuentas individuales y registros de auditoría.</p>
+</section>
+<section id="qué-ocurre-detrás-de-escena-al-iniciar-sesión" class="level1" data-number="21">
+<h1 data-number="21"><span class="header-section-number">21</span> ¿Qué ocurre detrás de escena al iniciar sesión?</h1>
+<div id="fig-flujo-login" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-flujo-login-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/clase_03/fig_03_10_flujo.svg" class="img-fluid figure-img" style="width:95.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-flujo-login-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;21.1: Flujo simplificado de inicio de sesión
+</figcaption>
+</figure>
+</div>
+<p>Un inicio de sesión puede involucrar los siguientes pasos:</p>
+<ol type="1">
+<li>El equipo se conecta a la red.</li>
+<li>DHCP proporciona la configuración necesaria.</li>
+<li>DNS localiza el servidor de autenticación.</li>
+<li>El usuario presenta sus credenciales.</li>
+<li>El servicio de directorio valida la identidad.</li>
+<li>El sistema consulta grupos y permisos.</li>
+<li>Se aplican políticas.</li>
+<li>Se habilitan carpetas, impresoras y aplicaciones autorizadas.</li>
+<li>El evento queda registrado.</li>
+</ol>
+<p>Para el usuario, el proceso dura unos segundos. Para el administrador, representa una cadena de servicios que debe funcionar correctamente.</p>
+</section>
+<section id="usuarios-grupos-y-permisos" class="level1" data-number="22">
+<h1 data-number="22"><span class="header-section-number">22</span> Usuarios, grupos y permisos</h1>
+<p>La seguridad de una red se apoya en tres componentes relacionados:</p>
+<ul>
+<li>Usuarios.</li>
+<li>Grupos.</li>
+<li>Permisos.</li>
+</ul>
+<div id="fig-usuarios" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-usuarios-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/clase_03/fig_03_06_usuarios.svg" class="img-fluid figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-usuarios-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;22.1: Relación entre usuarios, grupos y permisos
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="usuarios" class="level1" data-number="23">
+<h1 data-number="23"><span class="header-section-number">23</span> Usuarios</h1>
+<p>Un usuario representa una identidad digital. Puede corresponder a:</p>
+<ul>
+<li>Una persona.</li>
+<li>Un servicio.</li>
+<li>Una aplicación.</li>
+<li>Un equipo.</li>
+<li>Una cuenta temporal.</li>
+</ul>
+<p>Una cuenta debería ser individual cuando se necesita responsabilidad y auditoría.</p>
+<section id="por-qué-evitar-cuentas-compartidas" class="level2" data-number="23.1">
+<h2 data-number="23.1" class="anchored" data-anchor-id="por-qué-evitar-cuentas-compartidas"><span class="header-section-number">23.1</span> ¿Por qué evitar cuentas compartidas?</h2>
+<p>Si varias personas utilizan la misma cuenta:</p>
+<ul>
+<li>No se sabe quién realizó una acción.</li>
+<li>Es difícil revocar el acceso de una sola persona.</li>
+<li>La contraseña se comparte ampliamente.</li>
+<li>La auditoría pierde valor.</li>
+<li>Aumenta el riesgo de uso indebido.</li>
+</ul>
+</section>
+</section>
+<section id="grupos" class="level1" data-number="24">
+<h1 data-number="24"><span class="header-section-number">24</span> Grupos</h1>
+<p>Un grupo reúne usuarios con funciones semejantes.</p>
+<p>Ejemplos:</p>
+<ul>
+<li>Docentes.</li>
+<li>Estudiantes.</li>
+<li>Tesorería.</li>
+<li>Recursos Humanos.</li>
+<li>Soporte Técnico.</li>
+<li>Administradores.</li>
+</ul>
+<p>En lugar de asignar permisos persona por persona, se asignan al grupo y luego se incorporan los usuarios correspondientes.</p>
+<section id="ventaja-administrativa" class="level2" data-number="24.1">
+<h2 data-number="24.1" class="anchored" data-anchor-id="ventaja-administrativa"><span class="header-section-number">24.1</span> Ventaja administrativa</h2>
+<p>Si ingresan diez docentes nuevos, basta con agregarlos al grupo <strong>Docentes</strong> para que reciban los permisos establecidos.</p>
+<p>Si una persona cambia de puesto, se modifican sus grupos en lugar de revisar recurso por recurso.</p>
+</section>
+</section>
+<section id="permisos" class="level1" data-number="25">
+<h1 data-number="25"><span class="header-section-number">25</span> Permisos</h1>
+<p>Los permisos determinan las acciones autorizadas sobre un recurso.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Permiso</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Lectura</td>
+<td>Consultar información</td>
+</tr>
+<tr class="even">
+<td>Escritura</td>
+<td>Modificar contenido</td>
+</tr>
+<tr class="odd">
+<td>Crear</td>
+<td>Agregar nuevos elementos</td>
+</tr>
+<tr class="even">
+<td>Ejecutar</td>
+<td>Iniciar un programa o proceso</td>
+</tr>
+<tr class="odd">
+<td>Eliminar</td>
+<td>Borrar información</td>
+</tr>
+<tr class="even">
+<td>Administrar</td>
+<td>Cambiar permisos o configuración</td>
+</tr>
+</tbody>
+</table>
+<section id="caso-carpeta-de-calificaciones" class="level2" data-number="25.1">
+<h2 data-number="25.1" class="anchored" data-anchor-id="caso-carpeta-de-calificaciones"><span class="header-section-number">25.1</span> Caso: carpeta de calificaciones</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Rol</th>
+<th style="text-align: right;">Leer</th>
+<th style="text-align: right;">Escribir</th>
+<th style="text-align: right;">Eliminar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Coordinación</td>
+<td style="text-align: right;">Sí</td>
+<td style="text-align: right;">Sí</td>
+<td style="text-align: right;">Sí</td>
+</tr>
+<tr class="even">
+<td>Docente</td>
+<td style="text-align: right;">Sí</td>
+<td style="text-align: right;">Sí</td>
+<td style="text-align: right;">Según política</td>
+</tr>
+<tr class="odd">
+<td>Estudiante</td>
+<td style="text-align: right;">Solo sus resultados</td>
+<td style="text-align: right;">No</td>
+<td style="text-align: right;">No</td>
+</tr>
+<tr class="even">
+<td>Visitante</td>
+<td style="text-align: right;">No</td>
+<td style="text-align: right;">No</td>
+<td style="text-align: right;">No</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="principio-del-mínimo-privilegio" class="level1" data-number="26">
+<h1 data-number="26"><span class="header-section-number">26</span> Principio del mínimo privilegio</h1>
+<p>Este principio indica que una persona debe recibir únicamente los permisos necesarios para realizar su trabajo.</p>
+<section id="ejemplos" class="level2" data-number="26.1">
+<h2 data-number="26.1" class="anchored" data-anchor-id="ejemplos"><span class="header-section-number">26.1</span> Ejemplos</h2>
+<ul>
+<li>Un estudiante no necesita administrar servidores.</li>
+<li>Una recepcionista no necesita modificar respaldos.</li>
+<li>Un técnico de soporte no necesita consultar salarios.</li>
+<li>Una aplicación web no debería conectarse a la base de datos como administrador.</li>
+</ul>
+<div class="callout callout-style-simple callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Importante</span>Idea central
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Dar permisos “por si acaso” facilita el trabajo al inicio, pero aumenta el riesgo. El acceso debe justificarse por una necesidad real.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="plataformas-de-sistemas-operativos-de-red" class="level1" data-number="27">
+<h1 data-number="27"><span class="header-section-number">27</span> Plataformas de Sistemas Operativos de Red</h1>
+<p>No existe una plataforma universalmente superior. La selección depende de requisitos, experiencia del equipo, aplicaciones, presupuesto y soporte.</p>
+</section>
+<section id="windows-server" class="level1" data-number="28">
+<h1 data-number="28"><span class="header-section-number">28</span> Windows Server</h1>
+<p>Windows Server está orientado a entornos empresariales y se integra estrechamente con estaciones de trabajo Windows.</p>
+<p>Entre sus capacidades se encuentran:</p>
+<ul>
+<li>Active Directory.</li>
+<li>DNS y DHCP.</li>
+<li>Políticas de grupo.</li>
+<li>Servicios de archivos.</li>
+<li>Servicios de impresión.</li>
+<li>Virtualización.</li>
+<li>Administración gráfica y mediante línea de comandos.</li>
+<li>Integración con servicios Microsoft.</li>
+</ul>
+<section id="fortalezas" class="level2" data-number="28.1">
+<h2 data-number="28.1" class="anchored" data-anchor-id="fortalezas"><span class="header-section-number">28.1</span> Fortalezas</h2>
+<ul>
+<li>Administración centralizada.</li>
+<li>Amplia adopción empresarial.</li>
+<li>Integración con escritorios Windows.</li>
+<li>Herramientas gráficas.</li>
+<li>Ecosistema de soporte.</li>
+</ul>
+</section>
+<section id="consideraciones" class="level2" data-number="28.2">
+<h2 data-number="28.2" class="anchored" data-anchor-id="consideraciones"><span class="header-section-number">28.2</span> Consideraciones</h2>
+<ul>
+<li>Licenciamiento.</li>
+<li>Requisitos de hardware.</li>
+<li>Necesidad de planificar actualizaciones.</li>
+<li>Dependencia de herramientas y conocimientos especializados.</li>
+</ul>
+</section>
+</section>
+<section id="linux-server" class="level1" data-number="29">
+<h1 data-number="29"><span class="header-section-number">29</span> Linux Server</h1>
+<p>Linux está disponible mediante diferentes distribuciones.</p>
+<p>Algunas están orientadas a estabilidad empresarial, otras a facilidad de uso o flexibilidad.</p>
+<p>Es común utilizar Linux para:</p>
+<ul>
+<li>Servidores web.</li>
+<li>Bases de datos.</li>
+<li>DNS y DHCP.</li>
+<li>Almacenamiento.</li>
+<li>Contenedores.</li>
+<li>Automatización.</li>
+<li>Infraestructura en la nube.</li>
+</ul>
+<section id="fortalezas-1" class="level2" data-number="29.1">
+<h2 data-number="29.1" class="anchored" data-anchor-id="fortalezas-1"><span class="header-section-number">29.1</span> Fortalezas</h2>
+<ul>
+<li>Flexibilidad.</li>
+<li>Estabilidad.</li>
+<li>Automatización.</li>
+<li>Amplia comunidad.</li>
+<li>Posibilidad de utilizar herramientas abiertas.</li>
+<li>Buen desempeño en servidores.</li>
+</ul>
+</section>
+<section id="consideraciones-1" class="level2" data-number="29.2">
+<h2 data-number="29.2" class="anchored" data-anchor-id="consideraciones-1"><span class="header-section-number">29.2</span> Consideraciones</h2>
+<ul>
+<li>La administración puede requerir experiencia en línea de comandos.</li>
+<li>Las distribuciones poseen ciclos de soporte diferentes.</li>
+<li>Debe seleccionarse una versión adecuada para producción.</li>
+<li>La flexibilidad también exige disciplina de configuración.</li>
+</ul>
+</section>
+</section>
+<section id="unix" class="level1" data-number="30">
+<h1 data-number="30"><span class="header-section-number">30</span> UNIX</h1>
+<p>UNIX representa una familia y una filosofía de sistemas que influyó profundamente en la informática moderna.</p>
+<p>Sus características históricas incluyen:</p>
+<ul>
+<li>Multiusuario.</li>
+<li>Multitarea.</li>
+<li>Portabilidad.</li>
+<li>Permisos robustos.</li>
+<li>Herramientas modulares.</li>
+<li>Administración mediante texto y comandos.</li>
+</ul>
+<p>Algunas variantes comerciales continúan utilizándose en ambientes especializados y sistemas críticos.</p>
+</section>
+<section id="infraestructuras-híbridas" class="level1" data-number="31">
+<h1 data-number="31"><span class="header-section-number">31</span> Infraestructuras híbridas</h1>
+<p>En la práctica, muchas organizaciones combinan plataformas.</p>
+<p>Ejemplo:</p>
+<ul>
+<li>Windows Server para usuarios y políticas.</li>
+<li>Linux para aplicaciones web.</li>
+<li>Un dispositivo especializado para firewall.</li>
+<li>Servicios de respaldo en la nube.</li>
+<li>Bases de datos alojadas en otra plataforma.</li>
+</ul>
+<div class="callout callout-style-simple callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Criterio profesional
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>El trabajo del ingeniero no consiste en defender una marca. Consiste en justificar una decisión técnica con base en necesidades, riesgos, costos y capacidades.</p>
+</div>
+</div>
+</section>
+<section id="roles-de-un-servidor" class="level1" data-number="32">
+<h1 data-number="32"><span class="header-section-number">32</span> Roles de un servidor</h1>
+<p>Un <strong>rol</strong> describe la función que cumple un servidor dentro de la infraestructura.</p>
+<div id="fig-roles" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-roles-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/clase_03/fig_03_07_roles.svg" class="img-fluid figure-img" style="width:90.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-roles-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;32.1: Roles de servidor
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="servidor-de-archivos" class="level1" data-number="33">
+<h1 data-number="33"><span class="header-section-number">33</span> Servidor de archivos</h1>
+<p>Centraliza documentos y los comparte según permisos.</p>
+</section>
+<section id="servidor-de-impresión" class="level1" data-number="34">
+<h1 data-number="34"><span class="header-section-number">34</span> Servidor de impresión</h1>
+<p>Administra impresoras, colas y control de acceso.</p>
+</section>
+<section id="servidor-web" class="level1" data-number="35">
+<h1 data-number="35"><span class="header-section-number">35</span> Servidor web</h1>
+<p>Publica sitios y aplicaciones mediante protocolos web.</p>
+<p>Programas conocidos incluyen Apache, Nginx e IIS.</p>
+</section>
+<section id="servidor-de-bases-de-datos" class="level1" data-number="36">
+<h1 data-number="36"><span class="header-section-number">36</span> Servidor de bases de datos</h1>
+<p>Almacena información estructurada y procesa consultas.</p>
+<p>Puede utilizar motores como:</p>
+<ul>
+<li>PostgreSQL.</li>
+<li>MySQL.</li>
+<li>Microsoft SQL Server.</li>
+<li>Oracle Database.</li>
+</ul>
+</section>
+<section id="servidor-de-correo" class="level1" data-number="37">
+<h1 data-number="37"><span class="header-section-number">37</span> Servidor de correo</h1>
+<p>Gestiona envío, recepción, buzones y autenticación del correo institucional.</p>
+</section>
+<section id="servidor-dns" class="level1" data-number="38">
+<h1 data-number="38"><span class="header-section-number">38</span> Servidor DNS</h1>
+<p>Traduce nombres en direcciones IP.</p>
+</section>
+<section id="servidor-dhcp" class="level1" data-number="39">
+<h1 data-number="39"><span class="header-section-number">39</span> Servidor DHCP</h1>
+<p>Entrega automáticamente la configuración de red.</p>
+</section>
+<section id="controlador-de-dominio-o-servidor-de-identidad" class="level1" data-number="40">
+<h1 data-number="40"><span class="header-section-number">40</span> Controlador de dominio o servidor de identidad</h1>
+<p>Administra usuarios, grupos, equipos y políticas de autenticación.</p>
+</section>
+<section id="servidor-de-aplicaciones" class="level1" data-number="41">
+<h1 data-number="41"><span class="header-section-number">41</span> Servidor de aplicaciones</h1>
+<p>Ejecuta lógica de negocio utilizada por los clientes.</p>
+</section>
+<section id="servidor-de-respaldo" class="level1" data-number="42">
+<h1 data-number="42"><span class="header-section-number">42</span> Servidor de respaldo</h1>
+<p>Recibe y conserva copias de seguridad para recuperación.</p>
+</section>
+<section id="servidor-de-monitoreo" class="level1" data-number="43">
+<h1 data-number="43"><span class="header-section-number">43</span> Servidor de monitoreo</h1>
+<p>Supervisa disponibilidad, uso de recursos, eventos y alertas.</p>
+</section>
+<section id="un-servidor-puede-tener-varios-roles" class="level1" data-number="44">
+<h1 data-number="44"><span class="header-section-number">44</span> ¿Un servidor puede tener varios roles?</h1>
+<p>Sí. En una organización pequeña, un servidor puede proporcionar DNS, DHCP, archivos y autenticación.</p>
+<p>Sin embargo, concentrar demasiados roles puede generar riesgos:</p>
+<ul>
+<li>Una falla afecta múltiples servicios.</li>
+<li>El mantenimiento requiere detener varias funciones.</li>
+<li>Aumenta la superficie de ataque.</li>
+<li>Se dificulta identificar problemas.</li>
+<li>Los recursos pueden competir entre sí.</li>
+</ul>
+<p>En organizaciones grandes se distribuyen los roles y se utilizan mecanismos de redundancia.</p>
+</section>
+<section id="infraestructura-simplificada-de-una-universidad" class="level1" data-number="45">
+<h1 data-number="45"><span class="header-section-number">45</span> Infraestructura simplificada de una universidad</h1>
+<div id="fig-infraestructura" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-infraestructura-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/clase_03/fig_03_09_infraestructura.svg" class="img-fluid figure-img" style="width:95.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-infraestructura-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;45.1: Infraestructura universitaria simplificada
+</figcaption>
+</figure>
+</div>
+<p>Una infraestructura universitaria puede incluir:</p>
+<ul>
+<li>Conexión a Internet.</li>
+<li>Firewall.</li>
+<li>DNS y DHCP.</li>
+<li>Servicio de identidad.</li>
+<li>Servidor de archivos.</li>
+<li>Aplicaciones web.</li>
+<li>Bases de datos.</li>
+<li>Respaldos.</li>
+<li>Monitoreo.</li>
+</ul>
+<p>La arquitectura real dependerá del tamaño y las necesidades institucionales.</p>
+</section>
+<section id="seguridad-en-los-sistemas-operativos-de-red" class="level1" data-number="46">
+<h1 data-number="46"><span class="header-section-number">46</span> Seguridad en los Sistemas Operativos de Red</h1>
+<p>Centralizar recursos mejora la administración, pero también concentra riesgos. Por eso, la seguridad debe formar parte del diseño desde el inicio.</p>
+</section>
+<section id="triada-de-la-seguridad" class="level1" data-number="47">
+<h1 data-number="47"><span class="header-section-number">47</span> Triada de la seguridad</h1>
+<p>Tres objetivos fundamentales son:</p>
+<ul>
+<li>Confidencialidad.</li>
+<li>Integridad.</li>
+<li>Disponibilidad.</li>
+</ul>
+<div id="fig-cia" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cia-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/clase_03/fig_03_08_cia.svg" class="img-fluid figure-img" style="width:78.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cia-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;47.1: Triada de seguridad
+</figcaption>
+</figure>
+</div>
+<section id="confidencialidad" class="level2" data-number="47.1">
+<h2 data-number="47.1" class="anchored" data-anchor-id="confidencialidad"><span class="header-section-number">47.1</span> Confidencialidad</h2>
+<p>La información solo debe ser accesible para personas autorizadas.</p>
+<p>Ejemplo: un estudiante consulta sus propias calificaciones, no las de todo el grupo.</p>
+</section>
+<section id="integridad" class="level2" data-number="47.2">
+<h2 data-number="47.2" class="anchored" data-anchor-id="integridad"><span class="header-section-number">47.2</span> Integridad</h2>
+<p>La información debe mantenerse correcta y solo modificarse mediante procesos autorizados.</p>
+<p>Ejemplo: el docente registra una nota y el estudiante únicamente la consulta.</p>
+</section>
+<section id="disponibilidad" class="level2" data-number="47.3">
+<h2 data-number="47.3" class="anchored" data-anchor-id="disponibilidad"><span class="header-section-number">47.3</span> Disponibilidad</h2>
+<p>Los servicios deben estar accesibles cuando se necesitan.</p>
+<p>Ejemplo: la plataforma de inscripción debe funcionar durante el período de asignación de cursos.</p>
+</section>
+</section>
+<section id="contraseñas-y-autenticación-multifactor" class="level1" data-number="48">
+<h1 data-number="48"><span class="header-section-number">48</span> Contraseñas y autenticación multifactor</h1>
+<p>Una contraseña segura debe ser difícil de adivinar y no reutilizarse en múltiples servicios.</p>
+<p>Buenas prácticas:</p>
+<ul>
+<li>Utilizar frases largas.</li>
+<li>Evitar información personal.</li>
+<li>No compartir credenciales.</li>
+<li>Utilizar un gestor de contraseñas cuando sea permitido.</li>
+<li>Activar autenticación multifactor.</li>
+<li>Bloquear intentos repetidos.</li>
+<li>Deshabilitar cuentas que ya no se utilizan.</li>
+</ul>
+</section>
+<section id="actualizaciones" class="level1" data-number="49">
+<h1 data-number="49"><span class="header-section-number">49</span> Actualizaciones</h1>
+<p>Los fabricantes publican correcciones para errores y vulnerabilidades.</p>
+<p>Un proceso responsable incluye:</p>
+<ol type="1">
+<li>Identificar actualizaciones.</li>
+<li>Revisar su impacto.</li>
+<li>Probarlas.</li>
+<li>Programar una ventana de mantenimiento.</li>
+<li>Aplicarlas.</li>
+<li>Verificar los servicios.</li>
+<li>Documentar el resultado.</li>
+</ol>
+</section>
+<section id="copias-de-seguridad" class="level1" data-number="50">
+<h1 data-number="50"><span class="header-section-number">50</span> Copias de seguridad</h1>
+<p>Un respaldo es una copia diseñada para recuperar información después de una falla, error o incidente.</p>
+<section id="regla-3-2-1" class="level2" data-number="50.1">
+<h2 data-number="50.1" class="anchored" data-anchor-id="regla-3-2-1"><span class="header-section-number">50.1</span> Regla 3-2-1</h2>
+<ul>
+<li>Mantener tres copias de la información.</li>
+<li>Utilizar dos medios diferentes.</li>
+<li>Conservar una copia fuera del sitio principal.</li>
+</ul>
+</section>
+<section id="un-respaldo-debe-probarse" class="level2" data-number="50.2">
+<h2 data-number="50.2" class="anchored" data-anchor-id="un-respaldo-debe-probarse"><span class="header-section-number">50.2</span> Un respaldo debe probarse</h2>
+<p>No basta con que el sistema indique “copia finalizada”. Es necesario verificar que los archivos puedan recuperarse.</p>
+<div class="callout callout-style-simple callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Advertencia</span>Advertencia
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Un respaldo que nunca ha sido restaurado es una promesa, no una garantía.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="registros-y-auditoría" class="level1" data-number="51">
+<h1 data-number="51"><span class="header-section-number">51</span> Registros y auditoría</h1>
+<p>Los servidores generan registros o <em>logs</em>.</p>
+<p>Pueden indicar:</p>
+<ul>
+<li>Inicios de sesión.</li>
+<li>Intentos fallidos.</li>
+<li>Cambios de configuración.</li>
+<li>Errores.</li>
+<li>Accesos a recursos.</li>
+<li>Inicio y detención de servicios.</li>
+</ul>
+<p>La auditoría permite investigar incidentes y demostrar el cumplimiento de políticas.</p>
+</section>
+<section id="seguridad-física" class="level1" data-number="52">
+<h1 data-number="52"><span class="header-section-number">52</span> Seguridad física</h1>
+<p>También deben protegerse:</p>
+<ul>
+<li>El acceso al cuarto de servidores.</li>
+<li>La energía eléctrica.</li>
+<li>La temperatura.</li>
+<li>La humedad.</li>
+<li>El riesgo de incendio.</li>
+<li>La conectividad.</li>
+<li>Los dispositivos de almacenamiento.</li>
+</ul>
+<p>Un servidor protegido con contraseñas no está seguro si cualquier persona puede desconectarlo o retirar sus discos.</p>
+</section>
+<section id="continuidad-operativa" class="level1" data-number="53">
+<h1 data-number="53"><span class="header-section-number">53</span> Continuidad operativa</h1>
+<p>La continuidad busca que la organización pueda seguir funcionando o recuperarse en un tiempo aceptable.</p>
+<p>Incluye:</p>
+<ul>
+<li>Redundancia.</li>
+<li>Respaldos.</li>
+<li>Planes de recuperación.</li>
+<li>Documentación.</li>
+<li>Contactos de emergencia.</li>
+<li>Pruebas.</li>
+<li>Responsables claramente definidos.</li>
+</ul>
+</section>
+<section id="ingeniería-en-la-vida-real-1" class="level1" data-number="54">
+<h1 data-number="54"><span class="header-section-number">54</span> Ingeniería en la vida real</h1>
+<p>Supongamos que una universidad tiene un único servidor que proporciona autenticación, DNS, DHCP, archivos y el Campus Virtual.</p>
+<p>Si ese servidor falla:</p>
+<ul>
+<li>Los usuarios no pueden iniciar sesión.</li>
+<li>Los equipos nuevos no reciben IP.</li>
+<li>Los nombres no se resuelven.</li>
+<li>Las carpetas desaparecen.</li>
+<li>La plataforma deja de funcionar.</li>
+</ul>
+<p>El problema no es únicamente técnico. Puede detener clases, evaluaciones y procesos administrativos.</p>
+<p>Un ingeniero debe anticipar:</p>
+<ul>
+<li>¿Qué servicios son críticos?</li>
+<li>¿Cuánto tiempo pueden estar fuera de línea?</li>
+<li>¿Qué datos deben recuperarse?</li>
+<li>¿Existe un servidor alterno?</li>
+<li>¿Quién tomará decisiones durante el incidente?</li>
+</ul>
+</section>
+<section id="verifica-tu-comprensión" class="level1" data-number="55">
+<h1 data-number="55"><span class="header-section-number">55</span> Verifica tu comprensión</h1>
+<section id="pregunta-1" class="level2" data-number="55.1">
+<h2 data-number="55.1" class="anchored" data-anchor-id="pregunta-1"><span class="header-section-number">55.1</span> Pregunta 1</h2>
+<p>¿Cuál es la diferencia principal entre una arquitectura Punto a Punto y una Cliente/Servidor?</p>
+<ol type="a">
+<li>El tipo de cable utilizado.<br>
+</li>
+<li>La existencia de administración y servicios centralizados.<br>
+</li>
+<li>La marca de las computadoras.<br>
+</li>
+<li>La velocidad de Internet.</li>
+</ol>
+</section>
+<section id="pregunta-2" class="level2" data-number="55.2">
+<h2 data-number="55.2" class="anchored" data-anchor-id="pregunta-2"><span class="header-section-number">55.2</span> Pregunta 2</h2>
+<p>¿Qué servicio traduce nombres de dominio en direcciones IP?</p>
+<ol type="a">
+<li>DHCP.<br>
+</li>
+<li>DNS.<br>
+</li>
+<li>SMB.<br>
+</li>
+<li>SSH.</li>
+</ol>
+</section>
+<section id="pregunta-3" class="level2" data-number="55.3">
+<h2 data-number="55.3" class="anchored" data-anchor-id="pregunta-3"><span class="header-section-number">55.3</span> Pregunta 3</h2>
+<p>¿Qué servicio asigna automáticamente direcciones IP?</p>
+<ol type="a">
+<li>DNS.<br>
+</li>
+<li>HTTP.<br>
+</li>
+<li>DHCP.<br>
+</li>
+<li>LDAP.</li>
+</ol>
+</section>
+<section id="pregunta-4" class="level2" data-number="55.4">
+<h2 data-number="55.4" class="anchored" data-anchor-id="pregunta-4"><span class="header-section-number">55.4</span> Pregunta 4</h2>
+<p>¿Qué elemento facilita asignar permisos a muchas personas con funciones semejantes?</p>
+<ol type="a">
+<li>Un grupo.<br>
+</li>
+<li>Una impresora.<br>
+</li>
+<li>Una dirección IP.<br>
+</li>
+<li>Un navegador.</li>
+</ol>
+</section>
+<section id="pregunta-5" class="level2" data-number="55.5">
+<h2 data-number="55.5" class="anchored" data-anchor-id="pregunta-5"><span class="header-section-number">55.5</span> Pregunta 5</h2>
+<p>¿Cuál es un ejemplo del principio del mínimo privilegio?</p>
+<ol type="a">
+<li>Todos son administradores.<br>
+</li>
+<li>Cada usuario recibe únicamente el acceso necesario.<br>
+</li>
+<li>Se comparte una sola cuenta.<br>
+</li>
+<li>Se desactiva la auditoría.</li>
+</ol>
+</section>
+<section id="pregunta-6" class="level2" data-number="55.6">
+<h2 data-number="55.6" class="anchored" data-anchor-id="pregunta-6"><span class="header-section-number">55.6</span> Pregunta 6</h2>
+<p>¿Qué objetivo de seguridad se relaciona con mantener un servicio accesible?</p>
+<ol type="a">
+<li>Confidencialidad.<br>
+</li>
+<li>Integridad.<br>
+</li>
+<li>Disponibilidad.<br>
+</li>
+<li>Portabilidad.</li>
+</ol>
+<div class="callout callout-style-simple callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Respuestas
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>b<br>
+</li>
+<li>b<br>
+</li>
+<li>c<br>
+</li>
+<li>a<br>
+</li>
+<li>b<br>
+</li>
+<li>c</li>
+</ol>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="laboratorio-narrativo-diseñando-la-red-de-una-academia" class="level1" data-number="56">
+<h1 data-number="56"><span class="header-section-number">56</span> Laboratorio narrativo: diseñando la red de una academia</h1>
+<section id="situación" class="level2" data-number="56.1">
+<h2 data-number="56.1" class="anchored" data-anchor-id="situación"><span class="header-section-number">56.1</span> Situación</h2>
+<p>La Academia Horizonte abrirá una nueva sede.</p>
+<p>Contará con:</p>
+<ul>
+<li>28 computadoras para estudiantes.</li>
+<li>4 computadoras administrativas.</li>
+<li>3 computadoras para docentes.</li>
+<li>2 impresoras.</li>
+<li>Una conexión a Internet.</li>
+<li>Una plataforma académica.</li>
+<li>Documentos financieros.</li>
+<li>Materiales de clase compartidos.</li>
+</ul>
+<p>Actualmente, cada computadora utiliza cuentas locales y los archivos se transfieren mediante memorias USB.</p>
+<p>La dirección solicita una propuesta básica de red.</p>
+</section>
+<section id="misión" class="level2" data-number="56.2">
+<h2 data-number="56.2" class="anchored" data-anchor-id="misión"><span class="header-section-number">56.2</span> Misión</h2>
+<p>Actúe como integrante del equipo de infraestructura y diseñe una solución inicial.</p>
+</section>
+<section id="parte-1.-arquitectura" class="level2" data-number="56.3">
+<h2 data-number="56.3" class="anchored" data-anchor-id="parte-1.-arquitectura"><span class="header-section-number">56.3</span> Parte 1. Arquitectura</h2>
+<p>Responda:</p>
+<ol type="1">
+<li>¿Implementaría Punto a Punto o Cliente/Servidor?</li>
+<li>Justifique la decisión con al menos tres criterios.</li>
+<li>¿Qué riesgos tendría mantener cuentas locales independientes?</li>
+</ol>
+</section>
+<section id="parte-2.-roles" class="level2" data-number="56.4">
+<h2 data-number="56.4" class="anchored" data-anchor-id="parte-2.-roles"><span class="header-section-number">56.4</span> Parte 2. Roles</h2>
+<p>Seleccione los roles necesarios.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Rol</th>
+<th>¿Se necesita?</th>
+<th>Justificación</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>DNS</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>DHCP</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Directorio</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>Archivos</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Impresión</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>Web</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Base de datos</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>Respaldo</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Monitoreo</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="parte-3.-usuarios-y-grupos" class="level2" data-number="56.5">
+<h2 data-number="56.5" class="anchored" data-anchor-id="parte-3.-usuarios-y-grupos"><span class="header-section-number">56.5</span> Parte 3. Usuarios y grupos</h2>
+<p>Proponga grupos.</p>
+<p>Ejemplo:</p>
+<ul>
+<li>Administrativos.</li>
+<li>Docentes.</li>
+<li>Estudiantes.</li>
+<li>Soporte Técnico.</li>
+</ul>
+<p>Indique qué recursos debe utilizar cada grupo.</p>
+</section>
+<section id="parte-4.-permisos" class="level2" data-number="56.6">
+<h2 data-number="56.6" class="anchored" data-anchor-id="parte-4.-permisos"><span class="header-section-number">56.6</span> Parte 4. Permisos</h2>
+<p>Diseñe una matriz.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Recurso</th>
+<th>Administrativos</th>
+<th>Docentes</th>
+<th>Estudiantes</th>
+<th>Soporte</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Finanzas</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>Materiales docentes</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Entregas estudiantiles</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>Configuración de servidores</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Impresoras</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Utilice valores como:</p>
+<ul>
+<li>Sin acceso.</li>
+<li>Lectura.</li>
+<li>Lectura y escritura.</li>
+<li>Administración.</li>
+</ul>
+</section>
+<section id="parte-5.-seguridad" class="level2" data-number="56.7">
+<h2 data-number="56.7" class="anchored" data-anchor-id="parte-5.-seguridad"><span class="header-section-number">56.7</span> Parte 5. Seguridad</h2>
+<p>Proponga al menos una medida para cada categoría:</p>
+<ul>
+<li>Contraseñas.</li>
+<li>Respaldos.</li>
+<li>Actualizaciones.</li>
+<li>Auditoría.</li>
+<li>Seguridad física.</li>
+<li>Continuidad.</li>
+</ul>
+</section>
+<section id="parte-6.-diagrama" class="level2" data-number="56.8">
+<h2 data-number="56.8" class="anchored" data-anchor-id="parte-6.-diagrama"><span class="header-section-number">56.8</span> Parte 6. Diagrama</h2>
+<p>Dibuje la infraestructura propuesta.</p>
+<p>Debe incluir:</p>
+<ul>
+<li>Internet.</li>
+<li>Firewall o router.</li>
+<li>Servidor o servidores.</li>
+<li>Switch.</li>
+<li>Computadoras.</li>
+<li>Impresoras.</li>
+<li>Respaldos.</li>
+</ul>
+</section>
+<section id="producto-esperado" class="level2" data-number="56.9">
+<h2 data-number="56.9" class="anchored" data-anchor-id="producto-esperado"><span class="header-section-number">56.9</span> Producto esperado</h2>
+<p>Entregue:</p>
+<ol type="1">
+<li>Una justificación de la arquitectura.</li>
+<li>La lista de roles.</li>
+<li>Los grupos.</li>
+<li>La matriz de permisos.</li>
+<li>Las medidas de seguridad.</li>
+<li>El diagrama.</li>
+</ol>
+</section>
+</section>
+<section id="reto-del-ingeniero" class="level1" data-number="57">
+<h1 data-number="57"><span class="header-section-number">57</span> Reto del Ingeniero</h1>
+<p>Una clínica pequeña posee diez computadoras. El expediente de pacientes se almacena en una carpeta compartida desde la computadora de recepción.</p>
+<p>La recepcionista apaga su equipo al finalizar la jornada y, durante ese tiempo, nadie puede consultar los expedientes. Todos conocen la misma contraseña y no existen respaldos.</p>
+<p>Responda:</p>
+<ol type="1">
+<li>Identifique cinco riesgos.</li>
+<li>Proponga una arquitectura mejor.</li>
+<li>Defina tres grupos de usuarios.</li>
+<li>Asigne permisos generales.</li>
+<li>Indique qué servicios implementaría.</li>
+<li>Diseñe una estrategia básica de respaldo.</li>
+<li>Explique cómo mejoraría la disponibilidad.</li>
+</ol>
+</section>
+<section id="resumen-de-la-clase" class="level1" data-number="58">
+<h1 data-number="58"><span class="header-section-number">58</span> Resumen de la clase</h1>
+<p>En esta clase aprendimos que:</p>
+<ul>
+<li>Un Sistema Operativo de Red administra recursos compartidos.</li>
+<li>La arquitectura Punto a Punto es sencilla, pero posee limitaciones.</li>
+<li>Cliente/Servidor permite centralizar servicios y crecer.</li>
+<li>DNS traduce nombres en direcciones IP.</li>
+<li>DHCP entrega automáticamente la configuración de red.</li>
+<li>Los usuarios representan identidades.</li>
+<li>Los grupos facilitan la administración.</li>
+<li>Los permisos controlan acciones.</li>
+<li>Un servidor puede desempeñar diferentes roles.</li>
+<li>Windows Server, Linux y UNIX ofrecen soluciones distintas.</li>
+<li>La seguridad debe proteger confidencialidad, integridad y disponibilidad.</li>
+<li>Los respaldos, actualizaciones, registros y controles físicos son esenciales.</li>
+<li>Una infraestructura debe diseñarse según necesidades reales.</li>
+</ul>
+<div class="callout callout-style-simple callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Lo esencial que debes recordar
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Si puedes explicar con tus propias palabras cómo un usuario obtiene una dirección IP, localiza un servidor, inicia sesión y accede únicamente a los recursos autorizados, habrás comprendido la idea central de esta clase.</p>
+</div>
+</div>
+</section>
+<section id="cierre-de-la-clase" class="level1" data-number="59">
+<h1 data-number="59"><span class="header-section-number">59</span> Cierre de la clase</h1>
+<p>Un Sistema Operativo de Red convierte un conjunto de computadoras en una infraestructura organizada.</p>
+<p>La tecnología visible para el usuario puede ser una pantalla de inicio de sesión o una carpeta compartida. Sin embargo, detrás de esa simplicidad existen decisiones de arquitectura, servicios, seguridad y continuidad.</p>
+<p>El trabajo del ingeniero consiste en lograr que todos esos componentes funcionen como un sistema confiable.</p>
+</section>
+<section id="referencias" class="level1" data-number="60">
+<h1 data-number="60"><span class="header-section-number">60</span> Referencias</h1>
+<ul>
+<li>Kurose, J. F., &amp; Ross, K. W. <em>Computer Networking: A Top-Down Approach</em>. Pearson.</li>
+<li>Nemeth, E., Snyder, G., Hein, T. R., Whaley, B., &amp; Mackin, D. <em>UNIX and Linux System Administration Handbook</em>. Addison-Wesley.</li>
+<li>Silberschatz, A., Galvin, P. B., &amp; Gagne, G. <em>Operating System Concepts</em>. Wiley.</li>
+<li>Stallings, W. <em>Operating Systems: Internals and Design Principles</em>. Pearson.</li>
+<li>Tanenbaum, A. S., &amp; Bos, H. <em>Modern Operating Systems</em>. Pearson.</li>
+<li>Documentación técnica de Microsoft Learn sobre Windows Server y servicios de red.</li>
+<li>Documentación técnica de Red Hat sobre administración de sistemas Linux.</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiado");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiado");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../capitulos/02_administracion_sistema_archivos.html" class="pagination-link" aria-label="Administración del sistema de archivos desde la línea de comandos">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Administración del sistema de archivos desde la línea de comandos</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../capitulos/04_administracion_procesos.html" class="pagination-link" aria-label="Clase 4. Administración de Procesos">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Clase 4. Administración de Procesos</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Editorial Académica de Ingeniería en Sistemas</p>
+</div>   
+    <div class="nav-footer-center">
+<p>Diseñar una vez. Enseñar toda la vida.</p>
+</div>
+    <div class="nav-footer-right">
+<p>Ing. Jorge Luis García Chacón</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650">
+<rect width="1200" height="650" fill="#f7f7f7"/>
+<text x="600" y="52" text-anchor="middle" font-family="Arial" font-size="32" font-weight="bold" fill="#333">Organización jerárquica</text>
+<g font-family="Arial" font-size="23" text-anchor="middle">
+<rect x="460" y="90" width="280" height="70" rx="14" fill="#319f90"/><text x="600" y="133" fill="white">Unidad C:</text>
+<line x1="600" y1="160" x2="600" y2="210" stroke="#646464" stroke-width="4"/>
+<rect x="430" y="210" width="340" height="70" rx="14" fill="#d35400"/><text x="600" y="253" fill="white">Directorio Usuarios</text>
+<line x1="600" y1="280" x2="600" y2="330" stroke="#646464" stroke-width="4"/>
+<rect x="430" y="330" width="340" height="70" rx="14" fill="#646464"/><text x="600" y="373" fill="white">Directorio Estudiante</text>
+<line x1="600" y1="400" x2="600" y2="455" stroke="#646464" stroke-width="4"/>
+<line x1="250" y1="455" x2="950" y2="455" stroke="#646464" stroke-width="4"/>
+<line x1="250" y1="455" x2="250" y2="495" stroke="#646464" stroke-width="4"/>
+<line x1="600" y1="455" x2="600" y2="495" stroke="#646464" stroke-width="4"/>
+<line x1="950" y1="455" x2="950" y2="495" stroke="#646464" stroke-width="4"/>
+<rect x="110" y="495" width="280" height="70" rx="14" fill="#fbeae5" stroke="#d35400" stroke-width="3"/><text x="250" y="538" fill="#333">Documentos</text>
+<rect x="460" y="495" width="280" height="70" rx="14" fill="#fbeae5" stroke="#d35400" stroke-width="3"/><text x="600" y="538" fill="#333">Descargas</text>
+<rect x="810" y="495" width="280" height="70" rx="14" fill="#fbeae5" stroke="#d35400" stroke-width="3"/><text x="950" y="538" fill="#333">Escritorio</text>
+</g></svg>

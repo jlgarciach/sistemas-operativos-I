@@ -1,0 +1,61 @@
+project:
+  type: book
+  output-dir: docs
+
+book:
+  title: "Sistemas Operativos I"
+  subtitle: "Introducción y fundamentos"
+  author: ""
+  date: ""
+  language: es
+  chapters:
+    - index.qmd
+    - capitulos/01_introduccion_sistemas_operativos.qmd
+    - capitulos/02_administracion_sistema_archivos.qmd
+    - capitulos/03_sistemas_operativos_red.qmd
+    - capitulos/04_administracion_procesos.qmd
+    - capitulos/05_control_procesos_concurrencia.qmd
+    - capitulos/99_cierre.qmd
+  page-footer:
+    left: "Editorial Académica de Ingeniería en Sistemas"
+    center: "Diseñar una vez. Enseñar toda la vida."
+    right: "Ing. Jorge Luis García Chacón"
+
+lang: es
+
+format:
+  html:
+    theme:
+      - cosmo
+      - ../../editorial/scss/editorial.scss
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-copy: true
+    code-overflow: wrap
+    smooth-scroll: true
+    page-layout: article
+  pdf:
+    fig-width: 6.3
+    documentclass: scrbook
+    papersize: letter
+    toc: true
+    toc-title: "Contenido"
+    number-sections: true
+    colorlinks: true
+    pdf-engine: xelatex
+    geometry:
+      - top=2.4cm
+      - bottom=2.4cm
+      - left=2.6cm
+      - right=2.4cm
+    mainfont: "Arial"
+    monofont: "Courier New"
+    include-in-header: ../../editorial/templates/header.tex
+
+execute:
+  echo: false
+  warning: false
+  message: false
+
+editor: visual

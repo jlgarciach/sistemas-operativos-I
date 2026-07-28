@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650">
+<style>
+text { font-family: Arial, Helvetica, sans-serif; fill:#243447; }
+.title { font-size:32px; font-weight:700; fill:#1f4e79; }
+.label { font-size:24px; font-weight:700; }
+.small { font-size:19px; }
+.box { fill:#ffffff; stroke:#319f90; stroke-width:3; rx:18; }
+.accent { fill:#fbeae5; stroke:#d35400; stroke-width:3; rx:18; }
+.line { stroke:#646464; stroke-width:4; fill:none; }
+.arrow { stroke:#646464; stroke-width:4; fill:none; marker-end:url(#arrow); }
+</style>
+<defs><marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#646464"/></marker></defs>
+<rect width="100%" height="100%" fill="#f8fafb"/>
+<text x="60" y="60" class="title">Arquitectura Punto a Punto</text>
+
+<rect x="100" y="150" width="260" height="120" class="box"/><text x="170" y="205" class="label">Equipo A</text><text x="140" y="240" class="small">Cliente y servidor</text>
+<rect x="840" y="150" width="260" height="120" class="box"/><text x="910" y="205" class="label">Equipo B</text><text x="880" y="240" class="small">Cliente y servidor</text>
+<rect x="100" y="430" width="260" height="120" class="box"/><text x="170" y="485" class="label">Equipo C</text><text x="140" y="520" class="small">Cliente y servidor</text>
+<rect x="840" y="430" width="260" height="120" class="box"/><text x="910" y="485" class="label">Equipo D</text><text x="880" y="520" class="small">Cliente y servidor</text>
+<line x1="360" y1="210" x2="840" y2="210" class="line"/><line x1="360" y1="490" x2="840" y2="490" class="line"/>
+<line x1="230" y1="270" x2="230" y2="430" class="line"/><line x1="970" y1="270" x2="970" y2="430" class="line"/>
+<line x1="360" y1="270" x2="840" y2="430" class="line"/><line x1="840" y1="270" x2="360" y2="430" class="line"/>
+<text x="420" y="355" class="label">Sin servidor central</text>
+
+</svg>

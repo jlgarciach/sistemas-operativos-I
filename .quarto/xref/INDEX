@@ -1,0 +1,35 @@
+{
+  "index.qmd": {
+    "index.html": "a1447292"
+  },
+  "capitulos/01_introduccion_sistemas_operativos.qmd": {
+    "01_introduccion_sistemas_operativos.html": "9ee35816"
+  },
+  "capitulos/99_cierre.qmd": {
+    "99_cierre.html": "8512cc35"
+  },
+  "capitulos/02_administracion_sistema_archivos.qmd": {
+    "02_administracion_sistema_archivos.html": "5133cfd2"
+  },
+  "03_sistemas_operativos_red.qmd": {
+    "03_sistemas_operativos_red.html": "ca71542e"
+  },
+  "capitulos/03_sistemas_operativos_red.qmd": {
+    "03_sistemas_operativos_red.html": "ea21eab3"
+  },
+  "capitulos/04_Tipos_de_Servidores_y_Servicios_de_Red.qmd": {
+    "04_Tipos_de_Servidores_y_Servicios_de_Red.html": "1429de36"
+  },
+  "04_administracion_procesos.qmd": {
+    "04_administracion_procesos.html": "ea6c5f0d"
+  },
+  "capitulos/04_administracion_procesos.qmd": {
+    "04_administracion_procesos.html": "3ceef237"
+  },
+  "capitulos/05_control_procesos_concurrencia.qmd": {
+    "05_control_procesos_concurrencia.html": "8e14486d"
+  },
+  "05_control_procesos_concurrencia.qmd": {
+    "05_control_procesos_concurrencia.html": "585bbf9f"
+  }
+}

@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>2&nbsp; Presentación de la clase – Sistemas Operativos I</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../capitulos/02_administracion_sistema_archivos.html" rel="next">
+<link href="../index.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-00cb48ef4f8381ff23467c959274e61b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-663c59e08f2ec96d6b2ddc79a12e8e5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No se han encontrado resultados",
+    "search-matching-documents-text": "documentos encontrados",
+    "search-copy-link-title": "Copiar el enlace en la búsqueda",
+    "search-hide-matches-text": "Ocultar resultados adicionales",
+    "search-more-match-text": "resultado adicional en este documento",
+    "search-more-matches-text": "resultados adicionales en este documento",
+    "search-clear-button-title": "Borrar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Buscar"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<script src="../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../capitulos/01_introduccion_sistemas_operativos.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Presentación de la clase</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Buscar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Sistemas Operativos I</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Buscar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">index.html</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/01_introduccion_sistemas_operativos.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Presentación de la clase</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/02_administracion_sistema_archivos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Administración del sistema de archivos desde la línea de comandos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/03_sistemas_operativos_red.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Clase 3. Sistemas Operativos de Red</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/04_administracion_procesos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Clase 4. Administración de Procesos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/05_control_procesos_concurrencia.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Clase 5. Control de Procesos y Concurrencia</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/99_cierre.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Cierre de la clase</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Tabla de contenidos</h2>
+   
+  <ul>
+  <li><a href="#objetivos-de-aprendizaje" id="toc-objetivos-de-aprendizaje" class="nav-link active" data-scroll-target="#objetivos-de-aprendizaje"><span class="header-section-number">2.1</span> Objetivos de aprendizaje</a></li>
+  <li><a href="#qué-es-un-sistema-operativo" id="toc-qué-es-un-sistema-operativo" class="nav-link" data-scroll-target="#qué-es-un-sistema-operativo"><span class="header-section-number">3</span> ¿Qué es un sistema operativo?</a>
+  <ul class="collapse">
+  <li><a href="#una-comparación-sencilla" id="toc-una-comparación-sencilla" class="nav-link" data-scroll-target="#una-comparación-sencilla"><span class="header-section-number">3.1</span> Una comparación sencilla</a></li>
+  </ul></li>
+  <li><a href="#el-kernel-núcleo-del-sistema-operativo" id="toc-el-kernel-núcleo-del-sistema-operativo" class="nav-link" data-scroll-target="#el-kernel-núcleo-del-sistema-operativo"><span class="header-section-number">4</span> El kernel: núcleo del sistema operativo</a>
+  <ul class="collapse">
+  <li><a href="#modo-usuario-y-modo-privilegiado" id="toc-modo-usuario-y-modo-privilegiado" class="nav-link" data-scroll-target="#modo-usuario-y-modo-privilegiado"><span class="header-section-number">4.1</span> Modo usuario y modo privilegiado</a></li>
+  </ul></li>
+  <li><a href="#funciones-principales-de-un-sistema-operativo" id="toc-funciones-principales-de-un-sistema-operativo" class="nav-link" data-scroll-target="#funciones-principales-de-un-sistema-operativo"><span class="header-section-number">5</span> Funciones principales de un sistema operativo</a>
+  <ul class="collapse">
+  <li><a href="#gestión-de-procesos" id="toc-gestión-de-procesos" class="nav-link" data-scroll-target="#gestión-de-procesos"><span class="header-section-number">5.1</span> Gestión de procesos</a></li>
+  <li><a href="#gestión-de-memoria" id="toc-gestión-de-memoria" class="nav-link" data-scroll-target="#gestión-de-memoria"><span class="header-section-number">5.2</span> Gestión de memoria</a></li>
+  <li><a href="#gestión-de-archivos-y-almacenamiento" id="toc-gestión-de-archivos-y-almacenamiento" class="nav-link" data-scroll-target="#gestión-de-archivos-y-almacenamiento"><span class="header-section-number">5.3</span> Gestión de archivos y almacenamiento</a></li>
+  <li><a href="#gestión-de-dispositivos" id="toc-gestión-de-dispositivos" class="nav-link" data-scroll-target="#gestión-de-dispositivos"><span class="header-section-number">5.4</span> Gestión de dispositivos</a></li>
+  <li><a href="#seguridad-y-protección" id="toc-seguridad-y-protección" class="nav-link" data-scroll-target="#seguridad-y-protección"><span class="header-section-number">5.5</span> Seguridad y protección</a></li>
+  <li><a href="#redes-y-comunicación" id="toc-redes-y-comunicación" class="nav-link" data-scroll-target="#redes-y-comunicación"><span class="header-section-number">5.6</span> Redes y comunicación</a></li>
+  </ul></li>
+  <li><a href="#breve-evolución-de-los-sistemas-operativos" id="toc-breve-evolución-de-los-sistemas-operativos" class="nav-link" data-scroll-target="#breve-evolución-de-los-sistemas-operativos"><span class="header-section-number">6</span> Breve evolución de los sistemas operativos</a>
+  <ul class="collapse">
+  <li><a href="#primeras-computadoras" id="toc-primeras-computadoras" class="nav-link" data-scroll-target="#primeras-computadoras"><span class="header-section-number">6.1</span> Primeras computadoras</a></li>
+  <li><a href="#monitor-residente" id="toc-monitor-residente" class="nav-link" data-scroll-target="#monitor-residente"><span class="header-section-number">6.2</span> Monitor residente</a></li>
+  <li><a href="#procesamiento-por-lotes" id="toc-procesamiento-por-lotes" class="nav-link" data-scroll-target="#procesamiento-por-lotes"><span class="header-section-number">6.3</span> Procesamiento por lotes</a></li>
+  <li><a href="#multiprogramación-y-tiempo-compartido" id="toc-multiprogramación-y-tiempo-compartido" class="nav-link" data-scroll-target="#multiprogramación-y-tiempo-compartido"><span class="header-section-number">6.4</span> Multiprogramación y tiempo compartido</a></li>
+  <li><a href="#computadoras-personales-e-interfaces-gráficas" id="toc-computadoras-personales-e-interfaces-gráficas" class="nav-link" data-scroll-target="#computadoras-personales-e-interfaces-gráficas"><span class="header-section-number">6.5</span> Computadoras personales e interfaces gráficas</a></li>
+  <li><a href="#internet-dispositivos-móviles-nube-y-virtualización" id="toc-internet-dispositivos-móviles-nube-y-virtualización" class="nav-link" data-scroll-target="#internet-dispositivos-móviles-nube-y-virtualización"><span class="header-section-number">6.6</span> Internet, dispositivos móviles, nube y virtualización</a></li>
+  </ul></li>
+  <li><a href="#panorama-actual-de-sistemas-operativos" id="toc-panorama-actual-de-sistemas-operativos" class="nav-link" data-scroll-target="#panorama-actual-de-sistemas-operativos"><span class="header-section-number">7</span> Panorama actual de sistemas operativos</a>
+  <ul class="collapse">
+  <li><a href="#windows-y-windows-server" id="toc-windows-y-windows-server" class="nav-link" data-scroll-target="#windows-y-windows-server"><span class="header-section-number">7.1</span> Windows y Windows Server</a></li>
+  <li><a href="#gnulinux" id="toc-gnulinux" class="nav-link" data-scroll-target="#gnulinux"><span class="header-section-number">7.2</span> GNU/Linux</a></li>
+  <li><a href="#macos" id="toc-macos" class="nav-link" data-scroll-target="#macos"><span class="header-section-number">7.3</span> macOS</a></li>
+  <li><a href="#android-e-ios" id="toc-android-e-ios" class="nav-link" data-scroll-target="#android-e-ios"><span class="header-section-number">7.4</span> Android e iOS</a></li>
+  </ul></li>
+  <li><a href="#interfaces-de-usuario" id="toc-interfaces-de-usuario" class="nav-link" data-scroll-target="#interfaces-de-usuario"><span class="header-section-number">8</span> Interfaces de usuario</a>
+  <ul class="collapse">
+  <li><a href="#interfaz-gráfica-de-usuario" id="toc-interfaz-gráfica-de-usuario" class="nav-link" data-scroll-target="#interfaz-gráfica-de-usuario"><span class="header-section-number">8.1</span> Interfaz gráfica de usuario</a></li>
+  <li><a href="#interfaz-de-línea-de-comandos" id="toc-interfaz-de-línea-de-comandos" class="nav-link" data-scroll-target="#interfaz-de-línea-de-comandos"><span class="header-section-number">8.2</span> Interfaz de línea de comandos</a></li>
+  <li><a href="#no-son-enemigas" id="toc-no-son-enemigas" class="nav-link" data-scroll-target="#no-son-enemigas"><span class="header-section-number">8.3</span> No son enemigas</a></li>
+  </ul></li>
+  <li><a href="#clasificación-de-los-sistemas-operativos" id="toc-clasificación-de-los-sistemas-operativos" class="nav-link" data-scroll-target="#clasificación-de-los-sistemas-operativos"><span class="header-section-number">9</span> Clasificación de los sistemas operativos</a>
+  <ul class="collapse">
+  <li><a href="#monotarea-y-multitarea" id="toc-monotarea-y-multitarea" class="nav-link" data-scroll-target="#monotarea-y-multitarea"><span class="header-section-number">9.1</span> Monotarea y multitarea</a></li>
+  <li><a href="#monousuario-y-multiusuario" id="toc-monousuario-y-multiusuario" class="nav-link" data-scroll-target="#monousuario-y-multiusuario"><span class="header-section-number">9.2</span> Monousuario y multiusuario</a></li>
+  <li><a href="#procesamiento-por-lotes-1" id="toc-procesamiento-por-lotes-1" class="nav-link" data-scroll-target="#procesamiento-por-lotes-1"><span class="header-section-number">9.3</span> Procesamiento por lotes</a></li>
+  <li><a href="#tiempo-compartido" id="toc-tiempo-compartido" class="nav-link" data-scroll-target="#tiempo-compartido"><span class="header-section-number">9.4</span> Tiempo compartido</a></li>
+  <li><a href="#sistemas-de-red-y-distribuidos" id="toc-sistemas-de-red-y-distribuidos" class="nav-link" data-scroll-target="#sistemas-de-red-y-distribuidos"><span class="header-section-number">9.5</span> Sistemas de red y distribuidos</a></li>
+  <li><a href="#sistemas-de-tiempo-real" id="toc-sistemas-de-tiempo-real" class="nav-link" data-scroll-target="#sistemas-de-tiempo-real"><span class="header-section-number">9.6</span> Sistemas de tiempo real</a></li>
+  </ul></li>
+  <li><a href="#llamadas-al-sistema" id="toc-llamadas-al-sistema" class="nav-link" data-scroll-target="#llamadas-al-sistema"><span class="header-section-number">10</span> Llamadas al sistema</a>
+  <ul class="collapse">
+  <li><a href="#bibliotecas-y-api" id="toc-bibliotecas-y-api" class="nav-link" data-scroll-target="#bibliotecas-y-api"><span class="header-section-number">10.1</span> Bibliotecas y API</a></li>
+  </ul></li>
+  <li><a href="#relación-con-la-arquitectura-del-computador" id="toc-relación-con-la-arquitectura-del-computador" class="nav-link" data-scroll-target="#relación-con-la-arquitectura-del-computador"><span class="header-section-number">11</span> Relación con la arquitectura del computador</a>
+  <ul class="collapse">
+  <li><a href="#cpu" id="toc-cpu" class="nav-link" data-scroll-target="#cpu"><span class="header-section-number">11.1</span> CPU</a></li>
+  <li><a href="#memoria-principal" id="toc-memoria-principal" class="nav-link" data-scroll-target="#memoria-principal"><span class="header-section-number">11.2</span> Memoria principal</a></li>
+  <li><a href="#almacenamiento-secundario" id="toc-almacenamiento-secundario" class="nav-link" data-scroll-target="#almacenamiento-secundario"><span class="header-section-number">11.3</span> Almacenamiento secundario</a></li>
+  <li><a href="#unidad-de-control-y-alu" id="toc-unidad-de-control-y-alu" class="nav-link" data-scroll-target="#unidad-de-control-y-alu"><span class="header-section-number">11.4</span> Unidad de control y ALU</a></li>
+  <li><a href="#periféricos-y-entradasalida" id="toc-periféricos-y-entradasalida" class="nav-link" data-scroll-target="#periféricos-y-entradasalida"><span class="header-section-number">11.5</span> Periféricos y entrada/salida</a></li>
+  </ul></li>
+  <li><a href="#virtualización-y-contenedores-una-mirada-actual" id="toc-virtualización-y-contenedores-una-mirada-actual" class="nav-link" data-scroll-target="#virtualización-y-contenedores-una-mirada-actual"><span class="header-section-number">12</span> Virtualización y contenedores: una mirada actual</a></li>
+  <li><a href="#laboratorio-1-conozca-su-sistema-operativo" id="toc-laboratorio-1-conozca-su-sistema-operativo" class="nav-link" data-scroll-target="#laboratorio-1-conozca-su-sistema-operativo"><span class="header-section-number">13</span> Laboratorio 1: conozca su sistema operativo</a>
+  <ul class="collapse">
+  <li><a href="#propósito" id="toc-propósito" class="nav-link" data-scroll-target="#propósito"><span class="header-section-number">13.1</span> Propósito</a></li>
+  <li><a href="#actividad-a-información-general" id="toc-actividad-a-información-general" class="nav-link" data-scroll-target="#actividad-a-información-general"><span class="header-section-number">13.2</span> Actividad A: información general</a></li>
+  <li><a href="#actividad-b-windows" id="toc-actividad-b-windows" class="nav-link" data-scroll-target="#actividad-b-windows"><span class="header-section-number">13.3</span> Actividad B: Windows</a></li>
+  <li><a href="#actividad-c-macos" id="toc-actividad-c-macos" class="nav-link" data-scroll-target="#actividad-c-macos"><span class="header-section-number">13.4</span> Actividad C: macOS</a></li>
+  <li><a href="#actividad-d-gnulinux" id="toc-actividad-d-gnulinux" class="nav-link" data-scroll-target="#actividad-d-gnulinux"><span class="header-section-number">13.5</span> Actividad D: GNU/Linux</a></li>
+  <li><a href="#actividad-e-comparación" id="toc-actividad-e-comparación" class="nav-link" data-scroll-target="#actividad-e-comparación"><span class="header-section-number">13.6</span> Actividad E: comparación</a></li>
+  </ul></li>
+  <li><a href="#caso-de-análisis" id="toc-caso-de-análisis" class="nav-link" data-scroll-target="#caso-de-análisis"><span class="header-section-number">14</span> Caso de análisis</a></li>
+  <li><a href="#resumen-de-la-clase" id="toc-resumen-de-la-clase" class="nav-link" data-scroll-target="#resumen-de-la-clase"><span class="header-section-number">15</span> Resumen de la clase</a></li>
+  <li><a href="#tarea-sugerida" id="toc-tarea-sugerida" class="nav-link" data-scroll-target="#tarea-sugerida"><span class="header-section-number">16</span> Tarea sugerida</a></li>
+  <li><a href="#fuentes-oficiales-para-actualización" id="toc-fuentes-oficiales-para-actualización" class="nav-link" data-scroll-target="#fuentes-oficiales-para-actualización"><span class="header-section-number">17</span> Fuentes oficiales para actualización</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Presentación de la clase</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Bienvenidos al curso de <strong>Sistemas Operativos I</strong>. En esta primera clase estudiaremos el software que coordina prácticamente todo lo que ocurre en una computadora, un teléfono, un servidor o un dispositivo inteligente.</p>
+<p>Imagine que enciende su computadora y, en pocos segundos, puede abrir un navegador, reproducir música, guardar archivos, conectarse a Internet y utilizar varios programas al mismo tiempo. Mientras usted observa una pantalla aparentemente sencilla, el equipo está detectando dispositivos, reservando memoria, iniciando servicios, creando procesos, aplicando controles de seguridad y organizando el acceso al almacenamiento.</p>
+<p>La pieza que coordina esas actividades es el <strong>sistema operativo</strong>.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Idea central de la clase">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Idea central de la clase
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>El sistema operativo administra recursos, ofrece servicios a los programas y crea un entorno seguro y utilizable para las personas y las aplicaciones.</p>
+</div>
+</div>
+<section id="objetivos-de-aprendizaje" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="objetivos-de-aprendizaje"><span class="header-section-number">2.1</span> Objetivos de aprendizaje</h2>
+<p>Al finalizar esta clase, el estudiante será capaz de:</p>
+<ul>
+<li>Explicar qué es un sistema operativo y por qué es indispensable.</li>
+<li>Identificar la relación entre usuario, aplicaciones, sistema operativo y hardware.</li>
+<li>Reconocer las funciones principales del sistema operativo.</li>
+<li>Diferenciar una interfaz gráfica de una interfaz de línea de comandos.</li>
+<li>Clasificar sistemas operativos según su propósito y forma de trabajo.</li>
+<li>Explicar, de manera introductoria, qué son el kernel, los procesos y las llamadas al sistema.</li>
+<li>Identificar el sistema operativo, la versión y las características básicas de su propio equipo.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled" title="El libro que nos hubiera gustado tener">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>El libro que nos hubiera gustado tener
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>En este curso no memorizaremos listas aisladas. Relacionaremos cada concepto con situaciones que un ingeniero encontrará al administrar computadoras, servidores, redes y aplicaciones.</p>
+</div>
+</div>
+</section>
+<section id="qué-es-un-sistema-operativo" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> ¿Qué es un sistema operativo?</h1>
+<p>Un <strong>sistema operativo</strong> es el software fundamental que administra los recursos de un sistema informático y proporciona servicios comunes para que las aplicaciones puedan ejecutarse.</p>
+<p>Actúa como intermediario entre:</p>
+<ul>
+<li>las personas que utilizan el equipo;</li>
+<li>las aplicaciones;</li>
+<li>el hardware;</li>
+<li>y los dispositivos conectados.</li>
+</ul>
+<p>Sin un sistema operativo, cada programa tendría que conocer directamente cómo funciona cada modelo de procesador, disco, teclado, tarjeta de red o pantalla. El sistema operativo reduce esa complejidad mediante servicios y abstracciones.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/img/capas_sistema_operativo.png" class="img-fluid figure-img" style="width:88.0%"></p>
+<figcaption>Capas principales de un sistema informático</figcaption>
+</figure>
+</div>
+<section id="una-comparación-sencilla" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="una-comparación-sencilla"><span class="header-section-number">3.1</span> Una comparación sencilla</h2>
+<p>Pensemos en un hotel:</p>
+<ul>
+<li>Los <strong>huéspedes</strong> representan a los usuarios y aplicaciones.</li>
+<li>Las <strong>habitaciones, energía, ascensores y servicios</strong> representan los recursos de hardware.</li>
+<li>La <strong>administración del hotel</strong> representa al sistema operativo.</li>
+</ul>
+<p>Cada huésped utiliza servicios sin controlar directamente toda la infraestructura. La administración asigna recursos, organiza prioridades, establece reglas y evita conflictos.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="Importante">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Importante</span>Importante
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>El sistema operativo no es únicamente la apariencia del escritorio. La interfaz gráfica es solo una de sus capas. Debajo de ella existen procesos, controladores, servicios, mecanismos de seguridad y un kernel que trabaja continuamente.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="el-kernel-núcleo-del-sistema-operativo" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> El kernel: núcleo del sistema operativo</h1>
+<p>El <strong>kernel</strong> es la parte central del sistema operativo. Se ejecuta con privilegios elevados y controla el acceso a los recursos esenciales del computador.</p>
+<p>Entre sus responsabilidades se encuentran:</p>
+<ul>
+<li>planificar el uso del procesador;</li>
+<li>administrar la memoria;</li>
+<li>controlar dispositivos mediante controladores;</li>
+<li>coordinar operaciones de entrada y salida;</li>
+<li>aplicar mecanismos de protección;</li>
+<li>ofrecer servicios a los programas mediante llamadas al sistema.</li>
+</ul>
+<p>El kernel no debe confundirse con todo el sistema operativo. Un sistema completo también incluye bibliotecas, utilidades, servicios, herramientas administrativas e interfaces de usuario.</p>
+<section id="modo-usuario-y-modo-privilegiado" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="modo-usuario-y-modo-privilegiado"><span class="header-section-number">4.1</span> Modo usuario y modo privilegiado</h2>
+<p>Los procesadores modernos permiten separar al menos dos niveles de ejecución:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Nivel</th>
+<th>Característica principal</th>
+<th>Ejemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Modo usuario</td>
+<td>Acceso limitado; las aplicaciones no controlan directamente todo el hardware</td>
+<td>Navegador, editor de texto, reproductor</td>
+</tr>
+<tr class="even">
+<td>Modo kernel o privilegiado</td>
+<td>Acceso a operaciones críticas y recursos protegidos</td>
+<td>Kernel, controladores y componentes esenciales</td>
+</tr>
+</tbody>
+</table>
+<p>Esta separación evita que un error común en una aplicación tenga acceso irrestricto a toda la memoria o a los dispositivos del sistema.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="Error común">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Advertencia</span>Error común
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Decir que una aplicación “habla directamente con el hardware” suele ser una simplificación. En la mayoría de los casos, la aplicación solicita servicios al sistema operativo, y este coordina la operación con el hardware.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="funciones-principales-de-un-sistema-operativo" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Funciones principales de un sistema operativo</h1>
+<section id="gestión-de-procesos" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="gestión-de-procesos"><span class="header-section-number">5.1</span> Gestión de procesos</h2>
+<p>Un <strong>proceso</strong> es un programa en ejecución. El sistema operativo debe decidir:</p>
+<ul>
+<li>qué proceso utiliza el procesador;</li>
+<li>durante cuánto tiempo;</li>
+<li>cuándo se pausa;</li>
+<li>cuándo continúa;</li>
+<li>y cómo se comunica con otros procesos.</li>
+</ul>
+<p>Cuando una persona abre un navegador, un editor y una videollamada, el equipo parece ejecutar todo simultáneamente. En realidad, el sistema operativo distribuye el tiempo del procesador entre muchas actividades, aprovechando además los múltiples núcleos de la CPU.</p>
+</section>
+<section id="gestión-de-memoria" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="gestión-de-memoria"><span class="header-section-number">5.2</span> Gestión de memoria</h2>
+<p>El sistema operativo asigna memoria a cada proceso y procura que una aplicación no modifique sin autorización la memoria de otra.</p>
+<p>También puede utilizar <strong>memoria virtual</strong>, una técnica que permite organizar el espacio de direcciones de los procesos y, cuando es necesario, apoyar temporalmente la memoria física con almacenamiento secundario.</p>
+</section>
+<section id="gestión-de-archivos-y-almacenamiento" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="gestión-de-archivos-y-almacenamiento"><span class="header-section-number">5.3</span> Gestión de archivos y almacenamiento</h2>
+<p>El sistema operativo organiza la información mediante archivos, carpetas, permisos y sistemas de archivos.</p>
+<p>Entre sus tareas se encuentran:</p>
+<ul>
+<li>crear, leer, modificar y eliminar archivos;</li>
+<li>organizar directorios;</li>
+<li>controlar permisos;</li>
+<li>registrar ubicaciones y metadatos;</li>
+<li>coordinar el uso de discos, memorias USB y otras unidades.</li>
+</ul>
+</section>
+<section id="gestión-de-dispositivos" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="gestión-de-dispositivos"><span class="header-section-number">5.4</span> Gestión de dispositivos</h2>
+<p>Los dispositivos poseen características distintas. Para utilizarlos, el sistema operativo emplea <strong>controladores</strong> o <em>drivers</em>.</p>
+<p>Un controlador traduce solicitudes generales del sistema a operaciones específicas del dispositivo. Gracias a esta capa, una aplicación puede imprimir sin conocer todos los detalles internos de cada impresora.</p>
+</section>
+<section id="seguridad-y-protección" class="level2" data-number="5.5">
+<h2 data-number="5.5" class="anchored" data-anchor-id="seguridad-y-protección"><span class="header-section-number">5.5</span> Seguridad y protección</h2>
+<p>El sistema operativo administra usuarios, sesiones, permisos, credenciales y aislamiento entre procesos.</p>
+<p>La seguridad no consiste únicamente en utilizar una contraseña. También incluye:</p>
+<ul>
+<li>controlar quién puede acceder a un archivo;</li>
+<li>limitar privilegios;</li>
+<li>proteger la memoria;</li>
+<li>aplicar actualizaciones;</li>
+<li>registrar eventos;</li>
+<li>bloquear operaciones no autorizadas.</li>
+</ul>
+</section>
+<section id="redes-y-comunicación" class="level2" data-number="5.6">
+<h2 data-number="5.6" class="anchored" data-anchor-id="redes-y-comunicación"><span class="header-section-number">5.6</span> Redes y comunicación</h2>
+<p>Los sistemas operativos modernos incluyen una pila de red que permite utilizar protocolos, interfaces, puertos y servicios de comunicación.</p>
+<p>Cuando un navegador accede a una página web, el sistema operativo participa en la resolución de nombres, el envío de paquetes, la recepción de información y la entrega de datos a la aplicación correspondiente.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="En la práctica profesional">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>En la práctica profesional
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Cuando un servidor deja de responder, un administrador no debería comenzar reinstalando el sistema operativo. Primero revisa el uso de CPU, memoria, disco, red, procesos y registros para identificar la causa del problema.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="breve-evolución-de-los-sistemas-operativos" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Breve evolución de los sistemas operativos</h1>
+<p>La evolución de los sistemas operativos está estrechamente relacionada con la evolución del hardware y las necesidades de los usuarios.</p>
+<section id="primeras-computadoras" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="primeras-computadoras"><span class="header-section-number">6.1</span> Primeras computadoras</h2>
+<p>En las primeras generaciones, los programas se cargaban manualmente y el operador controlaba gran parte del proceso. El tiempo de la computadora era costoso y se perdía mucho tiempo preparando cada trabajo.</p>
+</section>
+<section id="monitor-residente" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="monitor-residente"><span class="header-section-number">6.2</span> Monitor residente</h2>
+<p>El <strong>monitor residente</strong> permanecía en memoria y automatizaba parte de la carga y ejecución de programas. Fue un paso inicial hacia la coordinación automática de trabajos.</p>
+</section>
+<section id="procesamiento-por-lotes" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="procesamiento-por-lotes"><span class="header-section-number">6.3</span> Procesamiento por lotes</h2>
+<p>El procesamiento por lotes agrupó varios trabajos para ejecutarlos secuencialmente con poca interacción humana. Esta modalidad mejoró la utilización del equipo, aunque el usuario debía esperar para recibir resultados.</p>
+</section>
+<section id="multiprogramación-y-tiempo-compartido" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="multiprogramación-y-tiempo-compartido"><span class="header-section-number">6.4</span> Multiprogramación y tiempo compartido</h2>
+<p>La multiprogramación permitió mantener varios trabajos en memoria y utilizar el procesador mientras otro esperaba una operación de entrada o salida.</p>
+<p>El tiempo compartido extendió esta idea para atender a varios usuarios de forma interactiva, ofreciendo la impresión de que cada uno disponía del sistema.</p>
+</section>
+<section id="computadoras-personales-e-interfaces-gráficas" class="level2" data-number="6.5">
+<h2 data-number="6.5" class="anchored" data-anchor-id="computadoras-personales-e-interfaces-gráficas"><span class="header-section-number">6.5</span> Computadoras personales e interfaces gráficas</h2>
+<p>Las computadoras personales acercaron la informática a hogares y oficinas. Las interfaces gráficas facilitaron el uso mediante ventanas, iconos, menús y dispositivos apuntadores.</p>
+</section>
+<section id="internet-dispositivos-móviles-nube-y-virtualización" class="level2" data-number="6.6">
+<h2 data-number="6.6" class="anchored" data-anchor-id="internet-dispositivos-móviles-nube-y-virtualización"><span class="header-section-number">6.6</span> Internet, dispositivos móviles, nube y virtualización</h2>
+<p>Los sistemas actuales ya no se limitan a una computadora de escritorio. Existen sistemas para:</p>
+<ul>
+<li>servidores físicos y virtuales;</li>
+<li>teléfonos y tabletas;</li>
+<li>dispositivos integrados;</li>
+<li>infraestructura en la nube;</li>
+<li>vehículos y equipos industriales;</li>
+<li>plataformas de contenedores.</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled" title="Perspectiva histórica">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Perspectiva histórica
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Los sistemas antiguos como MS-DOS, Windows XP o las primeras versiones de Mac OS siguen siendo importantes para comprender la evolución, pero no deben presentarse como el panorama tecnológico actual.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="panorama-actual-de-sistemas-operativos" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Panorama actual de sistemas operativos</h1>
+<p>La siguiente tabla presenta familias relevantes para un estudiante de Ingeniería en Sistemas.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Familia</th>
+<th>Uso frecuente</th>
+<th>Característica general</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Windows</td>
+<td>Equipos personales, organizaciones y estaciones de trabajo</td>
+<td>Amplio ecosistema comercial y compatibilidad de aplicaciones</td>
+</tr>
+<tr class="even">
+<td>Windows Server</td>
+<td>Servidores empresariales</td>
+<td>Servicios de red, identidades, virtualización y administración centralizada</td>
+</tr>
+<tr class="odd">
+<td>GNU/Linux</td>
+<td>Servidores, nube, desarrollo, escritorio, supercomputación y sistemas integrados</td>
+<td>Código abierto, variedad de distribuciones y gran capacidad de automatización</td>
+</tr>
+<tr class="even">
+<td>macOS</td>
+<td>Computadoras Mac</td>
+<td>Integración estrecha entre hardware y software de Apple</td>
+</tr>
+<tr class="odd">
+<td>Android</td>
+<td>Teléfonos, tabletas, televisores y dispositivos</td>
+<td>Plataforma móvil basada en el kernel Linux</td>
+</tr>
+<tr class="even">
+<td>iOS/iPadOS</td>
+<td>iPhone y iPad</td>
+<td>Integración con el ecosistema y hardware de Apple</td>
+</tr>
+<tr class="odd">
+<td>Sistemas de tiempo real</td>
+<td>Industria, vehículos, telecomunicaciones y control</td>
+<td>Respuesta predecible dentro de límites temporales</td>
+</tr>
+</tbody>
+</table>
+<section id="windows-y-windows-server" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="windows-y-windows-server"><span class="header-section-number">7.1</span> Windows y Windows Server</h2>
+<p>A julio de 2026, Windows 11 continúa como la familia principal de escritorio de Microsoft. Microsoft mantiene información oficial de versiones y canales de actualización en su portal de salud de versiones. Windows Server 2025 es la versión LTSC vigente de la plataforma de servidores y se orienta a seguridad, virtualización, almacenamiento e integración híbrida.</p>
+<p>La línea de tiempo incluida en el material original muestra parte de la evolución de Windows. Se conserva como referencia histórica, pero debe leerse junto con la información actualizada de esta sección.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/img/linea_tiempo_windows_material_original.png" class="img-fluid figure-img" style="width:82.0%"></p>
+<figcaption>Evolución de Windows en el material original de la clase</figcaption>
+</figure>
+</div>
+</section>
+<section id="gnulinux" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="gnulinux"><span class="header-section-number">7.2</span> GNU/Linux</h2>
+<p>Linux es el kernel iniciado por Linus Torvalds. Cuando se combina con herramientas, bibliotecas, gestores de paquetes y entornos de usuario, forma sistemas completos distribuidos en variantes como Ubuntu, Debian, Fedora, Rocky Linux, AlmaLinux o Arch Linux.</p>
+<p>Ubuntu 24.04 LTS continúa siendo una versión de soporte prolongado ampliamente utilizada. Las versiones LTS priorizan estabilidad y mantenimiento extendido, una característica valiosa en organizaciones y servidores.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="Precisión terminológica">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Importante</span>Precisión terminológica
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Linux es técnicamente el kernel. En el uso cotidiano se habla de “sistema operativo Linux”, pero una expresión más precisa para muchas distribuciones es GNU/Linux o simplemente el nombre de la distribución: Ubuntu, Debian, Fedora, etc.</p>
+</div>
+</div>
+</section>
+<section id="macos" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="macos"><span class="header-section-number">7.3</span> macOS</h2>
+<p>macOS es el sistema operativo de las computadoras Mac. A julio de 2026, macOS Tahoe 26 es la versión estable con actualizaciones de seguridad publicadas por Apple; macOS 27 se encuentra anunciado o en ciclo previo a su disponibilidad general según el momento de consulta.</p>
+<p>Para un libro reutilizable es preferible enseñar la familia, su arquitectura general y sus herramientas, en lugar de depender únicamente del número de versión.</p>
+</section>
+<section id="android-e-ios" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="android-e-ios"><span class="header-section-number">7.4</span> Android e iOS</h2>
+<p>Android domina una gran variedad de dispositivos móviles y utiliza el kernel Linux como base, aunque su entorno de aplicaciones y servicios es diferente al de una distribución GNU/Linux de escritorio.</p>
+<p>Android 17 fue publicado en junio de 2026. En el ecosistema Apple, iOS 26 continúa como versión estable con actualizaciones de seguridad, mientras iOS 27 fue anunciado para una etapa posterior.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Consejo del Ingeniero">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Consejo del Ingeniero
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Las versiones cambian con rapidez. En la práctica profesional, siempre consulte la documentación oficial antes de planificar una instalación, una actualización o una migración.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="interfaces-de-usuario" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Interfaces de usuario</h1>
+<p>Una interfaz permite que una persona interactúe con el sistema operativo.</p>
+<section id="interfaz-gráfica-de-usuario" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="interfaz-gráfica-de-usuario"><span class="header-section-number">8.1</span> Interfaz gráfica de usuario</h2>
+<p>La <strong>GUI</strong> (<em>Graphical User Interface</em>) utiliza ventanas, iconos, menús, botones y otros elementos visuales.</p>
+<p>Sus ventajas incluyen:</p>
+<ul>
+<li>facilidad de aprendizaje;</li>
+<li>descubrimiento visual de opciones;</li>
+<li>interacción mediante mouse, pantalla táctil o teclado;</li>
+<li>buena experiencia para tareas generales.</li>
+</ul>
+</section>
+<section id="interfaz-de-línea-de-comandos" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="interfaz-de-línea-de-comandos"><span class="header-section-number">8.2</span> Interfaz de línea de comandos</h2>
+<p>La <strong>CLI</strong> (<em>Command-Line Interface</em>) permite escribir instrucciones en una terminal o intérprete de comandos.</p>
+<p>Entre sus ventajas se encuentran:</p>
+<ul>
+<li>automatización mediante scripts;</li>
+<li>administración remota;</li>
+<li>precisión y repetibilidad;</li>
+<li>menor consumo de recursos en muchos escenarios;</li>
+<li>acceso rápido a herramientas avanzadas.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/img/interfaces_material_original.png" class="img-fluid figure-img" style="width:85.0%"></p>
+<figcaption>Ejemplos de interfaces conservados del material original</figcaption>
+</figure>
+</div>
+</section>
+<section id="no-son-enemigas" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="no-son-enemigas"><span class="header-section-number">8.3</span> No son enemigas</h2>
+<p>GUI y CLI no deben verse como opciones excluyentes. Un profesional utiliza ambas según la tarea.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Situación</th>
+<th>Interfaz conveniente</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Configurar una opción ocasional</td>
+<td>GUI</td>
+</tr>
+<tr class="even">
+<td>Repetir la misma tarea en 100 equipos</td>
+<td>CLI y automatización</td>
+</tr>
+<tr class="odd">
+<td>Explorar visualmente archivos</td>
+<td>GUI</td>
+</tr>
+<tr class="even">
+<td>Administrar un servidor remoto</td>
+<td>CLI</td>
+</tr>
+<tr class="odd">
+<td>Analizar procesos rápidamente</td>
+<td>GUI o CLI, según el contexto</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-tip callout-titled" title="En la práctica profesional">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>En la práctica profesional
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>PowerShell, Bash y otras shells permiten convertir procedimientos manuales en scripts repetibles. Esa capacidad reduce errores y facilita administrar muchos equipos.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="clasificación-de-los-sistemas-operativos" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> Clasificación de los sistemas operativos</h1>
+<p>Un sistema operativo puede pertenecer a varias categorías al mismo tiempo.</p>
+<section id="monotarea-y-multitarea" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="monotarea-y-multitarea"><span class="header-section-number">9.1</span> Monotarea y multitarea</h2>
+<ul>
+<li><strong>Monotarea:</strong> ejecuta una tarea principal a la vez.</li>
+<li><strong>Multitarea:</strong> administra varios procesos concurrentes y distribuye recursos entre ellos.</li>
+</ul>
+<p>Los sistemas generales actuales son multitarea.</p>
+</section>
+<section id="monousuario-y-multiusuario" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="monousuario-y-multiusuario"><span class="header-section-number">9.2</span> Monousuario y multiusuario</h2>
+<ul>
+<li><strong>Monousuario:</strong> está diseñado principalmente para una sesión o usuario a la vez.</li>
+<li><strong>Multiusuario:</strong> permite atender varios usuarios y separar recursos, permisos y sesiones.</li>
+</ul>
+<p>Un servidor Linux o Windows Server puede atender múltiples usuarios y servicios simultáneamente.</p>
+</section>
+<section id="procesamiento-por-lotes-1" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="procesamiento-por-lotes-1"><span class="header-section-number">9.3</span> Procesamiento por lotes</h2>
+<p>Ejecuta conjuntos de trabajos con poca interacción durante el procesamiento. Sigue siendo útil en tareas como generación nocturna de reportes, respaldo de información o procesamiento masivo de datos.</p>
+</section>
+<section id="tiempo-compartido" class="level2" data-number="9.4">
+<h2 data-number="9.4" class="anchored" data-anchor-id="tiempo-compartido"><span class="header-section-number">9.4</span> Tiempo compartido</h2>
+<p>Distribuye el tiempo de CPU entre múltiples usuarios o procesos interactivos, proporcionando respuestas suficientemente rápidas para mantener la sensación de atención individual.</p>
+</section>
+<section id="sistemas-de-red-y-distribuidos" class="level2" data-number="9.5">
+<h2 data-number="9.5" class="anchored" data-anchor-id="sistemas-de-red-y-distribuidos"><span class="header-section-number">9.5</span> Sistemas de red y distribuidos</h2>
+<p>Un sistema operativo de red facilita compartir servicios y recursos entre equipos conectados. Un sistema distribuido coordina componentes ubicados en diferentes nodos para ofrecer un servicio integrado.</p>
+</section>
+<section id="sistemas-de-tiempo-real" class="level2" data-number="9.6">
+<h2 data-number="9.6" class="anchored" data-anchor-id="sistemas-de-tiempo-real"><span class="header-section-number">9.6</span> Sistemas de tiempo real</h2>
+<p>Un sistema de tiempo real debe responder dentro de límites temporales definidos.</p>
+<ul>
+<li><strong>Tiempo real duro:</strong> incumplir el plazo puede producir una falla crítica.</li>
+<li><strong>Tiempo real blando:</strong> el retraso reduce la calidad del servicio, pero no necesariamente causa una falla catastrófica.</li>
+</ul>
+<p>Ejemplos:</p>
+<ul>
+<li>control industrial;</li>
+<li>sistemas automotrices;</li>
+<li>telecomunicaciones;</li>
+<li>robótica;</li>
+<li>instrumentación médica;</li>
+<li>control de energía.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/img/sistema_tiempo_real_material_original.png" class="img-fluid figure-img" style="width:72.0%"></p>
+<figcaption>Esquema de sistema de tiempo real tomado del material original</figcaption>
+</figure>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled" title="Aclaración">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Advertencia</span>Aclaración
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>“Tiempo real” no significa simplemente “muy rápido”. Significa que el sistema debe responder dentro de un tiempo máximo conocido y verificable.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="llamadas-al-sistema" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> Llamadas al sistema</h1>
+<p>Las aplicaciones necesitan solicitar servicios al kernel. Para hacerlo utilizan <strong>llamadas al sistema</strong>.</p>
+<p>Algunos servicios típicos son:</p>
+<ul>
+<li>abrir o cerrar un archivo;</li>
+<li>crear un proceso;</li>
+<li>reservar memoria;</li>
+<li>comunicarse por red;</li>
+<li>leer datos de un dispositivo;</li>
+<li>consultar la hora del sistema.</li>
+</ul>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+    A[Aplicación] --&gt; B[Biblioteca o API]
+    B --&gt; C[Llamada al sistema]
+    C --&gt; D[Kernel]
+    D --&gt; E[Hardware o recurso]
+    E --&gt; D
+    D --&gt; B
+    B --&gt; A
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<section id="bibliotecas-y-api" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="bibliotecas-y-api"><span class="header-section-number">10.1</span> Bibliotecas y API</h2>
+<p>Los lenguajes de alto nivel suelen utilizar bibliotecas que presentan funciones más sencillas. La biblioteca prepara los parámetros y realiza la transición necesaria para solicitar el servicio al sistema operativo.</p>
+<p>Por ejemplo, una aplicación puede llamar una función para abrir un archivo. Esa función termina utilizando servicios del sistema operativo para validar permisos, localizar el archivo y coordinar el acceso al almacenamiento.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Observe">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Observe
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Las llamadas al sistema forman una frontera controlada entre las aplicaciones y el kernel. Esta frontera permite ofrecer servicios sin entregar a cada programa control total sobre el equipo.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="relación-con-la-arquitectura-del-computador" class="level1" data-number="11">
+<h1 data-number="11"><span class="header-section-number">11</span> Relación con la arquitectura del computador</h1>
+<p>Para comprender un sistema operativo también necesitamos recordar los componentes básicos del computador.</p>
+<section id="cpu" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="cpu"><span class="header-section-number">11.1</span> CPU</h2>
+<p>La <strong>unidad central de procesamiento</strong> ejecuta instrucciones y realiza operaciones aritméticas, lógicas y de control.</p>
+<p>En sistemas modernos, una CPU puede incluir varios núcleos, memorias caché y mecanismos especializados. El sistema operativo planifica procesos e hilos para aprovechar esos recursos.</p>
+</section>
+<section id="memoria-principal" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="memoria-principal"><span class="header-section-number">11.2</span> Memoria principal</h2>
+<p>La memoria RAM almacena temporalmente instrucciones y datos necesarios durante la ejecución.</p>
+<p>Es rápida, pero normalmente pierde su contenido al apagar el equipo. El sistema operativo administra qué regiones utiliza cada proceso y coordina la memoria virtual.</p>
+</section>
+<section id="almacenamiento-secundario" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="almacenamiento-secundario"><span class="header-section-number">11.3</span> Almacenamiento secundario</h2>
+<p>SSD, discos duros y otros medios conservan información de forma persistente. Son más lentos que la RAM, pero poseen mayor capacidad.</p>
+</section>
+<section id="unidad-de-control-y-alu" class="level2" data-number="11.4">
+<h2 data-number="11.4" class="anchored" data-anchor-id="unidad-de-control-y-alu"><span class="header-section-number">11.4</span> Unidad de control y ALU</h2>
+<p>La unidad de control coordina la ejecución de instrucciones dentro del procesador. La unidad aritmética y lógica realiza operaciones matemáticas y comparaciones.</p>
+<p>En cursos modernos estos componentes se estudian como partes de la arquitectura del procesador, mientras el sistema operativo se analiza como el software que administra su utilización.</p>
+</section>
+<section id="periféricos-y-entradasalida" class="level2" data-number="11.5">
+<h2 data-number="11.5" class="anchored" data-anchor-id="periféricos-y-entradasalida"><span class="header-section-number">11.5</span> Periféricos y entrada/salida</h2>
+<p>Teclado, mouse, pantalla, almacenamiento, impresoras y adaptadores de red intercambian información con el sistema mediante controladores y mecanismos de entrada/salida.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Consejo del Ingeniero">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Consejo del Ingeniero
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Cuando una computadora está lenta, no asuma inmediatamente que “la CPU está mala”. El cuello de botella puede encontrarse en memoria, almacenamiento, red, temperatura, controladores o en un proceso específico.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="virtualización-y-contenedores-una-mirada-actual" class="level1" data-number="12">
+<h1 data-number="12"><span class="header-section-number">12</span> Virtualización y contenedores: una mirada actual</h1>
+<p>La virtualización permite ejecutar máquinas virtuales con su propio sistema operativo sobre un hipervisor.</p>
+<p>Una máquina virtual normalmente incluye:</p>
+<ul>
+<li>un sistema operativo invitado;</li>
+<li>su propio kernel;</li>
+<li>memoria virtual asignada;</li>
+<li>dispositivos virtuales.</li>
+</ul>
+<p>Los contenedores aíslan procesos y sus dependencias, pero comparten el kernel del sistema anfitrión. Por eso suelen ser más ligeros que una máquina virtual completa.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Característica</th>
+<th>Máquina virtual</th>
+<th>Contenedor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Kernel propio</td>
+<td>Sí</td>
+<td>Generalmente no; comparte el kernel anfitrión</td>
+</tr>
+<tr class="even">
+<td>Aislamiento</td>
+<td>Alto</td>
+<td>A nivel de procesos y recursos</td>
+</tr>
+<tr class="odd">
+<td>Tamaño</td>
+<td>Mayor</td>
+<td>Menor</td>
+</tr>
+<tr class="even">
+<td>Inicio</td>
+<td>Más lento</td>
+<td>Habitualmente rápido</td>
+</tr>
+<tr class="odd">
+<td>Uso típico</td>
+<td>Sistemas completos, pruebas de SO, aislamiento fuerte</td>
+<td>Empaquetado y despliegue de aplicaciones</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled" title="Primera aproximación">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Primera aproximación
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Virtualización y contenedores se estudiarán con mayor profundidad más adelante. En esta clase basta comprender que ambos dependen de funciones esenciales del sistema operativo.</p>
+</div>
+</div>
+</section>
+<section id="laboratorio-1-conozca-su-sistema-operativo" class="level1" data-number="13">
+<h1 data-number="13"><span class="header-section-number">13</span> Laboratorio 1: conozca su sistema operativo</h1>
+<section id="propósito" class="level2" data-number="13.1">
+<h2 data-number="13.1" class="anchored" data-anchor-id="propósito"><span class="header-section-number">13.1</span> Propósito</h2>
+<p>Identificar el sistema operativo del equipo y relacionar los conceptos estudiados con información real.</p>
+</section>
+<section id="actividad-a-información-general" class="level2" data-number="13.2">
+<h2 data-number="13.2" class="anchored" data-anchor-id="actividad-a-información-general"><span class="header-section-number">13.2</span> Actividad A: información general</h2>
+<p>Registre los siguientes datos:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Dato</th>
+<th>Resultado de su equipo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Sistema operativo</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>Edición o distribución</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Versión</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>Arquitectura</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Procesador</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>Memoria RAM</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Nombre del equipo</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>Usuario actual</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Espacio disponible</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="actividad-b-windows" class="level2" data-number="13.3">
+<h2 data-number="13.3" class="anchored" data-anchor-id="actividad-b-windows"><span class="header-section-number">13.3</span> Actividad B: Windows</h2>
+<p>Abra <strong>Terminal</strong>, <strong>PowerShell</strong> o <strong>Símbolo del sistema</strong> y ejecute:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode powershell code-with-copy"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>systeminfo</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>También puede utilizar:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode powershell code-with-copy"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Get-ComputerInfo</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Comandos básicos seguros para explorar:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode powershell code-with-copy"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>hostname</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>whoami</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">Get-Location</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">Get-ChildItem</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Responda:</p>
+<ol type="1">
+<li>¿Qué versión y compilación de Windows utiliza?</li>
+<li>¿Cuánta memoria física aparece instalada?</li>
+<li>¿Cuál es el nombre del equipo?</li>
+<li>¿Qué diferencia observa entre <code>Get-ChildItem</code> y la vista del Explorador de archivos?</li>
+</ol>
+</section>
+<section id="actividad-c-macos" class="level2" data-number="13.4">
+<h2 data-number="13.4" class="anchored" data-anchor-id="actividad-c-macos"><span class="header-section-number">13.4</span> Actividad C: macOS</h2>
+<p>Abra <strong>Terminal</strong> y ejecute:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sw_vers</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">uname</span> <span class="at">-a</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">whoami</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hostname</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="bu">pwd</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="ex">system_profiler</span> SPHardwareDataType</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Responda:</p>
+<ol type="1">
+<li>¿Qué versión de macOS utiliza?</li>
+<li>¿Qué arquitectura reporta el equipo?</li>
+<li>¿Qué información muestra <code>pwd</code>?</li>
+<li>¿Qué relación encuentra entre Finder y <code>ls</code>?</li>
+</ol>
+</section>
+<section id="actividad-d-gnulinux" class="level2" data-number="13.5">
+<h2 data-number="13.5" class="anchored" data-anchor-id="actividad-d-gnulinux"><span class="header-section-number">13.5</span> Actividad D: GNU/Linux</h2>
+<p>Abra una terminal y ejecute:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> /etc/os-release</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">uname</span> <span class="at">-r</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">hostnamectl</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">whoami</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="bu">pwd</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Responda:</p>
+<ol type="1">
+<li>¿Cuál es la distribución?</li>
+<li>¿Qué versión del kernel utiliza?</li>
+<li>¿Qué arquitectura tiene el equipo?</li>
+<li>¿Qué información proporciona <code>/etc/os-release</code>?</li>
+</ol>
+</section>
+<section id="actividad-e-comparación" class="level2" data-number="13.6">
+<h2 data-number="13.6" class="anchored" data-anchor-id="actividad-e-comparación"><span class="header-section-number">13.6</span> Actividad E: comparación</h2>
+<p>Complete la tabla:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Acción</th>
+<th>Windows</th>
+<th>macOS/Linux</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Mostrar usuario</td>
+<td><code>whoami</code></td>
+<td><code>whoami</code></td>
+</tr>
+<tr class="even">
+<td>Mostrar nombre del equipo</td>
+<td><code>hostname</code></td>
+<td><code>hostname</code></td>
+</tr>
+<tr class="odd">
+<td>Mostrar carpeta actual</td>
+<td><code>Get-Location</code></td>
+<td><code>pwd</code></td>
+</tr>
+<tr class="even">
+<td>Listar archivos</td>
+<td><code>Get-ChildItem</code></td>
+<td><code>ls</code></td>
+</tr>
+<tr class="odd">
+<td>Información del sistema</td>
+<td><code>systeminfo</code></td>
+<td><code>sw_vers</code>, <code>hostnamectl</code> o <code>/etc/os-release</code></td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-warning callout-titled" title="Regla del laboratorio">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Advertencia</span>Regla del laboratorio
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Ejecute únicamente los comandos indicados y lea su salida. No modifique usuarios, permisos, particiones, fecha, hora ni configuraciones del sistema durante esta práctica.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="caso-de-análisis" class="level1" data-number="14">
+<h1 data-number="14"><span class="header-section-number">14</span> Caso de análisis</h1>
+<p>Una empresa posee:</p>
+<ul>
+<li>40 computadoras de oficina;</li>
+<li>un servidor de archivos;</li>
+<li>una aplicación web;</li>
+<li>teléfonos utilizados por personal de campo;</li>
+<li>un sistema industrial que debe responder en milisegundos.</li>
+</ul>
+<p>Analice qué tipo de sistema operativo podría utilizarse en cada contexto y justifique su respuesta considerando:</p>
+<ul>
+<li>propósito;</li>
+<li>seguridad;</li>
+<li>administración;</li>
+<li>interfaz;</li>
+<li>tiempo de respuesta;</li>
+<li>compatibilidad de aplicaciones.</li>
+</ul>
+</section>
+<section id="resumen-de-la-clase" class="level1" data-number="15">
+<h1 data-number="15"><span class="header-section-number">15</span> Resumen de la clase</h1>
+<p>En esta clase aprendimos que:</p>
+<ul>
+<li>El sistema operativo administra hardware y ofrece servicios a las aplicaciones.</li>
+<li>El kernel es el núcleo privilegiado del sistema.</li>
+<li>Los procesos, la memoria, los archivos, los dispositivos, la seguridad y la red son recursos administrados por el sistema operativo.</li>
+<li>GUI y CLI son formas complementarias de interacción.</li>
+<li>Los sistemas operativos pueden clasificarse por su número de tareas, usuarios, forma de procesamiento y requisitos temporales.</li>
+<li>Las llamadas al sistema permiten a las aplicaciones solicitar servicios al kernel.</li>
+<li>Windows, GNU/Linux, macOS, Android, iOS y los sistemas de tiempo real responden a necesidades distintas.</li>
+<li>La virtualización y los contenedores dependen de capacidades fundamentales del sistema operativo.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled" title="Consejo final del Ingeniero">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Consejo final del Ingeniero
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Un buen administrador no memoriza únicamente comandos. Comprende qué recurso está observando, qué problema intenta resolver y qué efecto tendrá cada acción.</p>
+</div>
+</div>
+</section>
+<section id="tarea-sugerida" class="level1" data-number="16">
+<h1 data-number="16"><span class="header-section-number">16</span> Tarea sugerida</h1>
+<ol type="1">
+<li>Elabore una comparación entre el sistema operativo de su computadora y el de su teléfono.</li>
+<li>Identifique tres procesos activos en su equipo y explique, con sus propias palabras, para qué sirven.</li>
+<li>Explique la diferencia entre kernel, sistema operativo e interfaz gráfica.</li>
+<li>Investigue un ejemplo de sistema de tiempo real y explique por qué el cumplimiento del tiempo es importante.</li>
+<li>Describa una situación en la que utilizaría una máquina virtual y otra en la que utilizaría un contenedor.</li>
+<li>Incluya capturas de pantalla de la información obtenida en el laboratorio, ocultando datos personales que no desee compartir.</li>
+</ol>
+</section>
+<section id="fuentes-oficiales-para-actualización" class="level1" data-number="17">
+<h1 data-number="17"><span class="header-section-number">17</span> Fuentes oficiales para actualización</h1>
+<ul>
+<li>Microsoft. <em>Windows 11 release information</em>: <a href="https://learn.microsoft.com/windows/release-health/windows11-release-information" class="uri">https://learn.microsoft.com/windows/release-health/windows11-release-information</a></li>
+<li>Microsoft. <em>Windows Server release information</em>: <a href="https://learn.microsoft.com/windows/release-health/windows-server-release-info" class="uri">https://learn.microsoft.com/windows/release-health/windows-server-release-info</a></li>
+<li>Apple. <em>Apple security releases</em>: <a href="https://support.apple.com/100100" class="uri">https://support.apple.com/100100</a></li>
+<li>Canonical. <em>Ubuntu release cycle</em>: <a href="https://ubuntu.com/about/release-cycle" class="uri">https://ubuntu.com/about/release-cycle</a></li>
+<li>Linux Kernel Organization. <em>The Linux Kernel Archives</em>: <a href="https://www.kernel.org/" class="uri">https://www.kernel.org/</a></li>
+<li>Android Developers. <em>Android platform updates</em>: <a href="https://developer.android.com/latest-updates" class="uri">https://developer.android.com/latest-updates</a></li>
+<li>Docker. <em>What is a container?</em>: <a href="https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-a-container/" class="uri">https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-a-container/</a></li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled" title="Nota editorial">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Nota editorial
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La información de versiones fue revisada en julio de 2026. Debido a que los sistemas operativos se actualizan continuamente, las versiones exactas deben verificarse en la documentación oficial al impartir nuevamente la clase.</p>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiado");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiado");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../index.html" class="pagination-link" aria-label="index.html">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">index.html</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../capitulos/02_administracion_sistema_archivos.html" class="pagination-link" aria-label="Administración del sistema de archivos desde la línea de comandos">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Administración del sistema de archivos desde la línea de comandos</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Editorial Académica de Ingeniería en Sistemas</p>
+</div>   
+    <div class="nav-footer-center">
+<p>Diseñar una vez. Enseñar toda la vida.</p>
+</div>
+    <div class="nav-footer-right">
+<p>Ing. Jorge Luis García Chacón</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

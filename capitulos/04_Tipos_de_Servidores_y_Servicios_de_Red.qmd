@@ -1,0 +1,85 @@
+---
+title: "Clase 4. Tipos de Servidores y Servicios de Red"
+---
+
+# Clase 4 – Tipos de Servidores y Servicios de Red
+
+> **Nota:** Este documento es la versión inicial integrada del capítulo. Incluye la estructura completa para el libro y sirve como base para la edición final.
+
+## Presentación
+
+En esta clase estudiaremos los principales tipos de servidores utilizados en una infraestructura informática moderna...
+
+## Objetivos
+
+- Comprender qué es un servidor.
+- Identificar los principales tipos de servidores.
+- Diferenciar las funciones de cada uno.
+- Comprender cómo trabajan de forma integrada.
+
+## Contenido
+
+1. ¿Qué es un servidor?
+2. ¿Por qué existen diferentes servidores?
+3. DNS
+4. DHCP
+5. Directorio Activo
+6. Servidor Web
+7. Servidor de Archivos
+8. FTP/SFTP
+9. Servidor de Correo
+10. Servidor de Aplicaciones
+11. Servidor de Base de Datos
+12. Firewall
+13. Proxy
+14. IDS / IPS
+15. Virtualización
+16. NAS y SAN
+17. Computación en la nube
+18. Caso de estudio
+19. Laboratorio
+20. Autoevaluación
+21. Resumen
+
+---
+
+# Desarrollo
+
+Este capítulo debe incorporar el contenido desarrollado durante nuestra sesión de trabajo, con explicaciones conversacionales, ejemplos, actividades, tablas y figuras.
+
+Cada tema seguirá la estructura:
+
+- Introducción mediante una situación cotidiana.
+- Explicación del concepto.
+- Ejemplo aplicado.
+- Idea clave.
+- Figura sugerida.
+- Preguntas de reflexión cuando corresponda.
+
+---
+
+# Caso de estudio
+
+Acceso de un estudiante al Campus Virtual de la universidad y recorrido por DNS, Firewall, Servidor Web, Aplicaciones, Directorio y Base de Datos.
+
+---
+
+# Laboratorio
+
+Diseño de la infraestructura de servidores para una universidad.
+
+---
+
+# Autoevaluación
+
+Preguntas de selección múltiple, verdadero/falso y casos prácticos.
+
+---
+
+# Referencias
+
+- Silberschatz, Galvin & Gagne.
+- Tanenbaum.
+- Stallings.
+- Microsoft Learn.
+- Red Hat Documentation.

@@ -1,0 +1,118 @@
+
+---
+title: "Clase 4. Administración de Procesos"
+author: "Editorial Académica de Ingeniería en Sistemas"
+format:
+  html:
+    toc: true
+    number-sections: true
+---
+
+# Presentación
+
+Cada vez que abrimos un navegador, reproducimos música o editamos un documento, el Sistema Operativo crea y administra procesos. Aunque parezca que todas las aplicaciones trabajan al mismo tiempo, en realidad el procesador distribuye su tiempo entre ellas de forma extremadamente rápida.
+
+::: {.callout-tip}
+## Objetivos
+
+- Comprender qué es un proceso.
+- Diferenciar programa y proceso.
+- Explicar el modelo de procesos.
+- Comprender los estados de un proceso.
+- Interpretar el funcionamiento del PCB.
+:::
+
+# ¿Qué es un proceso?
+
+Un **proceso** es un programa que se encuentra en ejecución junto con todos los recursos que necesita para funcionar: memoria, registros, archivos abiertos y tiempo de CPU.
+
+| Programa | Proceso |
+|-----------|----------|
+| Archivo almacenado | Programa en ejecución |
+| Pasivo | Dinámico |
+| No consume recursos | Consume CPU, memoria y E/S |
+
+## Analogía
+
+Una receta de cocina representa un **programa**. Preparar la receta utilizando ingredientes, tiempo y utensilios representa el **proceso**.
+
+# Modelo de Procesos
+
+El Sistema Operativo crea la ilusión de que cada aplicación posee su propio procesador. En realidad, el **Scheduler** distribuye pequeños intervalos de tiempo entre todos los procesos.
+
+```{mermaid}
+flowchart LR
+A[Proceso A] --> CPU((CPU))
+B[Proceso B] --> CPU
+C[Proceso C] --> CPU
+CPU --> A
+CPU --> B
+CPU --> C
+```
+
+::: {.callout-note}
+## Idea clave
+
+La multitarea es posible porque el Sistema Operativo cambia rápidamente entre procesos mediante el **Cambio de Contexto (Context Switch)**.
+:::
+
+# Programa vs. Proceso
+
+Un único programa puede generar múltiples procesos independientes.
+
+```{mermaid}
+flowchart TB
+P[Microsoft Word.exe]
+P --> A[Proceso 1]
+P --> B[Proceso 2]
+P --> C[Proceso 3]
+```
+
+# Espacio de Direcciones
+
+Cada proceso dispone de un espacio de memoria independiente.
+
+```{mermaid}
+flowchart TB
+A[Código]
+B[Datos]
+C[Heap]
+D[Stack]
+
+A --> B --> C --> D
+```
+
+# Bloque de Control del Proceso (PCB)
+
+El PCB es el expediente administrativo del proceso.
+
+| Campo | Descripción |
+|-------|-------------|
+| PID | Identificador único |
+| Estado | Estado actual |
+| Program Counter | Próxima instrucción |
+| Registros | Contexto de CPU |
+| Memoria | Espacio asignado |
+| Archivos | Recursos abiertos |
+
+```{mermaid}
+flowchart LR
+PCB[PCB]
+PCB --> PID
+PCB --> Estado
+PCB --> Registros
+PCB --> Memoria
+PCB --> Archivos
+```
+
+# Tabla de Procesos
+
+El kernel mantiene una tabla donde registra todos los PCB existentes.
+
+# Resumen
+
+- Un programa se convierte en proceso al ejecutarse.
+- Cada proceso posee memoria y recursos propios.
+- El PCB almacena toda la información necesaria para administrarlo.
+- El Scheduler comparte el procesador entre todos los procesos.
+- En la siguiente sección estudiaremos el ciclo de vida y los estados de un proceso.

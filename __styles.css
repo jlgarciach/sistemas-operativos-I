@@ -1,0 +1,16 @@
+
+:root {
+  --umg-verde: #319f90;
+  --umg-naranja: #d35400;
+  --umg-gris: #646464;
+  --umg-rosa: #fbeae5;
+}
+h1, h2 { color: var(--umg-verde); }
+h3 { color: var(--umg-naranja); }
+blockquote {
+  border-left: 5px solid var(--umg-naranja);
+  background: var(--umg-rosa);
+  padding: .8rem 1rem;
+}
+table { font-size: .95rem; }
+code { white-space: pre-wrap; }

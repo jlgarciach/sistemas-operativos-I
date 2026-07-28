@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560">
+<rect width="1200" height="560" fill="#f7f7f7"/>
+<text x="600" y="48" text-anchor="middle" font-family="Arial" font-size="32" font-weight="bold" fill="#333">Rutas absolutas y relativas</text>
+<g font-family="Arial">
+<rect x="60" y="95" width="1080" height="150" rx="18" fill="white" stroke="#319f90" stroke-width="4"/>
+<text x="100" y="140" font-size="28" font-weight="bold" fill="#319f90">Ruta absoluta</text>
+<text x="100" y="195" font-size="25" fill="#333">C:\Usuarios\Estudiante\Documentos\SOI\Clase_02\notas.txt</text>
+<rect x="60" y="300" width="1080" height="150" rx="18" fill="white" stroke="#d35400" stroke-width="4"/>
+<text x="100" y="345" font-size="28" font-weight="bold" fill="#d35400">Ruta relativa</text>
+<text x="100" y="400" font-size="25" fill="#333">Clase_02\notas.txt</text>
+<text x="600" y="505" text-anchor="middle" font-size="22" fill="#646464">La ruta relativa depende de la ubicación actual.</text>
+</g></svg>

@@ -1,0 +1,61 @@
+---
+title: ""
+---
+
+{{< include ../_template/componentes/portada.qmd >}}
+
+::: {.content-visible when-format="html"}
+# Sistemas Operativos I
+
+## Comprender cómo funciona un sistema operativo es comprender cómo trabaja una computadora
+
+**Ing. Jorge Luis García Chacón**  
+Segundo Semestre - Edición 2026
+
+> **El libro que nos hubiera gustado tener cuando estudiábamos Ingeniería.**
+:::
+
+::: {.content-visible when-format="pdf"}
+\begin{titlepage}
+\centering
+\vspace*{1.5cm}
+{\Large UNIVERSIDAD MARIANO GÁLVEZ DE GUATEMALA\par}
+\vspace{0.4cm}
+{\large Facultad de Ingeniería en Sistemas\par}
+\vspace{1.5cm}
+{\Huge\bfseries SISTEMAS OPERATIVOS I\par}
+\vspace{0.5cm}
+{\Large Introducción y fundamentos\par}
+\vspace{1.2cm}
+{\LARGE Clase 1\par}
+\vspace{0.3cm}
+{\Large Introducción a los Sistemas Operativos\par}
+\vfill
+{\Large Ing. Jorge Luis García Chacón\par}
+\vspace{0.5cm}
+{\large Segundo Semestre - Edición 2026\par}
+\vspace{1.2cm}
+{\itshape El libro que nos hubiera gustado tener cuando estudiábamos Ingeniería.\par}
+\end{titlepage}
+\clearpage
+:::
+
+# Acerca de este volumen
+
+| Campo | Información |
+|---|---|
+| Universidad | Universidad Mariano Gálvez de Guatemala |
+| Facultad | Ingeniería en Sistemas |
+| Colección | Editorial Académica de Ingeniería en Sistemas |
+| Curso | Sistemas Operativos I |
+| Clase | Introducción a los Sistemas Operativos |
+| Docente | Ing. Jorge Luis García Chacón |
+| Edición | 2026 |
+
+::: {.callout-note title="Propósito de la colección"}
+Esta colección transforma la experiencia docente en materiales universitarios claros, actuales, prácticos y reutilizables.
+:::
+
+::: {.callout-tip title="Lema editorial"}
+Diseñar una vez. Enseñar toda la vida.
+:::

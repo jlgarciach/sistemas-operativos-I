@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ing. Jorge Luis García Chacón">
+
+<title>3&nbsp; Administración del sistema de archivos desde la línea de comandos – Sistemas Operativos I</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../capitulos/03_sistemas_operativos_red.html" rel="next">
+<link href="../capitulos/01_introduccion_sistemas_operativos.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-00cb48ef4f8381ff23467c959274e61b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-663c59e08f2ec96d6b2ddc79a12e8e5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No se han encontrado resultados",
+    "search-matching-documents-text": "documentos encontrados",
+    "search-copy-link-title": "Copiar el enlace en la búsqueda",
+    "search-hide-matches-text": "Ocultar resultados adicionales",
+    "search-more-match-text": "resultado adicional en este documento",
+    "search-more-matches-text": "resultados adicionales en este documento",
+    "search-clear-button-title": "Borrar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Buscar"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../capitulos/02_administracion_sistema_archivos.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Administración del sistema de archivos desde la línea de comandos</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Buscar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Sistemas Operativos I</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Buscar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">index.html</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/01_introduccion_sistemas_operativos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Presentación de la clase</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/02_administracion_sistema_archivos.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Administración del sistema de archivos desde la línea de comandos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/03_sistemas_operativos_red.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Clase 3. Sistemas Operativos de Red</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/04_administracion_procesos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Clase 4. Administración de Procesos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/05_control_procesos_concurrencia.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Clase 5. Control de Procesos y Concurrencia</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/99_cierre.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Cierre de la clase</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Tabla de contenidos</h2>
+   
+  <ul>
+  <li><a href="#presentación-de-la-clase" id="toc-presentación-de-la-clase" class="nav-link active" data-scroll-target="#presentación-de-la-clase"><span class="header-section-number">4</span> Presentación de la clase</a>
+  <ul class="collapse">
+  <li><a href="#objetivos-de-aprendizaje" id="toc-objetivos-de-aprendizaje" class="nav-link" data-scroll-target="#objetivos-de-aprendizaje"><span class="header-section-number">4.1</span> Objetivos de aprendizaje</a></li>
+  <li><a href="#ruta-de-trabajo-de-la-sesión" id="toc-ruta-de-trabajo-de-la-sesión" class="nav-link" data-scroll-target="#ruta-de-trabajo-de-la-sesión"><span class="header-section-number">4.2</span> Ruta de trabajo de la sesión</a></li>
+  </ul></li>
+  <li><a href="#dónde-está-realmente-un-archivo" id="toc-dónde-está-realmente-un-archivo" class="nav-link" data-scroll-target="#dónde-está-realmente-un-archivo"><span class="header-section-number">5</span> ¿Dónde está realmente un archivo?</a></li>
+  <li><a href="#el-sistema-de-archivos" id="toc-el-sistema-de-archivos" class="nav-link" data-scroll-target="#el-sistema-de-archivos"><span class="header-section-number">6</span> El sistema de archivos</a>
+  <ul class="collapse">
+  <li><a href="#unidades-de-almacenamiento" id="toc-unidades-de-almacenamiento" class="nav-link" data-scroll-target="#unidades-de-almacenamiento"><span class="header-section-number">6.1</span> Unidades de almacenamiento</a></li>
+  <li><a href="#directorios-y-carpetas" id="toc-directorios-y-carpetas" class="nav-link" data-scroll-target="#directorios-y-carpetas"><span class="header-section-number">6.2</span> Directorios y carpetas</a></li>
+  <li><a href="#archivos-y-extensiones" id="toc-archivos-y-extensiones" class="nav-link" data-scroll-target="#archivos-y-extensiones"><span class="header-section-number">6.3</span> Archivos y extensiones</a></li>
+  </ul></li>
+  <li><a href="#rutas-la-dirección-de-la-información" id="toc-rutas-la-dirección-de-la-información" class="nav-link" data-scroll-target="#rutas-la-dirección-de-la-información"><span class="header-section-number">7</span> Rutas: la dirección de la información</a>
+  <ul class="collapse">
+  <li><a href="#ruta-absoluta" id="toc-ruta-absoluta" class="nav-link" data-scroll-target="#ruta-absoluta"><span class="header-section-number">7.1</span> Ruta absoluta</a></li>
+  <li><a href="#ruta-relativa" id="toc-ruta-relativa" class="nav-link" data-scroll-target="#ruta-relativa"><span class="header-section-number">7.2</span> Ruta relativa</a></li>
+  <li><a href="#separadores-y-espacios" id="toc-separadores-y-espacios" class="nav-link" data-scroll-target="#separadores-y-espacios"><span class="header-section-number">7.3</span> Separadores y espacios</a></li>
+  </ul></li>
+  <li><a href="#de-la-interfaz-gráfica-a-la-línea-de-comandos" id="toc-de-la-interfaz-gráfica-a-la-línea-de-comandos" class="nav-link" data-scroll-target="#de-la-interfaz-gráfica-a-la-línea-de-comandos"><span class="header-section-number">8</span> De la interfaz gráfica a la línea de comandos</a></li>
+  <li><a href="#qué-es-un-comando" id="toc-qué-es-un-comando" class="nav-link" data-scroll-target="#qué-es-un-comando"><span class="header-section-number">9</span> ¿Qué es un comando?</a></li>
+  <li><a href="#cmd-en-windows" id="toc-cmd-en-windows" class="nav-link" data-scroll-target="#cmd-en-windows"><span class="header-section-number">10</span> CMD en Windows</a>
+  <ul class="collapse">
+  <li><a href="#cómo-abrirlo" id="toc-cómo-abrirlo" class="nav-link" data-scroll-target="#cómo-abrirlo"><span class="header-section-number">10.1</span> Cómo abrirlo</a></li>
+  </ul></li>
+  <li><a href="#anatomía-del-prompt" id="toc-anatomía-del-prompt" class="nav-link" data-scroll-target="#anatomía-del-prompt"><span class="header-section-number">11</span> Anatomía del prompt</a></li>
+  <li><a href="#laboratorio-narrativo-construyendo-el-proyecto-soi" id="toc-laboratorio-narrativo-construyendo-el-proyecto-soi" class="nav-link" data-scroll-target="#laboratorio-narrativo-construyendo-el-proyecto-soi"><span class="header-section-number">12</span> Laboratorio narrativo: construyendo el proyecto SOI</a>
+  <ul class="collapse">
+  <li><a href="#situación" id="toc-situación" class="nav-link" data-scroll-target="#situación"><span class="header-section-number">12.1</span> Situación</a></li>
+  <li><a href="#paso-1.-saber-dónde-estamos" id="toc-paso-1.-saber-dónde-estamos" class="nav-link" data-scroll-target="#paso-1.-saber-dónde-estamos"><span class="header-section-number">12.2</span> Paso 1. Saber dónde estamos</a></li>
+  <li><a href="#paso-2.-ver-el-contenido" id="toc-paso-2.-ver-el-contenido" class="nav-link" data-scroll-target="#paso-2.-ver-el-contenido"><span class="header-section-number">12.3</span> Paso 2. Ver el contenido</a>
+  <ul class="collapse">
+  <li><a href="#variantes-útiles" id="toc-variantes-útiles" class="nav-link" data-scroll-target="#variantes-útiles"><span class="header-section-number">12.3.1</span> Variantes útiles</a></li>
+  </ul></li>
+  <li><a href="#paso-3.-ir-a-documentos" id="toc-paso-3.-ir-a-documentos" class="nav-link" data-scroll-target="#paso-3.-ir-a-documentos"><span class="header-section-number">12.4</span> Paso 3. Ir a Documentos</a></li>
+  <li><a href="#paso-4.-crear-el-directorio-principal" id="toc-paso-4.-crear-el-directorio-principal" class="nav-link" data-scroll-target="#paso-4.-crear-el-directorio-principal"><span class="header-section-number">12.5</span> Paso 4. Crear el directorio principal</a></li>
+  <li><a href="#paso-5.-entrar-al-proyecto" id="toc-paso-5.-entrar-al-proyecto" class="nav-link" data-scroll-target="#paso-5.-entrar-al-proyecto"><span class="header-section-number">12.6</span> Paso 5. Entrar al proyecto</a></li>
+  <li><a href="#paso-6.-crear-la-estructura-del-semestre" id="toc-paso-6.-crear-la-estructura-del-semestre" class="nav-link" data-scroll-target="#paso-6.-crear-la-estructura-del-semestre"><span class="header-section-number">12.7</span> Paso 6. Crear la estructura del semestre</a></li>
+  <li><a href="#paso-7.-visualizar-el-árbol" id="toc-paso-7.-visualizar-el-árbol" class="nav-link" data-scroll-target="#paso-7.-visualizar-el-árbol"><span class="header-section-number">12.8</span> Paso 7. Visualizar el árbol</a></li>
+  </ul></li>
+  <li><a href="#navegación-con-cd" id="toc-navegación-con-cd" class="nav-link" data-scroll-target="#navegación-con-cd"><span class="header-section-number">13</span> Navegación con <code>cd</code></a>
+  <ul class="collapse">
+  <li><a href="#entrar-a-un-directorio" id="toc-entrar-a-un-directorio" class="nav-link" data-scroll-target="#entrar-a-un-directorio"><span class="header-section-number">13.1</span> Entrar a un directorio</a></li>
+  <li><a href="#subir-un-nivel" id="toc-subir-un-nivel" class="nav-link" data-scroll-target="#subir-un-nivel"><span class="header-section-number">13.2</span> Subir un nivel</a></li>
+  <li><a href="#ir-a-la-raíz-de-la-unidad" id="toc-ir-a-la-raíz-de-la-unidad" class="nav-link" data-scroll-target="#ir-a-la-raíz-de-la-unidad"><span class="header-section-number">13.3</span> Ir a la raíz de la unidad</a></li>
+  <li><a href="#cambiar-directamente-mediante-una-ruta" id="toc-cambiar-directamente-mediante-una-ruta" class="nav-link" data-scroll-target="#cambiar-directamente-mediante-una-ruta"><span class="header-section-number">13.4</span> Cambiar directamente mediante una ruta</a></li>
+  <li><a href="#volver-al-directorio-anterior" id="toc-volver-al-directorio-anterior" class="nav-link" data-scroll-target="#volver-al-directorio-anterior"><span class="header-section-number">13.5</span> Volver al directorio anterior</a></li>
+  </ul></li>
+  <li><a href="#crear-archivos-de-práctica" id="toc-crear-archivos-de-práctica" class="nav-link" data-scroll-target="#crear-archivos-de-práctica"><span class="header-section-number">14</span> Crear archivos de práctica</a></li>
+  <li><a href="#copiar-archivos-con-copy" id="toc-copiar-archivos-con-copy" class="nav-link" data-scroll-target="#copiar-archivos-con-copy"><span class="header-section-number">15</span> Copiar archivos con <code>copy</code></a>
+  <ul class="collapse">
+  <li><a href="#copiar-en-el-mismo-directorio" id="toc-copiar-en-el-mismo-directorio" class="nav-link" data-scroll-target="#copiar-en-el-mismo-directorio"><span class="header-section-number">15.1</span> Copiar en el mismo directorio</a></li>
+  <li><a href="#copiar-hacia-otro-directorio" id="toc-copiar-hacia-otro-directorio" class="nav-link" data-scroll-target="#copiar-hacia-otro-directorio"><span class="header-section-number">15.2</span> Copiar hacia otro directorio</a></li>
+  <li><a href="#evitar-sobrescrituras-accidentales" id="toc-evitar-sobrescrituras-accidentales" class="nav-link" data-scroll-target="#evitar-sobrescrituras-accidentales"><span class="header-section-number">15.3</span> Evitar sobrescrituras accidentales</a></li>
+  </ul></li>
+  <li><a href="#renombrar-con-ren" id="toc-renombrar-con-ren" class="nav-link" data-scroll-target="#renombrar-con-ren"><span class="header-section-number">16</span> Renombrar con <code>ren</code></a></li>
+  <li><a href="#mover-con-move" id="toc-mover-con-move" class="nav-link" data-scroll-target="#mover-con-move"><span class="header-section-number">17</span> Mover con <code>move</code></a></li>
+  <li><a href="#eliminar-archivos-con-del" id="toc-eliminar-archivos-con-del" class="nav-link" data-scroll-target="#eliminar-archivos-con-del"><span class="header-section-number">18</span> Eliminar archivos con <code>del</code></a>
+  <ul class="collapse">
+  <li><a href="#riesgo-de-los-comodines" id="toc-riesgo-de-los-comodines" class="nav-link" data-scroll-target="#riesgo-de-los-comodines"><span class="header-section-number">18.1</span> Riesgo de los comodines</a></li>
+  </ul></li>
+  <li><a href="#eliminar-directorios-con-rmdir" id="toc-eliminar-directorios-con-rmdir" class="nav-link" data-scroll-target="#eliminar-directorios-con-rmdir"><span class="header-section-number">19</span> Eliminar directorios con <code>rmdir</code></a>
+  <ul class="collapse">
+  <li><a href="#directorio-vacío" id="toc-directorio-vacío" class="nav-link" data-scroll-target="#directorio-vacío"><span class="header-section-number">19.1</span> Directorio vacío</a></li>
+  <li><a href="#directorio-con-contenido" id="toc-directorio-con-contenido" class="nav-link" data-scroll-target="#directorio-con-contenido"><span class="header-section-number">19.2</span> Directorio con contenido</a></li>
+  </ul></li>
+  <li><a href="#limpiar-la-pantalla-con-cls" id="toc-limpiar-la-pantalla-con-cls" class="nav-link" data-scroll-target="#limpiar-la-pantalla-con-cls"><span class="header-section-number">20</span> Limpiar la pantalla con <code>cls</code></a></li>
+  <li><a href="#resumen-de-comandos" id="toc-resumen-de-comandos" class="nav-link" data-scroll-target="#resumen-de-comandos"><span class="header-section-number">21</span> Resumen de comandos</a></li>
+  <li><a href="#reto-de-aplicación" id="toc-reto-de-aplicación" class="nav-link" data-scroll-target="#reto-de-aplicación"><span class="header-section-number">22</span> Reto de aplicación</a>
+  <ul class="collapse">
+  <li><a href="#escenario" id="toc-escenario" class="nav-link" data-scroll-target="#escenario"><span class="header-section-number">22.1</span> Escenario</a></li>
+  <li><a href="#reglas" id="toc-reglas" class="nav-link" data-scroll-target="#reglas"><span class="header-section-number">22.2</span> Reglas</a></li>
+  <li><a href="#evidencia-sugerida" id="toc-evidencia-sugerida" class="nav-link" data-scroll-target="#evidencia-sugerida"><span class="header-section-number">22.3</span> Evidencia sugerida</a></li>
+  </ul></li>
+  <li><a href="#diagnóstico-de-errores-frecuentes" id="toc-diagnóstico-de-errores-frecuentes" class="nav-link" data-scroll-target="#diagnóstico-de-errores-frecuentes"><span class="header-section-number">23</span> Diagnóstico de errores frecuentes</a>
+  <ul class="collapse">
+  <li><a href="#el-sistema-no-puede-encontrar-la-ruta-especificada" id="toc-el-sistema-no-puede-encontrar-la-ruta-especificada" class="nav-link" data-scroll-target="#el-sistema-no-puede-encontrar-la-ruta-especificada"><span class="header-section-number">23.1</span> “El sistema no puede encontrar la ruta especificada”</a></li>
+  <li><a href="#el-sistema-no-puede-encontrar-el-archivo-especificado" id="toc-el-sistema-no-puede-encontrar-el-archivo-especificado" class="nav-link" data-scroll-target="#el-sistema-no-puede-encontrar-el-archivo-especificado"><span class="header-section-number">23.2</span> “El sistema no puede encontrar el archivo especificado”</a></li>
+  <li><a href="#acceso-denegado" id="toc-acceso-denegado" class="nav-link" data-scroll-target="#acceso-denegado"><span class="header-section-number">23.3</span> “Acceso denegado”</a></li>
+  <li><a href="#el-comando-se-ejecutó-en-el-lugar-equivocado" id="toc-el-comando-se-ejecutó-en-el-lugar-equivocado" class="nav-link" data-scroll-target="#el-comando-se-ejecutó-en-el-lugar-equivocado"><span class="header-section-number">23.4</span> El comando se ejecutó en el lugar equivocado</a></li>
+  </ul></li>
+  <li><a href="#buenas-prácticas" id="toc-buenas-prácticas" class="nav-link" data-scroll-target="#buenas-prácticas"><span class="header-section-number">24</span> Buenas prácticas</a></li>
+  <li><a href="#autoevaluación" id="toc-autoevaluación" class="nav-link" data-scroll-target="#autoevaluación"><span class="header-section-number">25</span> Autoevaluación</a>
+  <ul class="collapse">
+  <li><a href="#selección-breve" id="toc-selección-breve" class="nav-link" data-scroll-target="#selección-breve"><span class="header-section-number">25.1</span> Selección breve</a></li>
+  <li><a href="#preguntas-de-reflexión" id="toc-preguntas-de-reflexión" class="nav-link" data-scroll-target="#preguntas-de-reflexión"><span class="header-section-number">25.2</span> Preguntas de reflexión</a></li>
+  </ul></li>
+  <li><a href="#resumen-de-la-clase" id="toc-resumen-de-la-clase" class="nav-link" data-scroll-target="#resumen-de-la-clase"><span class="header-section-number">26</span> Resumen de la clase</a></li>
+  <li><a href="#tarea-sugerida" id="toc-tarea-sugerida" class="nav-link" data-scroll-target="#tarea-sugerida"><span class="header-section-number">27</span> Tarea sugerida</a></li>
+  <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre"><span class="header-section-number">28</span> Cierre</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Administración del sistema de archivos desde la línea de comandos</span></h1>
+<p class="subtitle lead">Clase 2</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Autor/a</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ing. Jorge Luis García Chacón </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Fecha de publicación</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">31 de diciembre de 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="presentación-de-la-clase" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Presentación de la clase</h1>
+<p>En la clase anterior estudiamos qué es un sistema operativo y por qué constituye la base de todo sistema informático. En esta sesión nos concentraremos en una de sus funciones más visibles: <strong>organizar y administrar la información almacenada</strong>.</p>
+<p>Cada documento, fotografía, programa o proyecto necesita un lugar dentro del sistema. Cuando esa información está bien organizada, puede localizarse, copiarse, trasladarse o eliminarse con rapidez. Cuando no lo está, incluso un archivo que sigue existiendo puede parecer perdido.</p>
+<p>La administración de archivos puede realizarse mediante ventanas e iconos, pero también a través de instrucciones escritas. Por ello, en esta clase utilizaremos el <strong>Símbolo del sistema de Windows (CMD)</strong> para comprender cómo piensa el sistema operativo cuando trabaja con unidades, directorios, rutas y archivos.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Idea central">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Idea central
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Los comandos no son palabras aisladas para memorizar. Son instrucciones que expresan una necesidad concreta: ver, entrar, crear, copiar, mover, renombrar o eliminar.</p>
+</div>
+</div>
+<section id="objetivos-de-aprendizaje" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="objetivos-de-aprendizaje"><span class="header-section-number">4.1</span> Objetivos de aprendizaje</h2>
+<p>Al finalizar esta clase, el estudiante será capaz de:</p>
+<ul>
+<li>Explicar cómo organiza el sistema operativo la información.</li>
+<li>Diferenciar unidades, directorios, subdirectorios y archivos.</li>
+<li>Interpretar rutas absolutas y relativas.</li>
+<li>Reconocer la función del intérprete de comandos de Windows.</li>
+<li>Utilizar comandos básicos para navegar y organizar información.</li>
+<li>Aplicar buenas prácticas para evitar errores durante la administración de archivos.</li>
+</ul>
+</section>
+<section id="ruta-de-trabajo-de-la-sesión" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="ruta-de-trabajo-de-la-sesión"><span class="header-section-number">4.2</span> Ruta de trabajo de la sesión</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Momento</th>
+<th>Actividad</th>
+<th style="text-align: right;">Tiempo aproximado</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Inicio</td>
+<td>Situación problemática y conceptos base</td>
+<td style="text-align: right;">15 min</td>
+</tr>
+<tr class="even">
+<td>Desarrollo</td>
+<td>Directorios, archivos, rutas y CMD</td>
+<td style="text-align: right;">20 min</td>
+</tr>
+<tr class="odd">
+<td>Laboratorio</td>
+<td>Construcción del proyecto <code>SOI</code></td>
+<td style="text-align: right;">35 min</td>
+</tr>
+<tr class="even">
+<td>Aplicación</td>
+<td>Reto guiado y análisis de errores</td>
+<td style="text-align: right;">15 min</td>
+</tr>
+<tr class="odd">
+<td>Cierre</td>
+<td>Síntesis y autoevaluación</td>
+<td style="text-align: right;">5 min</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="dónde-está-realmente-un-archivo" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> ¿Dónde está realmente un archivo?</h1>
+<p>Imagine que debe entregar un proyecto al finalizar la clase. Está seguro de haberlo guardado, pero no recuerda si quedó en <strong>Documentos</strong>, <strong>Descargas</strong>, <strong>Escritorio</strong> o una memoria USB.</p>
+<p>El archivo no necesariamente se perdió. El problema puede ser que desconoce su ubicación.</p>
+<p>Los sistemas operativos resuelven esta situación mediante una organización jerárquica. En lugar de almacenar toda la información en un único espacio, la distribuyen en unidades, directorios y subdirectorios.</p>
+<div id="fig-jerarquia" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-jerarquia-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../img/clase_02/fig_02_01_jerarquia.svg" class="img-fluid figure-img" style="width:88.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-jerarquia-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;5.1: Organización jerárquica del sistema de archivos
+</figcaption>
+</figure>
+</div>
+<p>En esta estructura:</p>
+<ul>
+<li>La <strong>unidad</strong> representa un dispositivo o volumen de almacenamiento.</li>
+<li>El <strong>directorio</strong> agrupa información relacionada.</li>
+<li>El <strong>subdirectorio</strong> es un directorio ubicado dentro de otro.</li>
+<li>El <strong>archivo</strong> contiene los datos que utiliza el usuario o una aplicación.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled" title="Consejo del Ingeniero">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Consejo del Ingeniero
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Un archivo bien nombrado y guardado en una estructura lógica puede ahorrar más tiempo que cualquier comando avanzado.</p>
+</div>
+</div>
+</section>
+<section id="el-sistema-de-archivos" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> El sistema de archivos</h1>
+<p>Un <strong>sistema de archivos</strong> es el conjunto de reglas y estructuras que utiliza el sistema operativo para registrar, organizar, localizar y proteger la información dentro de un dispositivo de almacenamiento.</p>
+<p>El usuario observa carpetas y nombres. Internamente, el sistema operativo también mantiene datos como:</p>
+<ul>
+<li>ubicación lógica;</li>
+<li>tamaño;</li>
+<li>fecha de creación y modificación;</li>
+<li>permisos;</li>
+<li>atributos;</li>
+<li>relación entre directorios y archivos.</li>
+</ul>
+<p>La organización lógica evita que el usuario deba conocer el lugar físico exacto donde se encuentran los datos dentro del dispositivo.</p>
+<section id="unidades-de-almacenamiento" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="unidades-de-almacenamiento"><span class="header-section-number">6.1</span> Unidades de almacenamiento</h2>
+<p>En Windows, las unidades suelen identificarse mediante una letra seguida de dos puntos:</p>
+<pre class="text"><code>C:
+D:
+E:</code></pre>
+<p>La unidad <code>C:</code> suele contener el sistema operativo y los perfiles de usuario. Otras letras pueden representar particiones, memorias USB, discos externos, unidades ópticas o recursos conectados.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="No confundir">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Advertencia</span>No confundir
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La letra no indica por sí sola el tipo de dispositivo. Una memoria USB puede aparecer como <code>D:</code>, <code>E:</code> o cualquier otra letra disponible.</p>
+</div>
+</div>
+</section>
+<section id="directorios-y-carpetas" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="directorios-y-carpetas"><span class="header-section-number">6.2</span> Directorios y carpetas</h2>
+<p>En Windows se utiliza con frecuencia la palabra <strong>carpeta</strong>. En el lenguaje técnico y en la línea de comandos se emplea el término <strong>directorio</strong>.</p>
+<p>Ambos describen una estructura que permite agrupar archivos y otros directorios.</p>
+<pre class="text"><code>C:\
+└── Usuarios
+    └── Estudiante
+        ├── Documentos
+        ├── Descargas
+        └── Escritorio</code></pre>
+</section>
+<section id="archivos-y-extensiones" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="archivos-y-extensiones"><span class="header-section-number">6.3</span> Archivos y extensiones</h2>
+<p>Un archivo es una unidad de información identificada mediante un nombre.</p>
+<pre class="text"><code>informe.docx
+presupuesto.xlsx
+programa.cpp
+manual.pdf
+imagen.png</code></pre>
+<p>La parte ubicada después del último punto se denomina <strong>extensión</strong>. Esta ayuda al sistema operativo y a las aplicaciones a reconocer el formato del archivo.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="Idea clave">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Importante</span>Idea clave
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Cambiar <code>fotografia.jpg</code> por <code>fotografia.pdf</code> no transforma la imagen en un PDF. Solo modifica el nombre.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="rutas-la-dirección-de-la-información" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Rutas: la dirección de la información</h1>
+<p>Una <strong>ruta</strong> indica la ubicación de un archivo o directorio dentro de la jerarquía del sistema.</p>
+<div id="fig-rutas" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rutas-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../img/clase_02/fig_02_02_rutas.svg" class="img-fluid figure-img" style="width:92.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rutas-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;7.1: Ruta absoluta y ruta relativa
+</figcaption>
+</figure>
+</div>
+<section id="ruta-absoluta" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="ruta-absoluta"><span class="header-section-number">7.1</span> Ruta absoluta</h2>
+<p>Una ruta absoluta comienza desde la unidad y describe el recorrido completo.</p>
+<pre class="text"><code>C:\Usuarios\Estudiante\Documentos\SOI\Clase_02\notas.txt</code></pre>
+<p>Esta ruta puede interpretarse de izquierda a derecha:</p>
+<ol type="1">
+<li>Unidad <code>C:</code>.</li>
+<li>Directorio <code>Usuarios</code>.</li>
+<li>Perfil <code>Estudiante</code>.</li>
+<li>Directorio <code>Documentos</code>.</li>
+<li>Proyecto <code>SOI</code>.</li>
+<li>Directorio <code>Clase_02</code>.</li>
+<li>Archivo <code>notas.txt</code>.</li>
+</ol>
+</section>
+<section id="ruta-relativa" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="ruta-relativa"><span class="header-section-number">7.2</span> Ruta relativa</h2>
+<p>Una ruta relativa se interpreta desde la ubicación actual.</p>
+<p>Si la ubicación actual es:</p>
+<pre class="text"><code>C:\Usuarios\Estudiante\Documentos\SOI</code></pre>
+<p>la ruta relativa hacia el archivo anterior sería:</p>
+<pre class="text"><code>Clase_02\notas.txt</code></pre>
+<p>El símbolo <code>..</code> representa el directorio superior.</p>
+<pre class="text"><code>cd ..</code></pre>
+<p>significa:</p>
+<blockquote class="blockquote">
+<p>Subir un nivel dentro de la estructura.</p>
+</blockquote>
+</section>
+<section id="separadores-y-espacios" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="separadores-y-espacios"><span class="header-section-number">7.3</span> Separadores y espacios</h2>
+<p>Windows utiliza la barra invertida <code>\</code> para separar los componentes de una ruta.</p>
+<p>Cuando una ruta contiene espacios, es recomendable escribirla entre comillas:</p>
+<pre class="text"><code>cd "C:\Usuarios\Estudiante\Mis documentos"</code></pre>
+</section>
+</section>
+<section id="de-la-interfaz-gráfica-a-la-línea-de-comandos" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> De la interfaz gráfica a la línea de comandos</h1>
+<p>La interfaz gráfica permite administrar información mediante ventanas, iconos, menús y el puntero. La interfaz de línea de comandos permite hacerlo escribiendo instrucciones.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Interfaz gráfica</th>
+<th>Línea de comandos</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Utiliza ventanas e iconos</td>
+<td>Utiliza instrucciones escritas</td>
+</tr>
+<tr class="even">
+<td>Es visual e intuitiva</td>
+<td>Es precisa y reproducible</td>
+</tr>
+<tr class="odd">
+<td>Facilita tareas ocasionales</td>
+<td>Facilita automatización y diagnóstico</td>
+</tr>
+<tr class="even">
+<td>Requiere navegación manual</td>
+<td>Puede ejecutar secuencias rápidamente</td>
+</tr>
+</tbody>
+</table>
+<p>Ninguna reemplaza completamente a la otra. Un profesional utiliza la herramienta más adecuada para cada situación.</p>
+</section>
+<section id="qué-es-un-comando" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> ¿Qué es un comando?</h1>
+<p>Un <strong>comando</strong> es una instrucción que el usuario entrega a un intérprete para solicitar una acción.</p>
+<p>Ejemplos:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">dir</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Solicita mostrar el contenido del directorio actual.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mkdir</span> Clase_02</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Solicita crear un directorio llamado <code>Clase_02</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">copy</span> notas.txt respaldo.txt</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Solicita crear una copia del archivo.</p>
+<p>Los comandos pueden aceptar:</p>
+<ul>
+<li><strong>argumentos</strong>, que indican sobre qué elemento trabajar;</li>
+<li><strong>opciones</strong>, que modifican la forma en que se ejecuta la instrucción.</li>
+</ul>
+<p>Ejemplo:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">dir</span> <span class="at">/w</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<ul>
+<li><code>dir</code> es el comando.</li>
+<li><code>/w</code> es una opción que muestra una vista resumida.</li>
+</ul>
+</section>
+<section id="cmd-en-windows" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> CMD en Windows</h1>
+<p>El <strong>Símbolo del sistema</strong>, también conocido como <strong>CMD</strong>, es un intérprete de comandos incluido en Windows.</p>
+<p>No debe confundirse con MS-DOS. Aunque conserva numerosos comandos históricos, CMD funciona dentro de Windows y utiliza los servicios del sistema operativo actual.</p>
+<section id="cómo-abrirlo" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="cómo-abrirlo"><span class="header-section-number">10.1</span> Cómo abrirlo</h2>
+<p>Puede abrirse de distintas maneras:</p>
+<ol type="1">
+<li>Presionar la tecla Windows.</li>
+<li>Escribir <code>cmd</code>.</li>
+<li>Seleccionar <strong>Símbolo del sistema</strong>.</li>
+</ol>
+<p>También puede utilizarse la ventana <strong>Ejecutar</strong>:</p>
+<pre class="text"><code>Windows + R</code></pre>
+<p>Luego escribir:</p>
+<pre class="text"><code>cmd</code></pre>
+<p>y presionar Enter.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="Permisos administrativos">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Advertencia</span>Permisos administrativos
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Para esta práctica no es necesario abrir CMD como administrador. Trabajar con privilegios elevados aumenta el impacto de un error.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="anatomía-del-prompt" class="level1" data-number="11">
+<h1 data-number="11"><span class="header-section-number">11</span> Anatomía del prompt</h1>
+<p>Al abrir CMD aparece una línea similar a:</p>
+<pre class="text"><code>C:\Users\Estudiante&gt;</code></pre>
+<div id="fig-prompt" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-prompt-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../img/clase_02/fig_02_03_prompt.svg" class="img-fluid figure-img" style="width:88.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-prompt-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;11.1: Anatomía del prompt de CMD
+</figcaption>
+</figure>
+</div>
+<p>El prompt muestra la ubicación actual y termina con el símbolo <code>&gt;</code> para indicar que el intérprete espera una instrucción.</p>
+<pre class="text"><code>C:                         unidad
+\Users\Estudiante          ruta actual
+&gt;                          espera un comando</code></pre>
+<div class="callout callout-style-default callout-note callout-titled" title="Observe">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Observe
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Cada vez que cambia de directorio, el prompt también cambia. Por eso funciona como una brújula dentro del sistema de archivos.</p>
+</div>
+</div>
+</section>
+<section id="laboratorio-narrativo-construyendo-el-proyecto-soi" class="level1" data-number="12">
+<h1 data-number="12"><span class="header-section-number">12</span> Laboratorio narrativo: construyendo el proyecto SOI</h1>
+<section id="situación" class="level2" data-number="12.1">
+<h2 data-number="12.1" class="anchored" data-anchor-id="situación"><span class="header-section-number">12.1</span> Situación</h2>
+<p>Durante el semestre se generarán apuntes, prácticas, recursos y entregables. Para evitar que todo quede mezclado, construiremos una estructura permanente llamada <code>SOI</code>.</p>
+<p>El laboratorio se realizará dentro de <strong>Documentos</strong>. No trabaje en directorios del sistema como <code>C:\Windows</code> o <code>C:\Program Files</code>.</p>
+</section>
+<section id="paso-1.-saber-dónde-estamos" class="level2" data-number="12.2">
+<h2 data-number="12.2" class="anchored" data-anchor-id="paso-1.-saber-dónde-estamos"><span class="header-section-number">12.2</span> Paso 1. Saber dónde estamos</h2>
+<p>Escriba:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>CMD mostrará la ruta actual.</p>
+<p>También puede observarla directamente en el prompt.</p>
+</section>
+<section id="paso-2.-ver-el-contenido" class="level2" data-number="12.3">
+<h2 data-number="12.3" class="anchored" data-anchor-id="paso-2.-ver-el-contenido"><span class="header-section-number">12.3</span> Paso 2. Ver el contenido</h2>
+<p>Ejecute:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="bu">dir</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>El comando <code>dir</code> muestra directorios y archivos de la ubicación actual.</p>
+<p>En la salida encontrará datos como:</p>
+<ul>
+<li>fecha y hora;</li>
+<li>indicador <code>&lt;DIR&gt;</code> para directorios;</li>
+<li>tamaño de archivos;</li>
+<li>nombre de cada elemento.</li>
+</ul>
+<section id="variantes-útiles" class="level3" data-number="12.3.1">
+<h3 data-number="12.3.1" class="anchored" data-anchor-id="variantes-útiles"><span class="header-section-number">12.3.1</span> Variantes útiles</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="bu">dir</span> <span class="at">/w</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Muestra una vista resumida.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="bu">dir</span> <span class="at">/p</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Pausa la salida cuando ocupa más de una pantalla.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="bu">dir</span> *.txt</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Muestra únicamente archivos con extensión <code>.txt</code>.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Lectura antes de acción">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Lectura antes de acción
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Antes de crear, mover o borrar algo, use <code>dir</code>. Confirmar la ubicación reduce errores.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="paso-3.-ir-a-documentos" class="level2" data-number="12.4">
+<h2 data-number="12.4" class="anchored" data-anchor-id="paso-3.-ir-a-documentos"><span class="header-section-number">12.4</span> Paso 3. Ir a Documentos</h2>
+<p>Según el idioma y la configuración de Windows, el nombre visible puede variar. Una forma práctica es utilizar la variable del perfil:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="at">/d</span> <span class="st">"</span><span class="pp">%</span><span class="va">USERPROFILE</span><span class="pp">%</span><span class="st">\Documents"</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Si la carpeta se muestra en español pero la ruta interna utiliza <code>Documents</code>, el comando seguirá funcionando.</p>
+<p>La opción <code>/d</code> permite cambiar de unidad y directorio en una sola instrucción.</p>
+</section>
+<section id="paso-4.-crear-el-directorio-principal" class="level2" data-number="12.5">
+<h2 data-number="12.5" class="anchored" data-anchor-id="paso-4.-crear-el-directorio-principal"><span class="header-section-number">12.5</span> Paso 4. Crear el directorio principal</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mkdir</span> SOI</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>También puede utilizarse la forma abreviada:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="bu">md</span> SOI</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ambos comandos crean el directorio.</p>
+<p>Compruebe el resultado:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="bu">dir</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="paso-5.-entrar-al-proyecto" class="level2" data-number="12.6">
+<h2 data-number="12.6" class="anchored" data-anchor-id="paso-5.-entrar-al-proyecto"><span class="header-section-number">12.6</span> Paso 5. Entrar al proyecto</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> SOI</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>El prompt debería terminar de forma similar a:</p>
+<pre class="text"><code>...\Documents\SOI&gt;</code></pre>
+</section>
+<section id="paso-6.-crear-la-estructura-del-semestre" class="level2" data-number="12.7">
+<h2 data-number="12.7" class="anchored" data-anchor-id="paso-6.-crear-la-estructura-del-semestre"><span class="header-section-number">12.7</span> Paso 6. Crear la estructura del semestre</h2>
+<p>Ejecute:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mkdir</span> Clase_01 Clase_02 Clase_03 Laboratorios Recursos Proyecto_Final</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Luego verifique:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="bu">dir</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La estructura esperada es:</p>
+<pre class="text"><code>SOI
+├── Clase_01
+├── Clase_02
+├── Clase_03
+├── Laboratorios
+├── Recursos
+└── Proyecto_Final</code></pre>
+<div id="fig-proyecto" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-proyecto-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../img/clase_02/fig_02_04_proyecto_soi.svg" class="img-fluid figure-img" style="width:84.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-proyecto-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figura&nbsp;12.1: Estructura inicial del proyecto SOI
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="paso-7.-visualizar-el-árbol" class="level2" data-number="12.8">
+<h2 data-number="12.8" class="anchored" data-anchor-id="paso-7.-visualizar-el-árbol"><span class="header-section-number">12.8</span> Paso 7. Visualizar el árbol</h2>
+<p>Ejecute:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="kw">tree</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Para incluir también archivos:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="kw">tree</span> <span class="at">/f</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>tree</code> permite comprobar visualmente la jerarquía construida.</p>
+</section>
+</section>
+<section id="navegación-con-cd" class="level1" data-number="13">
+<h1 data-number="13"><span class="header-section-number">13</span> Navegación con <code>cd</code></h1>
+<p>El comando <code>cd</code> significa <strong>change directory</strong>, es decir, cambiar de directorio.</p>
+<section id="entrar-a-un-directorio" class="level2" data-number="13.1">
+<h2 data-number="13.1" class="anchored" data-anchor-id="entrar-a-un-directorio"><span class="header-section-number">13.1</span> Entrar a un directorio</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> Clase_02</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="subir-un-nivel" class="level2" data-number="13.2">
+<h2 data-number="13.2" class="anchored" data-anchor-id="subir-un-nivel"><span class="header-section-number">13.2</span> Subir un nivel</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ..</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="ir-a-la-raíz-de-la-unidad" class="level2" data-number="13.3">
+<h2 data-number="13.3" class="anchored" data-anchor-id="ir-a-la-raíz-de-la-unidad"><span class="header-section-number">13.3</span> Ir a la raíz de la unidad</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="sc">\</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="cambiar-directamente-mediante-una-ruta" class="level2" data-number="13.4">
+<h2 data-number="13.4" class="anchored" data-anchor-id="cambiar-directamente-mediante-una-ruta"><span class="header-section-number">13.4</span> Cambiar directamente mediante una ruta</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="at">/d</span> <span class="st">"</span><span class="pp">%</span><span class="va">USERPROFILE</span><span class="pp">%</span><span class="st">\Documents\SOI\Clase_02"</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="volver-al-directorio-anterior" class="level2" data-number="13.5">
+<h2 data-number="13.5" class="anchored" data-anchor-id="volver-al-directorio-anterior"><span class="header-section-number">13.5</span> Volver al directorio anterior</h2>
+<p>CMD no ofrece exactamente el mismo comportamiento que algunos intérpretes modernos, por lo que conviene leer el prompt y utilizar rutas relativas o absolutas de manera consciente.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="Error común">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Advertencia</span>Error común
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>cd...</code> no es la forma correcta de subir un nivel. Debe existir un espacio:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ..</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</section>
+</section>
+<section id="crear-archivos-de-práctica" class="level1" data-number="14">
+<h1 data-number="14"><span class="header-section-number">14</span> Crear archivos de práctica</h1>
+<p>Para continuar necesitamos archivos sencillos.</p>
+<p>Ubíquese dentro de <code>Clase_02</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="at">/d</span> <span class="st">"</span><span class="pp">%</span><span class="va">USERPROFILE</span><span class="pp">%</span><span class="st">\Documents\SOI\Clase_02"</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Cree un archivo de texto:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> Apuntes de la Clase 2 <span class="kw">&gt;</span> apuntes.txt</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Agregue una segunda línea:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> Practica de comandos de Windows <span class="kw">&gt;&gt;</span> apuntes.txt</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Los operadores utilizados son:</p>
+<ul>
+<li><code>&gt;</code> crea o reemplaza el contenido.</li>
+<li><code>&gt;&gt;</code> agrega contenido al final.</li>
+</ul>
+<p>Compruebe el archivo:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb41"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="bu">dir</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Muestre su contenido:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb42"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span> apuntes.txt</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-important callout-titled" title="Precaución">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Importante</span>Precaución
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>El operador <code>&gt;</code> reemplaza el contenido existente. Antes de usarlo sobre un archivo importante, compruebe el nombre y la ruta.</p>
+</div>
+</div>
+</section>
+<section id="copiar-archivos-con-copy" class="level1" data-number="15">
+<h1 data-number="15"><span class="header-section-number">15</span> Copiar archivos con <code>copy</code></h1>
+<p>El comando <code>copy</code> crea una copia de uno o varios archivos.</p>
+<section id="copiar-en-el-mismo-directorio" class="level2" data-number="15.1">
+<h2 data-number="15.1" class="anchored" data-anchor-id="copiar-en-el-mismo-directorio"><span class="header-section-number">15.1</span> Copiar en el mismo directorio</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb43"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="bu">copy</span> apuntes.txt respaldo_apuntes.txt</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="copiar-hacia-otro-directorio" class="level2" data-number="15.2">
+<h2 data-number="15.2" class="anchored" data-anchor-id="copiar-hacia-otro-directorio"><span class="header-section-number">15.2</span> Copiar hacia otro directorio</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb44"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="bu">copy</span> apuntes.txt ..\Recursos\</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La ruta <code>..\Recursos\</code> significa:</p>
+<ol type="1">
+<li>subir desde <code>Clase_02</code> hacia <code>SOI</code>;</li>
+<li>entrar en <code>Recursos</code>.</li>
+</ol>
+<p>Compruebe el resultado:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb45"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="bu">dir</span> ..\Recursos</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="evitar-sobrescrituras-accidentales" class="level2" data-number="15.3">
+<h2 data-number="15.3" class="anchored" data-anchor-id="evitar-sobrescrituras-accidentales"><span class="header-section-number">15.3</span> Evitar sobrescrituras accidentales</h2>
+<p>Puede utilizar:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb46"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="bu">copy</span> /<span class="at">-y</span> apuntes.txt respaldo_apuntes.txt</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La opción <code>/-y</code> solicita confirmación antes de reemplazar un archivo existente.</p>
+</section>
+</section>
+<section id="renombrar-con-ren" class="level1" data-number="16">
+<h1 data-number="16"><span class="header-section-number">16</span> Renombrar con <code>ren</code></h1>
+<p>El comando <code>ren</code> cambia el nombre de un archivo o directorio.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb47"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="bu">ren</span> respaldo_apuntes.txt apuntes_copia.txt</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Compruebe:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb48"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="bu">dir</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La instrucción cambia el nombre, pero no traslada el archivo a otra ubicación.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Diferencia importante">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Diferencia importante
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><code>ren</code> cambia el nombre.</li>
+<li><code>move</code> cambia la ubicación y también puede cambiar el nombre.</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="mover-con-move" class="level1" data-number="17">
+<h1 data-number="17"><span class="header-section-number">17</span> Mover con <code>move</code></h1>
+<p>Para trasladar un archivo:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb49"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="bu">move</span> apuntes_copia.txt ..\Laboratorios\</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Compruebe el directorio de destino:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb50"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="bu">dir</span> ..\Laboratorios</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>También puede mover y renombrar en una sola instrucción:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb51"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="bu">move</span> apuntes.txt ..\Laboratorios\bitacora_clase_02.txt</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="eliminar-archivos-con-del" class="level1" data-number="18">
+<h1 data-number="18"><span class="header-section-number">18</span> Eliminar archivos con <code>del</code></h1>
+<p>El comando <code>del</code> elimina archivos.</p>
+<p>Primero cree un archivo temporal:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb52"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> Archivo temporal <span class="kw">&gt;</span> temporal.txt</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Compruebe:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb53"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="bu">dir</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Luego elimínelo solicitando confirmación:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb54"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="bu">del</span> <span class="at">/p</span> temporal.txt</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-warning callout-titled" title="Advertencia">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Advertencia</span>Advertencia
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Los archivos eliminados desde CMD normalmente no pasan por la Papelera de reciclaje. Verifique siempre la ruta, el nombre y los comodines antes de confirmar.</p>
+</div>
+</div>
+<section id="riesgo-de-los-comodines" class="level2" data-number="18.1">
+<h2 data-number="18.1" class="anchored" data-anchor-id="riesgo-de-los-comodines"><span class="header-section-number">18.1</span> Riesgo de los comodines</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb55"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="bu">del</span> *.txt</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>elimina todos los archivos <code>.txt</code> del directorio actual.</p>
+<p>Este tipo de instrucción no debe ejecutarse sin revisar previamente:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb56"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="bu">dir</span> *.txt</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La secuencia profesional es:</p>
+<pre class="text"><code>1. Mostrar
+2. Verificar
+3. Ejecutar</code></pre>
+</section>
+</section>
+<section id="eliminar-directorios-con-rmdir" class="level1" data-number="19">
+<h1 data-number="19"><span class="header-section-number">19</span> Eliminar directorios con <code>rmdir</code></h1>
+<p><code>rmdir</code> o <code>rd</code> elimina directorios.</p>
+<section id="directorio-vacío" class="level2" data-number="19.1">
+<h2 data-number="19.1" class="anchored" data-anchor-id="directorio-vacío"><span class="header-section-number">19.1</span> Directorio vacío</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb58"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="bu">mkdir</span> Prueba_Vacia</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="bu">rmdir</span> Prueba_Vacia</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="directorio-con-contenido" class="level2" data-number="19.2">
+<h2 data-number="19.2" class="anchored" data-anchor-id="directorio-con-contenido"><span class="header-section-number">19.2</span> Directorio con contenido</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb59"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="bu">rmdir</span> <span class="at">/s</span> Carpeta</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La opción <code>/s</code> incluye todo su contenido.</p>
+<p>Para solicitar confirmación:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb60"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="bu">rmdir</span> <span class="at">/s</span> Carpeta</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Para omitirla existe <code>/q</code>, pero no debe utilizarse durante el aprendizaje:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb61"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="bu">rmdir</span> <span class="at">/s</span> <span class="at">/q</span> Carpeta</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout-danger" title="Comando de alto impacto">
+<p><code>rmdir /s /q</code> puede eliminar una estructura completa sin preguntar. No lo utilice fuera de carpetas de práctica.</p>
+</div>
+</section>
+</section>
+<section id="limpiar-la-pantalla-con-cls" class="level1" data-number="20">
+<h1 data-number="20"><span class="header-section-number">20</span> Limpiar la pantalla con <code>cls</code></h1>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb62"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cls</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Este comando limpia la pantalla, pero no elimina archivos ni modifica la ubicación actual.</p>
+<p>Después de ejecutarlo, el prompt continúa en el mismo directorio.</p>
+</section>
+<section id="resumen-de-comandos" class="level1" data-number="21">
+<h1 data-number="21"><span class="header-section-number">21</span> Resumen de comandos</h1>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Necesidad</th>
+<th>Comando principal</th>
+<th>Ejemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Mostrar ubicación</td>
+<td><code>cd</code></td>
+<td><code>cd</code></td>
+</tr>
+<tr class="even">
+<td>Listar contenido</td>
+<td><code>dir</code></td>
+<td><code>dir /w</code></td>
+</tr>
+<tr class="odd">
+<td>Cambiar directorio</td>
+<td><code>cd</code></td>
+<td><code>cd Clase_02</code></td>
+</tr>
+<tr class="even">
+<td>Crear directorio</td>
+<td><code>mkdir</code> o <code>md</code></td>
+<td><code>mkdir Recursos</code></td>
+</tr>
+<tr class="odd">
+<td>Mostrar árbol</td>
+<td><code>tree</code></td>
+<td><code>tree /f</code></td>
+</tr>
+<tr class="even">
+<td>Mostrar texto</td>
+<td><code>type</code></td>
+<td><code>type apuntes.txt</code></td>
+</tr>
+<tr class="odd">
+<td>Copiar archivo</td>
+<td><code>copy</code></td>
+<td><code>copy a.txt b.txt</code></td>
+</tr>
+<tr class="even">
+<td>Renombrar</td>
+<td><code>ren</code></td>
+<td><code>ren a.txt b.txt</code></td>
+</tr>
+<tr class="odd">
+<td>Mover</td>
+<td><code>move</code></td>
+<td><code>move a.txt ..\Recursos\</code></td>
+</tr>
+<tr class="even">
+<td>Eliminar archivo</td>
+<td><code>del</code></td>
+<td><code>del /p a.txt</code></td>
+</tr>
+<tr class="odd">
+<td>Eliminar directorio</td>
+<td><code>rmdir</code> o <code>rd</code></td>
+<td><code>rmdir Carpeta</code></td>
+</tr>
+<tr class="even">
+<td>Limpiar pantalla</td>
+<td><code>cls</code></td>
+<td><code>cls</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reto-de-aplicación" class="level1" data-number="22">
+<h1 data-number="22"><span class="header-section-number">22</span> Reto de aplicación</h1>
+<section id="escenario" class="level2" data-number="22.1">
+<h2 data-number="22.1" class="anchored" data-anchor-id="escenario"><span class="header-section-number">22.1</span> Escenario</h2>
+<p>El directorio <code>SOI</code> debe quedar organizado de la siguiente manera:</p>
+<pre class="text"><code>SOI
+├── Clase_01
+├── Clase_02
+├── Clase_03
+├── Laboratorios
+│   └── bitacora_clase_02.txt
+├── Recursos
+│   └── apuntes.txt
+└── Proyecto_Final</code></pre>
+</section>
+<section id="reglas" class="level2" data-number="22.2">
+<h2 data-number="22.2" class="anchored" data-anchor-id="reglas"><span class="header-section-number">22.2</span> Reglas</h2>
+<p>Realice el reto únicamente con comandos.</p>
+<ol type="1">
+<li>Compruebe la ubicación actual.</li>
+<li>Navegue hasta <code>SOI</code>.</li>
+<li>Use <code>tree /f</code> para revisar la estructura.</li>
+<li>Asegúrese de que <code>apuntes.txt</code> esté en <code>Recursos</code>.</li>
+<li>Asegúrese de que <code>bitacora_clase_02.txt</code> esté en <code>Laboratorios</code>.</li>
+<li>Elimine únicamente archivos temporales creados durante la práctica.</li>
+<li>Muestre el árbol final.</li>
+</ol>
+</section>
+<section id="evidencia-sugerida" class="level2" data-number="22.3">
+<h2 data-number="22.3" class="anchored" data-anchor-id="evidencia-sugerida"><span class="header-section-number">22.3</span> Evidencia sugerida</h2>
+<p>El estudiante puede entregar:</p>
+<ul>
+<li>captura del comando <code>tree /f</code>;</li>
+<li>lista de comandos utilizados;</li>
+<li>explicación breve de un error cometido y cómo lo corrigió.</li>
+</ul>
+</section>
+</section>
+<section id="diagnóstico-de-errores-frecuentes" class="level1" data-number="23">
+<h1 data-number="23"><span class="header-section-number">23</span> Diagnóstico de errores frecuentes</h1>
+<section id="el-sistema-no-puede-encontrar-la-ruta-especificada" class="level2" data-number="23.1">
+<h2 data-number="23.1" class="anchored" data-anchor-id="el-sistema-no-puede-encontrar-la-ruta-especificada"><span class="header-section-number">23.1</span> “El sistema no puede encontrar la ruta especificada”</h2>
+<p>Posibles causas:</p>
+<ul>
+<li>el directorio no existe;</li>
+<li>el nombre fue escrito incorrectamente;</li>
+<li>la ruta contiene espacios y no se utilizaron comillas;</li>
+<li>la ubicación actual no es la esperada.</li>
+</ul>
+<p>Acciones:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb64"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span></span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a><span class="bu">dir</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Luego revise la ruta paso a paso.</p>
+</section>
+<section id="el-sistema-no-puede-encontrar-el-archivo-especificado" class="level2" data-number="23.2">
+<h2 data-number="23.2" class="anchored" data-anchor-id="el-sistema-no-puede-encontrar-el-archivo-especificado"><span class="header-section-number">23.2</span> “El sistema no puede encontrar el archivo especificado”</h2>
+<p>Compruebe:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb65"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="bu">dir</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="bu">dir</span> *.txt</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Revise el nombre y la extensión real.</p>
+</section>
+<section id="acceso-denegado" class="level2" data-number="23.3">
+<h2 data-number="23.3" class="anchored" data-anchor-id="acceso-denegado"><span class="header-section-number">23.3</span> “Acceso denegado”</h2>
+<p>Puede ocurrir cuando:</p>
+<ul>
+<li>el archivo está protegido;</li>
+<li>otro programa lo utiliza;</li>
+<li>el usuario no posee permisos;</li>
+<li>se trabaja en un directorio del sistema.</li>
+</ul>
+<p>No resuelva automáticamente el problema ejecutando todo como administrador. Primero determine la causa.</p>
+</section>
+<section id="el-comando-se-ejecutó-en-el-lugar-equivocado" class="level2" data-number="23.4">
+<h2 data-number="23.4" class="anchored" data-anchor-id="el-comando-se-ejecutó-en-el-lugar-equivocado"><span class="header-section-number">23.4</span> El comando se ejecutó en el lugar equivocado</h2>
+<p>Compruebe siempre el prompt. Una instrucción correcta ejecutada en un directorio incorrecto puede producir un resultado no deseado.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Método de recuperación">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Método de recuperación
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Cuando se sienta perdido:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb66"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span></span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a><span class="bu">dir</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Primero determine dónde está. Luego decida a dónde necesita ir.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="buenas-prácticas" class="level1" data-number="24">
+<h1 data-number="24"><span class="header-section-number">24</span> Buenas prácticas</h1>
+<ol type="1">
+<li>Utilice nombres descriptivos.</li>
+<li>Evite crear todos los archivos en el Escritorio.</li>
+<li>Compruebe la ubicación antes de modificar información.</li>
+<li>Use <code>dir</code> antes de aplicar comandos destructivos.</li>
+<li>Practique con archivos temporales.</li>
+<li>No trabaje como administrador sin necesidad.</li>
+<li>Mantenga respaldos de los archivos importantes.</li>
+<li>Lea los mensajes del sistema antes de repetir una instrucción.</li>
+</ol>
+</section>
+<section id="autoevaluación" class="level1" data-number="25">
+<h1 data-number="25"><span class="header-section-number">25</span> Autoevaluación</h1>
+<section id="selección-breve" class="level2" data-number="25.1">
+<h2 data-number="25.1" class="anchored" data-anchor-id="selección-breve"><span class="header-section-number">25.1</span> Selección breve</h2>
+<ol type="1">
+<li>¿Qué representa <code>C:</code>?
+<ul>
+<li><ol type="a">
+<li>Un archivo</li>
+</ol></li>
+<li><ol start="2" type="a">
+<li>Una unidad</li>
+</ol></li>
+<li><ol start="3" type="a">
+<li>Un comando</li>
+</ol></li>
+<li><ol start="4" type="a">
+<li>Una extensión</li>
+</ol></li>
+</ul></li>
+<li>¿Qué comando muestra el contenido del directorio actual?
+<ul>
+<li><ol type="a">
+<li><code>show</code></li>
+</ol></li>
+<li><ol start="2" type="a">
+<li><code>list</code></li>
+</ol></li>
+<li><ol start="3" type="a">
+<li><code>dir</code></li>
+</ol></li>
+<li><ol start="4" type="a">
+<li><code>type</code></li>
+</ol></li>
+</ul></li>
+<li>¿Qué significa <code>..</code> dentro de una ruta?
+<ul>
+<li><ol type="a">
+<li>Directorio actual</li>
+</ol></li>
+<li><ol start="2" type="a">
+<li>Directorio superior</li>
+</ol></li>
+<li><ol start="3" type="a">
+<li>Unidad principal</li>
+</ol></li>
+<li><ol start="4" type="a">
+<li>Archivo oculto</li>
+</ol></li>
+</ul></li>
+<li>¿Cuál comando crea un directorio?
+<ul>
+<li><ol type="a">
+<li><code>mkdir</code></li>
+</ol></li>
+<li><ol start="2" type="a">
+<li><code>copy</code></li>
+</ol></li>
+<li><ol start="3" type="a">
+<li><code>type</code></li>
+</ol></li>
+<li><ol start="4" type="a">
+<li><code>cls</code></li>
+</ol></li>
+</ul></li>
+<li>¿Cuál acción requiere mayor precaución?
+<ul>
+<li><ol type="a">
+<li><code>dir</code></li>
+</ol></li>
+<li><ol start="2" type="a">
+<li><code>cd</code></li>
+</ol></li>
+<li><ol start="3" type="a">
+<li><code>del</code></li>
+</ol></li>
+<li><ol start="4" type="a">
+<li><code>cls</code></li>
+</ol></li>
+</ul></li>
+</ol>
+</section>
+<section id="preguntas-de-reflexión" class="level2" data-number="25.2">
+<h2 data-number="25.2" class="anchored" data-anchor-id="preguntas-de-reflexión"><span class="header-section-number">25.2</span> Preguntas de reflexión</h2>
+<ol type="1">
+<li>¿Por qué una ruta absoluta funciona aunque el usuario se encuentre en otro directorio?</li>
+<li>¿Qué ventaja ofrece una ruta relativa?</li>
+<li>¿Por qué conviene ejecutar <code>dir</code> antes de <code>del</code>?</li>
+<li>¿Qué diferencia existe entre copiar y mover?</li>
+<li>¿Por qué CMD no debe presentarse simplemente como MS-DOS?</li>
+</ol>
+</section>
+</section>
+<section id="resumen-de-la-clase" class="level1" data-number="26">
+<h1 data-number="26"><span class="header-section-number">26</span> Resumen de la clase</h1>
+<p>En esta clase aprendimos que:</p>
+<ul>
+<li>El sistema operativo organiza la información mediante un sistema de archivos.</li>
+<li>Las unidades contienen directorios, subdirectorios y archivos.</li>
+<li>Una ruta expresa la ubicación de un elemento.</li>
+<li>Las rutas pueden ser absolutas o relativas.</li>
+<li>CMD permite comunicarse con Windows mediante comandos.</li>
+<li><code>dir</code>, <code>cd</code>, <code>mkdir</code> y <code>tree</code> permiten explorar y construir estructuras.</li>
+<li><code>copy</code>, <code>ren</code> y <code>move</code> permiten reorganizar archivos.</li>
+<li><code>del</code> y <code>rmdir</code> requieren especial cuidado.</li>
+<li>Una práctica profesional comienza por verificar la ubicación y el contenido.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled" title="Consejo final del Ingeniero">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Consejo final del Ingeniero
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La línea de comandos se domina practicando. La velocidad llegará después; primero deben desarrollarse precisión, lectura y criterio.</p>
+</div>
+</div>
+</section>
+<section id="tarea-sugerida" class="level1" data-number="27">
+<h1 data-number="27"><span class="header-section-number">27</span> Tarea sugerida</h1>
+<p>Construya desde CMD una estructura para organizar sus cursos del semestre:</p>
+<pre class="text"><code>Universidad
+├── Sistemas_Operativos_I
+├── Algoritmos
+├── Programacion
+└── Proyecto_Semestral</code></pre>
+<p>Dentro de cada curso cree:</p>
+<pre class="text"><code>Apuntes
+Laboratorios
+Tareas
+Recursos</code></pre>
+<p>Genere un archivo <code>descripcion.txt</code> en cada curso y escriba una línea que describa su propósito. Entregue el resultado de:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb69"><pre class="sourceCode bat code-with-copy"><code class="sourceCode dosbat"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="kw">tree</span> <span class="at">/f</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="cierre" class="level1" data-number="28">
+<h1 data-number="28"><span class="header-section-number">28</span> Cierre</h1>
+<p>En la próxima clase estudiaremos herramientas de administración de Windows que permiten inspeccionar configuración, servicios, inicio del sistema y otros componentes. El objetivo no será abrir utilidades por curiosidad, sino comprender qué problema resuelve cada una y qué riesgos implica modificarla.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiado");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiado");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../capitulos/01_introduccion_sistemas_operativos.html" class="pagination-link" aria-label="Presentación de la clase">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Presentación de la clase</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../capitulos/03_sistemas_operativos_red.html" class="pagination-link" aria-label="Clase 3. Sistemas Operativos de Red">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Clase 3. Sistemas Operativos de Red</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Editorial Académica de Ingeniería en Sistemas</p>
+</div>   
+    <div class="nav-footer-center">
+<p>Diseñar una vez. Enseñar toda la vida.</p>
+</div>
+    <div class="nav-footer-right">
+<p>Ing. Jorge Luis García Chacón</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

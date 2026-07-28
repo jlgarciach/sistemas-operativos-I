@@ -1,0 +1,55 @@
+
+::: {.cover}
+
+<div class="cover-logo">
+<img src="assets/img/UMG.png">
+</div>
+
+<div class="cover-universidad">
+UNIVERSIDAD MARIANO GÁLVEZ DE GUATEMALA
+</div>
+<div class="cover-facultad">
+Facultad de Ingeniería en Sistemas
+</div>
+<div class="cover-line"></div>
+<div class="cover-curso">
+SISTEMAS OPERATIVOS I
+</div>
+
+<div class="cover-subtitulo">
+Introducción y Fundamentos
+</div>
+
+<div class="cover-line"></div>
+
+<div class="cover-editorial">
+
+Editorial Académica
+
+Ingeniería en Sistemas
+
+</div>
+
+<div class="cover-autor">
+
+Ing. Jorge Luis García Chacón
+
+</div>
+
+<div class="cover-edicion">
+
+Segundo Semestre
+
+Edición 2026
+
+</div>
+
+<div class="cover-frase">
+
+Diseñar una vez.
+
+Enseñar toda la vida.
+
+</div>
+
+:::

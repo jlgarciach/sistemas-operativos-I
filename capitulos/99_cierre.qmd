@@ -1,0 +1,9 @@
+# Cierre de la clase
+
+::: {.callout-tip title="Consejo final del Ingeniero"}
+Comprender un sistema operativo no consiste solamente en aprender nombres de versiones o comandos. Consiste en comprender cómo se administran recursos, cómo se protegen los procesos y cómo se construye el entorno donde funcionan las aplicaciones.
+:::
+
+## Próximo paso
+
+En la siguiente clase profundizaremos en la estructura y los componentes de un sistema operativo, relacionando kernel, procesos, memoria, dispositivos y servicios.
