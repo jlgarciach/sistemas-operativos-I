@@ -31,5 +31,8 @@
   },
   "05_control_procesos_concurrencia.qmd": {
     "05_control_procesos_concurrencia.html": "585bbf9f"
+  },
+  "capitulos/06_algoritmos_de_planificacion.qmd": {
+    "06_algoritmos_de_planificacion.html": "8cc55abf"
   }
 }

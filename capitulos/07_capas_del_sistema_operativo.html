@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="07_capas_del_sistema_operativo_files/libs/clipboard/clipboard.min.js"></script>
+<script src="07_capas_del_sistema_operativo_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="07_capas_del_sistema_operativo_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="07_capas_del_sistema_operativo_files/libs/quarto-html/popper.min.js"></script>
+<script src="07_capas_del_sistema_operativo_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="07_capas_del_sistema_operativo_files/libs/quarto-html/anchor.min.js"></script>
+<link href="07_capas_del_sistema_operativo_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="07_capas_del_sistema_operativo_files/libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="07_capas_del_sistema_operativo_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="07_capas_del_sistema_operativo_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="07_capas_del_sistema_operativo_files/libs/bootstrap/bootstrap-138a6193a3bd40baf1e627da441a4734.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="07_capas_del_sistema_operativo_files/libs/quarto-diagram/mermaid.min.js"></script>
+<script src="07_capas_del_sistema_operativo_files/libs/quarto-diagram/mermaid-init.js"></script>
+<link href="07_capas_del_sistema_operativo_files/libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="capítulo-7.-capas-del-sistema-operativo" class="level1">
+<h1>Capítulo 7. Capas del Sistema Operativo</h1>
+<section id="relación-con-la-clase-anterior" class="level2">
+<h2 class="anchored" data-anchor-id="relación-con-la-clase-anterior">Relación con la clase anterior</h2>
+<p>En el capítulo anterior aprendimos que el <strong>Scheduler</strong> decide qué proceso utilizará el procesador y que el <strong>Kernel</strong> coordina esa decisión.</p>
+<p>Ahora responderemos una nueva pregunta:</p>
+<blockquote class="blockquote">
+<p><strong>¿Qué ocurre dentro de una computadora desde que hacemos doble clic sobre una aplicación hasta que aparece en pantalla?</strong></p>
+</blockquote>
+<p>Esta pregunta nos permitirá comprender cómo trabajan juntas las diferentes capas de un Sistema Operativo.</p>
+<hr>
+</section>
+</section>
+<section id="objetivos-de-aprendizaje" class="level1">
+<h1>Objetivos de aprendizaje</h1>
+<p>Al finalizar este capítulo serás capaz de:</p>
+<ul>
+<li>Comprender la organización por capas de un Sistema Operativo.</li>
+<li>Explicar la función de cada capa.</li>
+<li>Identificar el papel del Kernel dentro de esa arquitectura.</li>
+<li>Relacionar las capas con acciones que realizamos diariamente en una computadora.</li>
+</ul>
+<hr>
+</section>
+<section id="motivación" class="level1">
+<h1>Motivación</h1>
+<p>Todos los días abrimos aplicaciones como:</p>
+<ul>
+<li>Google Chrome</li>
+<li>Microsoft Word</li>
+<li>Visual Studio Code</li>
+<li>Spotify</li>
+</ul>
+<p>La aplicación aparece en pocos segundos.</p>
+<p>Pero…</p>
+<ul>
+<li>¿Quién encuentra el programa en el disco?</li>
+<li>¿Quién reserva memoria para ejecutarlo?</li>
+<li>¿Quién se comunica con el teclado y el mouse?</li>
+<li>¿Quién envía la imagen al monitor?</li>
+<li>¿Quién controla realmente todo el proceso?</li>
+</ul>
+<p>La respuesta está en las <strong>capas del Sistema Operativo</strong>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Pregunta detonadora
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Cuando haces doble clic sobre una aplicación, ¿qué sucede dentro de la computadora antes de que aparezca la ventana?</p>
+<p>Al finalizar este capítulo podrás responder esa pregunta paso a paso.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="un-viaje-por-el-sistema-operativo" class="level1">
+<h1>Un viaje por el Sistema Operativo</h1>
+<p>Durante esta clase seguiremos el recorrido que realiza una solicitud desde el usuario hasta el hardware.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+
+U["👤 Usuario"]
+GUI["🖥️ Interfaz gráfica (GUI)"]
+SYS["📞 Llamadas al Sistema"]
+K["🧠 Kernel"]
+D["🔌 Drivers"]
+H["💻 Hardware"]
+
+U --&gt; GUI
+GUI --&gt; SYS
+SYS --&gt; K
+K --&gt; D
+D --&gt; H
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>Observa que el usuario nunca se comunica directamente con el hardware.</p>
+<p>Siempre existe una cadena de componentes que trabajan coordinadamente.</p>
+<hr>
+</section>
+<section id="por-qué-organizar-el-sistema-operativo-por-capas" class="level1">
+<h1>¿Por qué organizar el Sistema Operativo por capas?</h1>
+<p>Dividir el Sistema Operativo en capas ofrece varias ventajas.</p>
+<ul>
+<li>Cada capa tiene una responsabilidad específica.</li>
+<li>Facilita el mantenimiento del sistema.</li>
+<li>Reduce errores.</li>
+<li>Permite actualizar componentes sin modificar todo el Sistema Operativo.</li>
+<li>Hace posible reutilizar código.</li>
+</ul>
+<p>Piensa en un edificio.</p>
+<p>Cada piso tiene una función distinta, pero todos trabajan juntos para que el edificio funcione correctamente.</p>
+<p>Con un Sistema Operativo ocurre exactamente lo mismo.</p>
+<hr>
+</section>
+<section id="qué-aprenderemos-en-este-capítulo" class="level1">
+<h1>¿Qué aprenderemos en este capítulo?</h1>
+<p>En las siguientes secciones estudiaremos:</p>
+<ol type="1">
+<li>La arquitectura por capas.</li>
+<li>La función de cada capa.</li>
+<li>El Kernel como corazón del Sistema Operativo.</li>
+<li>Los tipos de Kernel.</li>
+<li>Un caso práctico siguiendo el recorrido de una aplicación desde el usuario hasta el hardware.</li>
+</ol>
+<hr>
+</section>
+<section id="preparándonos-para-la-siguiente-sección" class="level1">
+<h1>Preparándonos para la siguiente sección</h1>
+<p>Ya conocemos el recorrido general.</p>
+<p>Ahora estudiaremos cada una de las capas comenzando desde la más cercana al usuario hasta llegar al <strong>Kernel</strong>, el componente más importante del Sistema Operativo.</p>
+</section>
+<section id="conociendo-las-capas-del-sistema-operativo" class="level1">
+<h1>Conociendo las capas del Sistema Operativo</h1>
+<p>En la sección anterior vimos que una solicitud recorre varias capas antes de llegar al hardware.</p>
+<p>Ahora estudiaremos cada una de ellas para comprender su función.</p>
+<section id="vista-general" class="level2">
+<h2 class="anchored" data-anchor-id="vista-general">Vista general</h2>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+U["👤 Usuario"]
+APP["🪟 Aplicaciones"]
+GUI["🖥️ Interfaz gráfica (GUI)"]
+API["📞 Llamadas al sistema"]
+K["🧠 Kernel"]
+DRV["🔌 Drivers"]
+HW["💻 Hardware"]
+
+U --&gt; APP --&gt; GUI --&gt; API --&gt; K --&gt; DRV --&gt; HW
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>Cada capa tiene una responsabilidad específica y colabora con las demás.</p>
+<hr>
+</section>
+</section>
+<section id="capa-1.-usuario" class="level1">
+<h1>Capa 1. Usuario</h1>
+<p>Es la persona que utiliza el computador.</p>
+<p>Sus acciones son sencillas:</p>
+<ul>
+<li>Hacer clic.</li>
+<li>Escribir con el teclado.</li>
+<li>Abrir un programa.</li>
+<li>Guardar un archivo.</li>
+</ul>
+<p>El usuario nunca controla directamente el hardware.</p>
+<hr>
+</section>
+<section id="capa-2.-aplicaciones" class="level1">
+<h1>Capa 2. Aplicaciones</h1>
+<p>Son los programas que utilizamos diariamente.</p>
+<p>Ejemplos:</p>
+<ul>
+<li>Google Chrome</li>
+<li>Microsoft Word</li>
+<li>Visual Studio Code</li>
+<li>VLC</li>
+</ul>
+<p>Las aplicaciones solicitan servicios al Sistema Operativo, pero no acceden directamente al disco, la memoria o el procesador.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Idea importante
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Las aplicaciones dependen del Sistema Operativo para utilizar los recursos del computador.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="capa-3.-interfaz-gráfica-gui" class="level1">
+<h1>Capa 3. Interfaz gráfica (GUI)</h1>
+<p>La GUI permite que el usuario interactúe mediante:</p>
+<ul>
+<li>Ventanas.</li>
+<li>Botones.</li>
+<li>Menús.</li>
+<li>Iconos.</li>
+</ul>
+<p>Gracias a ella no es necesario escribir comandos para realizar la mayoría de las tareas.</p>
+<hr>
+</section>
+<section id="capa-4.-llamadas-al-sistema-system-calls" class="level1">
+<h1>Capa 4. Llamadas al Sistema (System Calls)</h1>
+<p>Cuando una aplicación necesita un recurso, realiza una <strong>llamada al sistema</strong>.</p>
+<p>Por ejemplo:</p>
+<ul>
+<li>Abrir un archivo.</li>
+<li>Reservar memoria.</li>
+<li>Crear un proceso.</li>
+<li>Imprimir un documento.</li>
+</ul>
+<p>Estas solicitudes son enviadas al Kernel.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+APP["Aplicación"] --&gt; SYS["System Call"]
+SYS --&gt; K["Kernel"]
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Reflexiona
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Cuando haces clic en <strong>Guardar</strong>, la aplicación no escribe directamente en el disco.</p>
+<p>Primero solicita ese servicio al Sistema Operativo mediante una llamada al sistema.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="qué-observamos-hasta-ahora" class="level1">
+<h1>¿Qué observamos hasta ahora?</h1>
+<p>Las primeras capas están orientadas al usuario y a las aplicaciones.</p>
+<p>Sin embargo, todavía no hemos llegado al componente que realmente controla el Sistema Operativo.</p>
+<p>En la siguiente sección estudiaremos el <strong>Kernel</strong>, considerado el corazón del Sistema Operativo.</p>
+</section>
+<section id="el-kernel-el-corazón-del-sistema-operativo" class="level1">
+<h1>El Kernel: el corazón del Sistema Operativo</h1>
+<p>Hasta este momento hemos recorrido varias capas del Sistema Operativo.</p>
+<p>Sin embargo, todas ellas dependen de un componente central.</p>
+<p>Ese componente recibe el nombre de <strong>Kernel</strong>.</p>
+<p>Si el Sistema Operativo fuera un cuerpo humano, el Kernel sería su <strong>corazón y su cerebro</strong>, ya que coordina el funcionamiento de todos los recursos del computador.</p>
+<hr>
+</section>
+<section id="qué-es-el-kernel" class="level1">
+<h1>¿Qué es el Kernel?</h1>
+<p>El <strong>Kernel</strong> es la parte más importante del Sistema Operativo.</p>
+<p>Es el primer componente que se carga en memoria durante el arranque del sistema y permanece ejecutándose mientras la computadora está encendida.</p>
+<p>Su función principal es actuar como intermediario entre:</p>
+<ul>
+<li>Las aplicaciones.</li>
+<li>El hardware.</li>
+<li>Los dispositivos de entrada y salida.</li>
+<li>La memoria.</li>
+<li>El procesador.</li>
+</ul>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+
+APP["Aplicaciones"]
+SYS["System Calls"]
+K["🧠 Kernel"]
+CPU["CPU"]
+MEM["Memoria"]
+DISK["Disco"]
+DEV["Dispositivos"]
+
+APP --&gt; SYS
+SYS --&gt; K
+
+K --&gt; CPU
+K --&gt; MEM
+K --&gt; DISK
+K --&gt; DEV
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Idea clave
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Las aplicaciones <strong>nunca acceden directamente al hardware</strong>.</p>
+<p>Todas las solicitudes pasan primero por el Kernel.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="qué-responsabilidades-tiene-el-kernel" class="level1">
+<h1>¿Qué responsabilidades tiene el Kernel?</h1>
+<p>El Kernel realiza numerosas tareas al mismo tiempo.</p>
+<p>Entre las más importantes se encuentran:</p>
+<ul>
+<li>Administrar los procesos.</li>
+<li>Planificar el uso del procesador.</li>
+<li>Administrar la memoria.</li>
+<li>Controlar los dispositivos mediante los drivers.</li>
+<li>Gestionar el sistema de archivos.</li>
+<li>Atender interrupciones.</li>
+<li>Proteger los recursos del sistema.</li>
+</ul>
+<p>Observa que muchos de estos temas serán estudiados durante el resto del curso.</p>
+<hr>
+</section>
+<section id="qué-ocurriría-si-el-kernel-no-existiera" class="level1">
+<h1>¿Qué ocurriría si el Kernel no existiera?</h1>
+<p>Imagina que una aplicación intenta:</p>
+<ul>
+<li>Leer un archivo.</li>
+<li>Utilizar la impresora.</li>
+<li>Acceder a la memoria.</li>
+<li>Escribir información en el disco.</li>
+</ul>
+<p>Sin el Kernel:</p>
+<ul>
+<li>Dos programas podrían utilizar la misma memoria.</li>
+<li>Varios procesos intentarían controlar el CPU al mismo tiempo.</li>
+<li>Los dispositivos no podrían coordinarse.</li>
+<li>El sistema sería inestable y probablemente dejaría de funcionar.</li>
+</ul>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Reflexiona
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>El Kernel no solamente administra recursos.</p>
+<p>También evita que los programas interfieran entre sí.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="relación-con-los-temas-estudiados" class="level1">
+<h1>Relación con los temas estudiados</h1>
+<p>Observa cómo el Kernel aparece en casi todo lo que hemos aprendido.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Tema</th>
+<th>Participación del Kernel</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Procesos</td>
+<td>Los crea y administra</td>
+</tr>
+<tr class="even">
+<td>Scheduler</td>
+<td>Coordina la planificación</td>
+</tr>
+<tr class="odd">
+<td>Dispatcher</td>
+<td>Coordina el cambio de contexto</td>
+</tr>
+<tr class="even">
+<td>Memoria</td>
+<td>Reserva y libera espacios</td>
+</tr>
+<tr class="odd">
+<td>Archivos</td>
+<td>Controla el acceso al disco</td>
+</tr>
+<tr class="even">
+<td>Dispositivos</td>
+<td>Se comunica mediante drivers</td>
+</tr>
+</tbody>
+</table>
+<p>Esto demuestra por qué se le considera el <strong>corazón del Sistema Operativo</strong>.</p>
+<hr>
+</section>
+<section id="preparándonos-para-la-siguiente-sección-1" class="level1">
+<h1>Preparándonos para la siguiente sección</h1>
+<p>Ya conocemos la importancia del Kernel.</p>
+<p>Ahora estudiaremos que <strong>no todos los Sistemas Operativos utilizan el mismo tipo de Kernel</strong>.</p>
+<p>Analizaremos los modelos:</p>
+<ul>
+<li>Monolítico.</li>
+<li>Microkernel.</li>
+<li>Híbrido.</li>
+</ul>
+<p>Y conoceremos cuál utiliza Windows, Linux y macOS.</p>
+</section>
+<section id="tipos-de-kernel" class="level1">
+<h1>Tipos de Kernel</h1>
+<p>En la sección anterior aprendimos que el <strong>Kernel</strong> es el corazón del Sistema Operativo.</p>
+<p>Sin embargo, no todos los Sistemas Operativos implementan el Kernel de la misma forma.</p>
+<p>Dependiendo de su diseño, existen diferentes arquitecturas.</p>
+<hr>
+</section>
+<section id="kernel-monolítico" class="level1">
+<h1>Kernel Monolítico</h1>
+<p>En un <strong>Kernel Monolítico</strong>, la mayoría de los servicios del Sistema Operativo se ejecutan dentro del propio Kernel.</p>
+<p>Esto significa que:</p>
+<ul>
+<li>Administración de memoria.</li>
+<li>Sistema de archivos.</li>
+<li>Controladores (drivers).</li>
+<li>Redes.</li>
+<li>Planificación de procesos.</li>
+</ul>
+<p>trabajan en un mismo espacio del Kernel.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+K["Kernel Monolítico"]
+K --&gt; MEM["Memoria"]
+K --&gt; FS["Sistema de archivos"]
+K --&gt; DR["Drivers"]
+K --&gt; NET["Red"]
+K --&gt; CPU["Planificación"]
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<section id="ventajas" class="level2">
+<h2 class="anchored" data-anchor-id="ventajas">Ventajas</h2>
+<ul>
+<li>Muy rápido.</li>
+<li>Excelente rendimiento.</li>
+<li>Menor sobrecarga.</li>
+</ul>
+</section>
+<section id="desventajas" class="level2">
+<h2 class="anchored" data-anchor-id="desventajas">Desventajas</h2>
+<ul>
+<li>Un error en un componente puede afectar todo el sistema.</li>
+<li>Mayor complejidad para mantener.</li>
+</ul>
+<p>Ejemplo: <strong>Linux</strong>.</p>
+<hr>
+</section>
+</section>
+<section id="microkernel" class="level1">
+<h1>Microkernel</h1>
+<p>El <strong>Microkernel</strong> mantiene dentro del Kernel únicamente las funciones esenciales.</p>
+<p>Otros servicios se ejecutan fuera del Kernel como procesos independientes.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+MK["Microkernel"]
+MK --&gt; CPU["CPU"]
+MK --&gt; MEM["Memoria"]
+
+APP["Servicios"]
+APP --&gt; FS["Sistema de archivos"]
+APP --&gt; DR["Drivers"]
+APP --&gt; NET["Red"]
+
+APP --&gt; MK
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<section id="ventajas-1" class="level2">
+<h2 class="anchored" data-anchor-id="ventajas-1">Ventajas</h2>
+<ul>
+<li>Mayor estabilidad.</li>
+<li>Más seguro.</li>
+<li>Fácil de mantener.</li>
+</ul>
+</section>
+<section id="desventajas-1" class="level2">
+<h2 class="anchored" data-anchor-id="desventajas-1">Desventajas</h2>
+<ul>
+<li>Mayor comunicación entre procesos.</li>
+<li>Menor rendimiento que un monolítico.</li>
+</ul>
+<p>Ejemplo clásico: <strong>MINIX</strong>.</p>
+<hr>
+</section>
+</section>
+<section id="kernel-híbrido" class="level1">
+<h1>Kernel Híbrido</h1>
+<p>El <strong>Kernel Híbrido</strong> combina características del Kernel Monolítico y del Microkernel.</p>
+<p>Mantiene servicios importantes dentro del Kernel para mejorar el rendimiento y deja otros componentes fuera para aumentar la modularidad.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+HK["Kernel Híbrido"]
+HK --&gt; CORE["Servicios críticos"]
+EXT["Servicios adicionales"] --&gt; HK
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<section id="ventajas-2" class="level2">
+<h2 class="anchored" data-anchor-id="ventajas-2">Ventajas</h2>
+<ul>
+<li>Buen equilibrio entre rendimiento y estabilidad.</li>
+<li>Muy utilizado en sistemas modernos.</li>
+</ul>
+</section>
+<section id="desventajas-2" class="level2">
+<h2 class="anchored" data-anchor-id="desventajas-2">Desventajas</h2>
+<ul>
+<li>Arquitectura más compleja.</li>
+</ul>
+<p>Ejemplos:</p>
+<ul>
+<li>Windows</li>
+<li>macOS</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="comparación" class="level1">
+<h1>Comparación</h1>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Característica</th>
+<th>Monolítico</th>
+<th>Microkernel</th>
+<th>Híbrido</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Rendimiento</td>
+<td>Alto</td>
+<td>Medio</td>
+<td>Alto</td>
+</tr>
+<tr class="even">
+<td>Estabilidad</td>
+<td>Media</td>
+<td>Alta</td>
+<td>Alta</td>
+</tr>
+<tr class="odd">
+<td>Mantenimiento</td>
+<td>Difícil</td>
+<td>Fácil</td>
+<td>Medio</td>
+</tr>
+<tr class="even">
+<td>Ejemplo</td>
+<td>Linux</td>
+<td>MINIX</td>
+<td>Windows / macOS</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Idea clave
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>No existe un tipo de Kernel perfecto.</p>
+<p>Cada arquitectura representa un equilibrio distinto entre <strong>rendimiento</strong>, <strong>seguridad</strong>, <strong>mantenimiento</strong> y <strong>modularidad</strong>.</p>
+</div>
+</div>
+</section>
+<section id="preparándonos-para-el-cierre" class="level1">
+<h1>Preparándonos para el cierre</h1>
+<p>En la siguiente sección seguiremos el recorrido completo de una aplicación desde que el usuario hace doble clic hasta que aparece en pantalla y resumiremos todo lo aprendido en este capítulo.</p>
+</section>
+<section id="caso-integrador-qué-ocurre-cuando-abrimos-una-aplicación" class="level1">
+<h1>Caso integrador: ¿Qué ocurre cuando abrimos una aplicación?</h1>
+<p>Llegó el momento de integrar todo lo aprendido.</p>
+<p>Imagina que haces doble clic sobre <strong>Google Chrome</strong>.</p>
+<p>A simple vista únicamente aparece una ventana en la pantalla.</p>
+<p>Sin embargo, internamente ocurre una secuencia de eventos perfectamente organizada.</p>
+<section id="paso-1.-el-usuario-solicita-abrir-la-aplicación" class="level2">
+<h2 class="anchored" data-anchor-id="paso-1.-el-usuario-solicita-abrir-la-aplicación">Paso 1. El usuario solicita abrir la aplicación</h2>
+<p>El usuario hace doble clic sobre el icono.</p>
+<p>La solicitud llega a la <strong>Interfaz Gráfica (GUI)</strong>.</p>
+</section>
+<section id="paso-2.-la-aplicación-solicita-servicios" class="level2">
+<h2 class="anchored" data-anchor-id="paso-2.-la-aplicación-solicita-servicios">Paso 2. La aplicación solicita servicios</h2>
+<p>La aplicación necesita:</p>
+<ul>
+<li>Leer su archivo ejecutable.</li>
+<li>Reservar memoria.</li>
+<li>Crear un proceso.</li>
+<li>Obtener tiempo de CPU.</li>
+</ul>
+<p>Para ello realiza <strong>llamadas al sistema (System Calls)</strong>.</p>
+</section>
+<section id="paso-3.-el-kernel-entra-en-acción" class="level2">
+<h2 class="anchored" data-anchor-id="paso-3.-el-kernel-entra-en-acción">Paso 3. El Kernel entra en acción</h2>
+<p>El Kernel recibe la solicitud y comienza a coordinar todos los recursos necesarios.</p>
+<p>Entre otras tareas:</p>
+<ul>
+<li>Crea el proceso.</li>
+<li>Reserva memoria.</li>
+<li>Consulta el sistema de archivos.</li>
+<li>Coordina el Scheduler.</li>
+<li>Se comunica con los Drivers.</li>
+</ul>
+</section>
+<section id="paso-4.-los-drivers-controlan-el-hardware" class="level2">
+<h2 class="anchored" data-anchor-id="paso-4.-los-drivers-controlan-el-hardware">Paso 4. Los Drivers controlan el hardware</h2>
+<p>Los Drivers permiten que el Sistema Operativo se comunique con:</p>
+<ul>
+<li>Disco duro o SSD.</li>
+<li>Tarjeta gráfica.</li>
+<li>Teclado.</li>
+<li>Mouse.</li>
+<li>Monitor.</li>
+</ul>
+</section>
+<section id="paso-5.-la-aplicación-aparece-en-pantalla" class="level2">
+<h2 class="anchored" data-anchor-id="paso-5.-la-aplicación-aparece-en-pantalla">Paso 5. La aplicación aparece en pantalla</h2>
+<p>Cuando todos los recursos están preparados, la ventana finalmente aparece y el usuario puede comenzar a trabajar.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+U["👤 Usuario"] --&gt; GUI["🖥️ GUI"]
+GUI --&gt; SYS["📞 System Calls"]
+SYS --&gt; K["🧠 Kernel"]
+K --&gt; DRV["🔌 Drivers"]
+DRV --&gt; HW["💻 Hardware"]
+HW --&gt; APP["✅ Aplicación en ejecución"]
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Idea clave
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>El usuario observa un único clic.</p>
+<p>El Sistema Operativo coordina cientos de operaciones en apenas unos milisegundos.</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="autoevaluación" class="level1">
+<h1>Autoevaluación</h1>
+<ol type="1">
+<li>¿Cuál es la función principal del Kernel?</li>
+<li>¿Qué capa recibe directamente las solicitudes de las aplicaciones?</li>
+<li>¿Qué son las System Calls?</li>
+<li>¿Por qué las aplicaciones no acceden directamente al hardware?</li>
+<li>¿Cuál es la función de los Drivers?</li>
+<li>¿Qué diferencia existe entre un Kernel Monolítico y un Microkernel?</li>
+<li>¿Qué ventajas ofrece un Kernel Híbrido?</li>
+<li>¿Qué ocurriría si el Kernel dejara de funcionar?</li>
+<li>¿Por qué decimos que el Kernel es el corazón del Sistema Operativo?</li>
+<li>Describe el recorrido que sigue una solicitud desde el usuario hasta el hardware.</li>
+</ol>
+<hr>
+</section>
+<section id="resumen-del-capítulo" class="level1">
+<h1>Resumen del capítulo</h1>
+<p>Durante este capítulo comprendimos que un Sistema Operativo está organizado por capas para facilitar la administración de los recursos del computador.</p>
+<p>Aprendimos que:</p>
+<ul>
+<li>El usuario interactúa con las aplicaciones.</li>
+<li>Las aplicaciones solicitan servicios mediante llamadas al sistema.</li>
+<li>El Kernel coordina todos los recursos.</li>
+<li>Los Drivers permiten controlar el hardware.</li>
+<li>Existen diferentes arquitecturas de Kernel según las necesidades del sistema.</li>
+</ul>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">mindmap
+  root((Sistema Operativo))
+    Usuario
+    Aplicaciones
+    GUI
+    System Calls
+    Kernel
+      Procesos
+      CPU
+      Memoria
+      Archivos
+      Dispositivos
+    Drivers
+    Hardware
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Para recordar
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>El <strong>Kernel</strong> es el componente más importante del Sistema Operativo.</p>
+<p>Todo acceso al procesador, memoria, dispositivos y archivos pasa por él.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="conexión-con-el-siguiente-capítulo" class="level1">
+<h1>Conexión con el siguiente capítulo</h1>
+<p>Ya comprendemos cómo el Sistema Operativo organiza sus componentes y administra el procesador.</p>
+<p>En el siguiente capítulo estudiaremos cómo administra otro recurso fundamental:</p>
+<blockquote class="blockquote">
+<p><strong>La memoria principal (RAM).</strong></p>
+</blockquote>
+<p>Descubriremos cómo el Sistema Operativo asigna, protege y libera memoria para que múltiples procesos puedan ejecutarse de forma segura y eficiente.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

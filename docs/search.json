@@ -1720,13 +1720,53 @@
     ]
   },
   {
+    "objectID": "capitulos/06_algoritmos_de_planificacion.html",
+    "href": "capitulos/06_algoritmos_de_planificacion.html",
+    "title": "7  Capítulo 6. ¿Cómo decide el Sistema Operativo quién utiliza el procesador?",
+    "section": "",
+    "text": "8 Capítulo 6. Algoritmos de planificación del CPU",
+    "crumbs": [
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Capítulo 6. ¿Cómo decide el Sistema Operativo quién utiliza el procesador?</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/06_algoritmos_de_planificacion.html#relación-con-la-clase-anterior",
+    "href": "capitulos/06_algoritmos_de_planificacion.html#relación-con-la-clase-anterior",
+    "title": "7  Capítulo 6. ¿Cómo decide el Sistema Operativo quién utiliza el procesador?",
+    "section": "8.1 Relación con la clase anterior",
+    "text": "8.1 Relación con la clase anterior\nEn la clase anterior estudiamos los procesos, el PCB, el Scheduler, el Dispatcher y el Cambio de Contexto.\nAhora responderemos una nueva pregunta:\n\n¿Cómo decide el Sistema Operativo cuál proceso utilizará el procesador?",
+    "crumbs": [
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Capítulo 6. ¿Cómo decide el Sistema Operativo quién utiliza el procesador?</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/06_algoritmos_de_planificacion.html#cómo-elegir-un-buen-quantum",
+    "href": "capitulos/06_algoritmos_de_planificacion.html#cómo-elegir-un-buen-quantum",
+    "title": "7  Capítulo 6. ¿Cómo decide el Sistema Operativo quién utiliza el procesador?",
+    "section": "54.1 ¿Cómo elegir un buen Quantum?",
+    "text": "54.1 ¿Cómo elegir un buen Quantum?\n\nMuy pequeño: muchos cambios de contexto y menor rendimiento.\nMuy grande: los procesos esperan demasiado.\nAdecuado: equilibrio entre rendimiento y respuesta.\n\n\n\n\n\n\nflowchart TD\nA[Quantum muy pequeño] --&gt; B[Muchos cambios de contexto]\nC[Quantum muy grande] --&gt; D[Se parece a FCFS]\nE[Quantum adecuado] --&gt; F[Buen tiempo de respuesta]",
+    "crumbs": [
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Capítulo 6. ¿Cómo decide el Sistema Operativo quién utiliza el procesador?</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/06_algoritmos_de_planificacion.html#analiza",
+    "href": "capitulos/06_algoritmos_de_planificacion.html#analiza",
+    "title": "7  Capítulo 6. ¿Cómo decide el Sistema Operativo quién utiliza el procesador?",
+    "section": "58.1 Analiza",
+    "text": "58.1 Analiza\n\n¿Qué proceso ejecutaría FCFS primero?\n¿Qué proceso elegiría SJF?\n¿Qué proceso seleccionaría Prioridades?\nSi el Quantum = 2 ms, ¿cómo comenzaría Round Robin?\n\nDiscute y justifica tus respuestas.",
+    "crumbs": [
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Capítulo 6. ¿Cómo decide el Sistema Operativo quién utiliza el procesador?</span>"
+    ]
+  },
+  {
     "objectID": "capitulos/99_cierre.html",
     "href": "capitulos/99_cierre.html",
-    "title": "7  Cierre de la clase",
+    "title": "8  Cierre de la clase",
     "section": "",
-    "text": "7.1 Próximo paso\nEn la siguiente clase profundizaremos en la estructura y los componentes de un sistema operativo, relacionando kernel, procesos, memoria, dispositivos y servicios.",
+    "text": "8.1 Próximo paso\nEn la siguiente clase profundizaremos en la estructura y los componentes de un sistema operativo, relacionando kernel, procesos, memoria, dispositivos y servicios.",
     "crumbs": [
-      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Cierre de la clase</span>"
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Cierre de la clase</span>"
     ]
   }
 ]
