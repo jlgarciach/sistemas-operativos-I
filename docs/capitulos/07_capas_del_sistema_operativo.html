@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
 
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.9.37">
@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</title>
+<title>8&nbsp; Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo – Sistemas Operativos I</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -26,33 +26,221 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="07_capas_del_sistema_operativo_files/libs/clipboard/clipboard.min.js"></script>
-<script src="07_capas_del_sistema_operativo_files/libs/quarto-html/quarto.js" type="module"></script>
-<script src="07_capas_del_sistema_operativo_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="07_capas_del_sistema_operativo_files/libs/quarto-html/popper.min.js"></script>
-<script src="07_capas_del_sistema_operativo_files/libs/quarto-html/tippy.umd.min.js"></script>
-<script src="07_capas_del_sistema_operativo_files/libs/quarto-html/anchor.min.js"></script>
-<link href="07_capas_del_sistema_operativo_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="07_capas_del_sistema_operativo_files/libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="07_capas_del_sistema_operativo_files/libs/bootstrap/bootstrap.min.js"></script>
-<link href="07_capas_del_sistema_operativo_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="07_capas_del_sistema_operativo_files/libs/bootstrap/bootstrap-138a6193a3bd40baf1e627da441a4734.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
-<script src="07_capas_del_sistema_operativo_files/libs/quarto-diagram/mermaid.min.js"></script>
-<script src="07_capas_del_sistema_operativo_files/libs/quarto-diagram/mermaid-init.js"></script>
-<link href="07_capas_del_sistema_operativo_files/libs/quarto-diagram/mermaid.css" rel="stylesheet">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../capitulos/99_cierre.html" rel="next">
+<link href="../capitulos/06_algoritmos_de_planificacion.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-00cb48ef4f8381ff23467c959274e61b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-663c59e08f2ec96d6b2ddc79a12e8e5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No se han encontrado resultados",
+    "search-matching-documents-text": "documentos encontrados",
+    "search-copy-link-title": "Copiar el enlace en la búsqueda",
+    "search-hide-matches-text": "Ocultar resultados adicionales",
+    "search-more-match-text": "resultado adicional en este documento",
+    "search-more-matches-text": "resultados adicionales en este documento",
+    "search-clear-button-title": "Borrar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Buscar"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<script src="../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 </head>
 
-<body class="fullcontent quarto-light">
+<body class="nav-sidebar floating quarto-light">
 
-<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../capitulos/07_capas_del_sistema_operativo.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Buscar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Sistemas Operativos I</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Buscar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">index.html</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/01_introduccion_sistemas_operativos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Presentación de la clase</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/02_administracion_sistema_archivos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Administración del sistema de archivos desde la línea de comandos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/03_sistemas_operativos_red.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Clase 3. Sistemas Operativos de Red</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/04_administracion_procesos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Clase 4. Administración de Procesos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/05_control_procesos_concurrencia.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Clase 5. Control de Procesos y Concurrencia</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/06_algoritmos_de_planificacion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Capítulo 6. ¿Cómo decide el Sistema Operativo quién utiliza el procesador?</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/07_capas_del_sistema_operativo.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/99_cierre.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Cierre de la clase</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Tabla de contenidos</h2>
+   
+  <ul>
+  <li><a href="#capítulo-7.-capas-del-sistema-operativo" id="toc-capítulo-7.-capas-del-sistema-operativo" class="nav-link active" data-scroll-target="#capítulo-7.-capas-del-sistema-operativo"><span class="header-section-number">9</span> Capítulo 7. Capas del Sistema Operativo</a>
+  <ul class="collapse">
+  <li><a href="#relación-con-la-clase-anterior" id="toc-relación-con-la-clase-anterior" class="nav-link" data-scroll-target="#relación-con-la-clase-anterior"><span class="header-section-number">9.1</span> Relación con la clase anterior</a></li>
+  </ul></li>
+  <li><a href="#objetivos-de-aprendizaje" id="toc-objetivos-de-aprendizaje" class="nav-link" data-scroll-target="#objetivos-de-aprendizaje"><span class="header-section-number">10</span> Objetivos de aprendizaje</a></li>
+  <li><a href="#motivación" id="toc-motivación" class="nav-link" data-scroll-target="#motivación"><span class="header-section-number">11</span> Motivación</a></li>
+  <li><a href="#un-viaje-por-el-sistema-operativo" id="toc-un-viaje-por-el-sistema-operativo" class="nav-link" data-scroll-target="#un-viaje-por-el-sistema-operativo"><span class="header-section-number">12</span> Un viaje por el Sistema Operativo</a></li>
+  <li><a href="#por-qué-organizar-el-sistema-operativo-por-capas" id="toc-por-qué-organizar-el-sistema-operativo-por-capas" class="nav-link" data-scroll-target="#por-qué-organizar-el-sistema-operativo-por-capas"><span class="header-section-number">13</span> ¿Por qué organizar el Sistema Operativo por capas?</a></li>
+  <li><a href="#qué-aprenderemos-en-este-capítulo" id="toc-qué-aprenderemos-en-este-capítulo" class="nav-link" data-scroll-target="#qué-aprenderemos-en-este-capítulo"><span class="header-section-number">14</span> ¿Qué aprenderemos en este capítulo?</a></li>
+  <li><a href="#preparándonos-para-la-siguiente-sección" id="toc-preparándonos-para-la-siguiente-sección" class="nav-link" data-scroll-target="#preparándonos-para-la-siguiente-sección"><span class="header-section-number">15</span> Preparándonos para la siguiente sección</a></li>
+  <li><a href="#conociendo-las-capas-del-sistema-operativo" id="toc-conociendo-las-capas-del-sistema-operativo" class="nav-link" data-scroll-target="#conociendo-las-capas-del-sistema-operativo"><span class="header-section-number">16</span> Conociendo las capas del Sistema Operativo</a>
+  <ul class="collapse">
+  <li><a href="#vista-general" id="toc-vista-general" class="nav-link" data-scroll-target="#vista-general"><span class="header-section-number">16.1</span> Vista general</a></li>
+  </ul></li>
+  <li><a href="#capa-1.-usuario" id="toc-capa-1.-usuario" class="nav-link" data-scroll-target="#capa-1.-usuario"><span class="header-section-number">17</span> Capa 1. Usuario</a></li>
+  <li><a href="#capa-2.-aplicaciones" id="toc-capa-2.-aplicaciones" class="nav-link" data-scroll-target="#capa-2.-aplicaciones"><span class="header-section-number">18</span> Capa 2. Aplicaciones</a></li>
+  <li><a href="#capa-3.-interfaz-gráfica-gui" id="toc-capa-3.-interfaz-gráfica-gui" class="nav-link" data-scroll-target="#capa-3.-interfaz-gráfica-gui"><span class="header-section-number">19</span> Capa 3. Interfaz gráfica (GUI)</a></li>
+  <li><a href="#capa-4.-llamadas-al-sistema-system-calls" id="toc-capa-4.-llamadas-al-sistema-system-calls" class="nav-link" data-scroll-target="#capa-4.-llamadas-al-sistema-system-calls"><span class="header-section-number">20</span> Capa 4. Llamadas al Sistema (System Calls)</a></li>
+  <li><a href="#qué-observamos-hasta-ahora" id="toc-qué-observamos-hasta-ahora" class="nav-link" data-scroll-target="#qué-observamos-hasta-ahora"><span class="header-section-number">21</span> ¿Qué observamos hasta ahora?</a></li>
+  <li><a href="#el-kernel-el-corazón-del-sistema-operativo" id="toc-el-kernel-el-corazón-del-sistema-operativo" class="nav-link" data-scroll-target="#el-kernel-el-corazón-del-sistema-operativo"><span class="header-section-number">22</span> El Kernel: el corazón del Sistema Operativo</a></li>
+  <li><a href="#qué-es-el-kernel" id="toc-qué-es-el-kernel" class="nav-link" data-scroll-target="#qué-es-el-kernel"><span class="header-section-number">23</span> ¿Qué es el Kernel?</a></li>
+  <li><a href="#qué-responsabilidades-tiene-el-kernel" id="toc-qué-responsabilidades-tiene-el-kernel" class="nav-link" data-scroll-target="#qué-responsabilidades-tiene-el-kernel"><span class="header-section-number">24</span> ¿Qué responsabilidades tiene el Kernel?</a></li>
+  <li><a href="#qué-ocurriría-si-el-kernel-no-existiera" id="toc-qué-ocurriría-si-el-kernel-no-existiera" class="nav-link" data-scroll-target="#qué-ocurriría-si-el-kernel-no-existiera"><span class="header-section-number">25</span> ¿Qué ocurriría si el Kernel no existiera?</a></li>
+  <li><a href="#relación-con-los-temas-estudiados" id="toc-relación-con-los-temas-estudiados" class="nav-link" data-scroll-target="#relación-con-los-temas-estudiados"><span class="header-section-number">26</span> Relación con los temas estudiados</a></li>
+  <li><a href="#preparándonos-para-la-siguiente-sección-1" id="toc-preparándonos-para-la-siguiente-sección-1" class="nav-link" data-scroll-target="#preparándonos-para-la-siguiente-sección-1"><span class="header-section-number">27</span> Preparándonos para la siguiente sección</a></li>
+  <li><a href="#tipos-de-kernel" id="toc-tipos-de-kernel" class="nav-link" data-scroll-target="#tipos-de-kernel"><span class="header-section-number">28</span> Tipos de Kernel</a></li>
+  <li><a href="#kernel-monolítico" id="toc-kernel-monolítico" class="nav-link" data-scroll-target="#kernel-monolítico"><span class="header-section-number">29</span> Kernel Monolítico</a>
+  <ul class="collapse">
+  <li><a href="#ventajas" id="toc-ventajas" class="nav-link" data-scroll-target="#ventajas"><span class="header-section-number">29.1</span> Ventajas</a></li>
+  <li><a href="#desventajas" id="toc-desventajas" class="nav-link" data-scroll-target="#desventajas"><span class="header-section-number">29.2</span> Desventajas</a></li>
+  </ul></li>
+  <li><a href="#microkernel" id="toc-microkernel" class="nav-link" data-scroll-target="#microkernel"><span class="header-section-number">30</span> Microkernel</a>
+  <ul class="collapse">
+  <li><a href="#ventajas-1" id="toc-ventajas-1" class="nav-link" data-scroll-target="#ventajas-1"><span class="header-section-number">30.1</span> Ventajas</a></li>
+  <li><a href="#desventajas-1" id="toc-desventajas-1" class="nav-link" data-scroll-target="#desventajas-1"><span class="header-section-number">30.2</span> Desventajas</a></li>
+  </ul></li>
+  <li><a href="#kernel-híbrido" id="toc-kernel-híbrido" class="nav-link" data-scroll-target="#kernel-híbrido"><span class="header-section-number">31</span> Kernel Híbrido</a>
+  <ul class="collapse">
+  <li><a href="#ventajas-2" id="toc-ventajas-2" class="nav-link" data-scroll-target="#ventajas-2"><span class="header-section-number">31.1</span> Ventajas</a></li>
+  <li><a href="#desventajas-2" id="toc-desventajas-2" class="nav-link" data-scroll-target="#desventajas-2"><span class="header-section-number">31.2</span> Desventajas</a></li>
+  </ul></li>
+  <li><a href="#comparación" id="toc-comparación" class="nav-link" data-scroll-target="#comparación"><span class="header-section-number">32</span> Comparación</a></li>
+  <li><a href="#preparándonos-para-el-cierre" id="toc-preparándonos-para-el-cierre" class="nav-link" data-scroll-target="#preparándonos-para-el-cierre"><span class="header-section-number">33</span> Preparándonos para el cierre</a></li>
+  <li><a href="#caso-integrador-qué-ocurre-cuando-abrimos-una-aplicación" id="toc-caso-integrador-qué-ocurre-cuando-abrimos-una-aplicación" class="nav-link" data-scroll-target="#caso-integrador-qué-ocurre-cuando-abrimos-una-aplicación"><span class="header-section-number">34</span> Caso integrador: ¿Qué ocurre cuando abrimos una aplicación?</a>
+  <ul class="collapse">
+  <li><a href="#paso-1.-el-usuario-solicita-abrir-la-aplicación" id="toc-paso-1.-el-usuario-solicita-abrir-la-aplicación" class="nav-link" data-scroll-target="#paso-1.-el-usuario-solicita-abrir-la-aplicación"><span class="header-section-number">34.1</span> Paso 1. El usuario solicita abrir la aplicación</a></li>
+  <li><a href="#paso-2.-la-aplicación-solicita-servicios" id="toc-paso-2.-la-aplicación-solicita-servicios" class="nav-link" data-scroll-target="#paso-2.-la-aplicación-solicita-servicios"><span class="header-section-number">34.2</span> Paso 2. La aplicación solicita servicios</a></li>
+  <li><a href="#paso-3.-el-kernel-entra-en-acción" id="toc-paso-3.-el-kernel-entra-en-acción" class="nav-link" data-scroll-target="#paso-3.-el-kernel-entra-en-acción"><span class="header-section-number">34.3</span> Paso 3. El Kernel entra en acción</a></li>
+  <li><a href="#paso-4.-los-drivers-controlan-el-hardware" id="toc-paso-4.-los-drivers-controlan-el-hardware" class="nav-link" data-scroll-target="#paso-4.-los-drivers-controlan-el-hardware"><span class="header-section-number">34.4</span> Paso 4. Los Drivers controlan el hardware</a></li>
+  <li><a href="#paso-5.-la-aplicación-aparece-en-pantalla" id="toc-paso-5.-la-aplicación-aparece-en-pantalla" class="nav-link" data-scroll-target="#paso-5.-la-aplicación-aparece-en-pantalla"><span class="header-section-number">34.5</span> Paso 5. La aplicación aparece en pantalla</a></li>
+  </ul></li>
+  <li><a href="#autoevaluación" id="toc-autoevaluación" class="nav-link" data-scroll-target="#autoevaluación"><span class="header-section-number">35</span> Autoevaluación</a></li>
+  <li><a href="#resumen-del-capítulo" id="toc-resumen-del-capítulo" class="nav-link" data-scroll-target="#resumen-del-capítulo"><span class="header-section-number">36</span> Resumen del capítulo</a></li>
+  <li><a href="#conexión-con-el-siguiente-capítulo" id="toc-conexión-con-el-siguiente-capítulo" class="nav-link" data-scroll-target="#conexión-con-el-siguiente-capítulo"><span class="header-section-number">37</span> Conexión con el siguiente capítulo</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</h1>
+<h1 class="title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</span></h1>
 </div>
 
 
@@ -69,10 +257,10 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="capítulo-7.-capas-del-sistema-operativo" class="level1">
-<h1>Capítulo 7. Capas del Sistema Operativo</h1>
-<section id="relación-con-la-clase-anterior" class="level2">
-<h2 class="anchored" data-anchor-id="relación-con-la-clase-anterior">Relación con la clase anterior</h2>
+<section id="capítulo-7.-capas-del-sistema-operativo" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> Capítulo 7. Capas del Sistema Operativo</h1>
+<section id="relación-con-la-clase-anterior" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="relación-con-la-clase-anterior"><span class="header-section-number">9.1</span> Relación con la clase anterior</h2>
 <p>En el capítulo anterior aprendimos que el <strong>Scheduler</strong> decide qué proceso utilizará el procesador y que el <strong>Kernel</strong> coordina esa decisión.</p>
 <p>Ahora responderemos una nueva pregunta:</p>
 <blockquote class="blockquote">
@@ -82,8 +270,8 @@ ul.task-list li input[type="checkbox"] {
 <hr>
 </section>
 </section>
-<section id="objetivos-de-aprendizaje" class="level1">
-<h1>Objetivos de aprendizaje</h1>
+<section id="objetivos-de-aprendizaje" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> Objetivos de aprendizaje</h1>
 <p>Al finalizar este capítulo serás capaz de:</p>
 <ul>
 <li>Comprender la organización por capas de un Sistema Operativo.</li>
@@ -93,8 +281,8 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 <hr>
 </section>
-<section id="motivación" class="level1">
-<h1>Motivación</h1>
+<section id="motivación" class="level1" data-number="11">
+<h1 data-number="11"><span class="header-section-number">11</span> Motivación</h1>
 <p>Todos los días abrimos aplicaciones como:</p>
 <ul>
 <li>Google Chrome</li>
@@ -118,7 +306,7 @@ ul.task-list li input[type="checkbox"] {
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Pregunta detonadora
+<span class="screen-reader-only">Nota</span>Pregunta detonadora
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -128,8 +316,8 @@ ul.task-list li input[type="checkbox"] {
 </div>
 <hr>
 </section>
-<section id="un-viaje-por-el-sistema-operativo" class="level1">
-<h1>Un viaje por el Sistema Operativo</h1>
+<section id="un-viaje-por-el-sistema-operativo" class="level1" data-number="12">
+<h1 data-number="12"><span class="header-section-number">12</span> Un viaje por el Sistema Operativo</h1>
 <p>Durante esta clase seguiremos el recorrido que realiza una solicitud desde el usuario hasta el hardware.</p>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
@@ -160,8 +348,8 @@ D --&gt; H
 <p>Siempre existe una cadena de componentes que trabajan coordinadamente.</p>
 <hr>
 </section>
-<section id="por-qué-organizar-el-sistema-operativo-por-capas" class="level1">
-<h1>¿Por qué organizar el Sistema Operativo por capas?</h1>
+<section id="por-qué-organizar-el-sistema-operativo-por-capas" class="level1" data-number="13">
+<h1 data-number="13"><span class="header-section-number">13</span> ¿Por qué organizar el Sistema Operativo por capas?</h1>
 <p>Dividir el Sistema Operativo en capas ofrece varias ventajas.</p>
 <ul>
 <li>Cada capa tiene una responsabilidad específica.</li>
@@ -175,8 +363,8 @@ D --&gt; H
 <p>Con un Sistema Operativo ocurre exactamente lo mismo.</p>
 <hr>
 </section>
-<section id="qué-aprenderemos-en-este-capítulo" class="level1">
-<h1>¿Qué aprenderemos en este capítulo?</h1>
+<section id="qué-aprenderemos-en-este-capítulo" class="level1" data-number="14">
+<h1 data-number="14"><span class="header-section-number">14</span> ¿Qué aprenderemos en este capítulo?</h1>
 <p>En las siguientes secciones estudiaremos:</p>
 <ol type="1">
 <li>La arquitectura por capas.</li>
@@ -187,17 +375,17 @@ D --&gt; H
 </ol>
 <hr>
 </section>
-<section id="preparándonos-para-la-siguiente-sección" class="level1">
-<h1>Preparándonos para la siguiente sección</h1>
+<section id="preparándonos-para-la-siguiente-sección" class="level1" data-number="15">
+<h1 data-number="15"><span class="header-section-number">15</span> Preparándonos para la siguiente sección</h1>
 <p>Ya conocemos el recorrido general.</p>
 <p>Ahora estudiaremos cada una de las capas comenzando desde la más cercana al usuario hasta llegar al <strong>Kernel</strong>, el componente más importante del Sistema Operativo.</p>
 </section>
-<section id="conociendo-las-capas-del-sistema-operativo" class="level1">
-<h1>Conociendo las capas del Sistema Operativo</h1>
+<section id="conociendo-las-capas-del-sistema-operativo" class="level1" data-number="16">
+<h1 data-number="16"><span class="header-section-number">16</span> Conociendo las capas del Sistema Operativo</h1>
 <p>En la sección anterior vimos que una solicitud recorre varias capas antes de llegar al hardware.</p>
 <p>Ahora estudiaremos cada una de ellas para comprender su función.</p>
-<section id="vista-general" class="level2">
-<h2 class="anchored" data-anchor-id="vista-general">Vista general</h2>
+<section id="vista-general" class="level2" data-number="16.1">
+<h2 data-number="16.1" class="anchored" data-anchor-id="vista-general"><span class="header-section-number">16.1</span> Vista general</h2>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
 <div>
@@ -223,8 +411,8 @@ U --&gt; APP --&gt; GUI --&gt; API --&gt; K --&gt; DRV --&gt; HW
 <hr>
 </section>
 </section>
-<section id="capa-1.-usuario" class="level1">
-<h1>Capa 1. Usuario</h1>
+<section id="capa-1.-usuario" class="level1" data-number="17">
+<h1 data-number="17"><span class="header-section-number">17</span> Capa 1. Usuario</h1>
 <p>Es la persona que utiliza el computador.</p>
 <p>Sus acciones son sencillas:</p>
 <ul>
@@ -236,8 +424,8 @@ U --&gt; APP --&gt; GUI --&gt; API --&gt; K --&gt; DRV --&gt; HW
 <p>El usuario nunca controla directamente el hardware.</p>
 <hr>
 </section>
-<section id="capa-2.-aplicaciones" class="level1">
-<h1>Capa 2. Aplicaciones</h1>
+<section id="capa-2.-aplicaciones" class="level1" data-number="18">
+<h1 data-number="18"><span class="header-section-number">18</span> Capa 2. Aplicaciones</h1>
 <p>Son los programas que utilizamos diariamente.</p>
 <p>Ejemplos:</p>
 <ul>
@@ -253,7 +441,7 @@ U --&gt; APP --&gt; GUI --&gt; API --&gt; K --&gt; DRV --&gt; HW
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Idea importante
+<span class="screen-reader-only">Nota</span>Idea importante
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -262,8 +450,8 @@ U --&gt; APP --&gt; GUI --&gt; API --&gt; K --&gt; DRV --&gt; HW
 </div>
 <hr>
 </section>
-<section id="capa-3.-interfaz-gráfica-gui" class="level1">
-<h1>Capa 3. Interfaz gráfica (GUI)</h1>
+<section id="capa-3.-interfaz-gráfica-gui" class="level1" data-number="19">
+<h1 data-number="19"><span class="header-section-number">19</span> Capa 3. Interfaz gráfica (GUI)</h1>
 <p>La GUI permite que el usuario interactúe mediante:</p>
 <ul>
 <li>Ventanas.</li>
@@ -274,8 +462,8 @@ U --&gt; APP --&gt; GUI --&gt; API --&gt; K --&gt; DRV --&gt; HW
 <p>Gracias a ella no es necesario escribir comandos para realizar la mayoría de las tareas.</p>
 <hr>
 </section>
-<section id="capa-4.-llamadas-al-sistema-system-calls" class="level1">
-<h1>Capa 4. Llamadas al Sistema (System Calls)</h1>
+<section id="capa-4.-llamadas-al-sistema-system-calls" class="level1" data-number="20">
+<h1 data-number="20"><span class="header-section-number">20</span> Capa 4. Llamadas al Sistema (System Calls)</h1>
 <p>Cuando una aplicación necesita un recurso, realiza una <strong>llamada al sistema</strong>.</p>
 <p>Por ejemplo:</p>
 <ul>
@@ -315,22 +503,22 @@ SYS --&gt; K["Kernel"]
 </div>
 <hr>
 </section>
-<section id="qué-observamos-hasta-ahora" class="level1">
-<h1>¿Qué observamos hasta ahora?</h1>
+<section id="qué-observamos-hasta-ahora" class="level1" data-number="21">
+<h1 data-number="21"><span class="header-section-number">21</span> ¿Qué observamos hasta ahora?</h1>
 <p>Las primeras capas están orientadas al usuario y a las aplicaciones.</p>
 <p>Sin embargo, todavía no hemos llegado al componente que realmente controla el Sistema Operativo.</p>
 <p>En la siguiente sección estudiaremos el <strong>Kernel</strong>, considerado el corazón del Sistema Operativo.</p>
 </section>
-<section id="el-kernel-el-corazón-del-sistema-operativo" class="level1">
-<h1>El Kernel: el corazón del Sistema Operativo</h1>
+<section id="el-kernel-el-corazón-del-sistema-operativo" class="level1" data-number="22">
+<h1 data-number="22"><span class="header-section-number">22</span> El Kernel: el corazón del Sistema Operativo</h1>
 <p>Hasta este momento hemos recorrido varias capas del Sistema Operativo.</p>
 <p>Sin embargo, todas ellas dependen de un componente central.</p>
 <p>Ese componente recibe el nombre de <strong>Kernel</strong>.</p>
 <p>Si el Sistema Operativo fuera un cuerpo humano, el Kernel sería su <strong>corazón y su cerebro</strong>, ya que coordina el funcionamiento de todos los recursos del computador.</p>
 <hr>
 </section>
-<section id="qué-es-el-kernel" class="level1">
-<h1>¿Qué es el Kernel?</h1>
+<section id="qué-es-el-kernel" class="level1" data-number="23">
+<h1 data-number="23"><span class="header-section-number">23</span> ¿Qué es el Kernel?</h1>
 <p>El <strong>Kernel</strong> es la parte más importante del Sistema Operativo.</p>
 <p>Es el primer componente que se carga en memoria durante el arranque del sistema y permanece ejecutándose mientras la computadora está encendida.</p>
 <p>Su función principal es actuar como intermediario entre:</p>
@@ -375,7 +563,7 @@ K --&gt; DEV
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Idea clave
+<span class="screen-reader-only">Nota</span>Idea clave
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -385,8 +573,8 @@ K --&gt; DEV
 </div>
 <hr>
 </section>
-<section id="qué-responsabilidades-tiene-el-kernel" class="level1">
-<h1>¿Qué responsabilidades tiene el Kernel?</h1>
+<section id="qué-responsabilidades-tiene-el-kernel" class="level1" data-number="24">
+<h1 data-number="24"><span class="header-section-number">24</span> ¿Qué responsabilidades tiene el Kernel?</h1>
 <p>El Kernel realiza numerosas tareas al mismo tiempo.</p>
 <p>Entre las más importantes se encuentran:</p>
 <ul>
@@ -401,8 +589,8 @@ K --&gt; DEV
 <p>Observa que muchos de estos temas serán estudiados durante el resto del curso.</p>
 <hr>
 </section>
-<section id="qué-ocurriría-si-el-kernel-no-existiera" class="level1">
-<h1>¿Qué ocurriría si el Kernel no existiera?</h1>
+<section id="qué-ocurriría-si-el-kernel-no-existiera" class="level1" data-number="25">
+<h1 data-number="25"><span class="header-section-number">25</span> ¿Qué ocurriría si el Kernel no existiera?</h1>
 <p>Imagina que una aplicación intenta:</p>
 <ul>
 <li>Leer un archivo.</li>
@@ -423,7 +611,7 @@ K --&gt; DEV
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Warning</span>Reflexiona
+<span class="screen-reader-only">Advertencia</span>Reflexiona
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -433,8 +621,8 @@ K --&gt; DEV
 </div>
 <hr>
 </section>
-<section id="relación-con-los-temas-estudiados" class="level1">
-<h1>Relación con los temas estudiados</h1>
+<section id="relación-con-los-temas-estudiados" class="level1" data-number="26">
+<h1 data-number="26"><span class="header-section-number">26</span> Relación con los temas estudiados</h1>
 <p>Observa cómo el Kernel aparece en casi todo lo que hemos aprendido.</p>
 <table class="caption-top table">
 <thead>
@@ -473,8 +661,8 @@ K --&gt; DEV
 <p>Esto demuestra por qué se le considera el <strong>corazón del Sistema Operativo</strong>.</p>
 <hr>
 </section>
-<section id="preparándonos-para-la-siguiente-sección-1" class="level1">
-<h1>Preparándonos para la siguiente sección</h1>
+<section id="preparándonos-para-la-siguiente-sección-1" class="level1" data-number="27">
+<h1 data-number="27"><span class="header-section-number">27</span> Preparándonos para la siguiente sección</h1>
 <p>Ya conocemos la importancia del Kernel.</p>
 <p>Ahora estudiaremos que <strong>no todos los Sistemas Operativos utilizan el mismo tipo de Kernel</strong>.</p>
 <p>Analizaremos los modelos:</p>
@@ -485,15 +673,15 @@ K --&gt; DEV
 </ul>
 <p>Y conoceremos cuál utiliza Windows, Linux y macOS.</p>
 </section>
-<section id="tipos-de-kernel" class="level1">
-<h1>Tipos de Kernel</h1>
+<section id="tipos-de-kernel" class="level1" data-number="28">
+<h1 data-number="28"><span class="header-section-number">28</span> Tipos de Kernel</h1>
 <p>En la sección anterior aprendimos que el <strong>Kernel</strong> es el corazón del Sistema Operativo.</p>
 <p>Sin embargo, no todos los Sistemas Operativos implementan el Kernel de la misma forma.</p>
 <p>Dependiendo de su diseño, existen diferentes arquitecturas.</p>
 <hr>
 </section>
-<section id="kernel-monolítico" class="level1">
-<h1>Kernel Monolítico</h1>
+<section id="kernel-monolítico" class="level1" data-number="29">
+<h1 data-number="29"><span class="header-section-number">29</span> Kernel Monolítico</h1>
 <p>En un <strong>Kernel Monolítico</strong>, la mayoría de los servicios del Sistema Operativo se ejecutan dentro del propio Kernel.</p>
 <p>Esto significa que:</p>
 <ul>
@@ -522,16 +710,16 @@ K --&gt; CPU["Planificación"]
 </div>
 </div>
 </div>
-<section id="ventajas" class="level2">
-<h2 class="anchored" data-anchor-id="ventajas">Ventajas</h2>
+<section id="ventajas" class="level2" data-number="29.1">
+<h2 data-number="29.1" class="anchored" data-anchor-id="ventajas"><span class="header-section-number">29.1</span> Ventajas</h2>
 <ul>
 <li>Muy rápido.</li>
 <li>Excelente rendimiento.</li>
 <li>Menor sobrecarga.</li>
 </ul>
 </section>
-<section id="desventajas" class="level2">
-<h2 class="anchored" data-anchor-id="desventajas">Desventajas</h2>
+<section id="desventajas" class="level2" data-number="29.2">
+<h2 data-number="29.2" class="anchored" data-anchor-id="desventajas"><span class="header-section-number">29.2</span> Desventajas</h2>
 <ul>
 <li>Un error en un componente puede afectar todo el sistema.</li>
 <li>Mayor complejidad para mantener.</li>
@@ -540,8 +728,8 @@ K --&gt; CPU["Planificación"]
 <hr>
 </section>
 </section>
-<section id="microkernel" class="level1">
-<h1>Microkernel</h1>
+<section id="microkernel" class="level1" data-number="30">
+<h1 data-number="30"><span class="header-section-number">30</span> Microkernel</h1>
 <p>El <strong>Microkernel</strong> mantiene dentro del Kernel únicamente las funciones esenciales.</p>
 <p>Otros servicios se ejecutan fuera del Kernel como procesos independientes.</p>
 <div class="cell" data-layout-align="default">
@@ -566,16 +754,16 @@ APP --&gt; MK
 </div>
 </div>
 </div>
-<section id="ventajas-1" class="level2">
-<h2 class="anchored" data-anchor-id="ventajas-1">Ventajas</h2>
+<section id="ventajas-1" class="level2" data-number="30.1">
+<h2 data-number="30.1" class="anchored" data-anchor-id="ventajas-1"><span class="header-section-number">30.1</span> Ventajas</h2>
 <ul>
 <li>Mayor estabilidad.</li>
 <li>Más seguro.</li>
 <li>Fácil de mantener.</li>
 </ul>
 </section>
-<section id="desventajas-1" class="level2">
-<h2 class="anchored" data-anchor-id="desventajas-1">Desventajas</h2>
+<section id="desventajas-1" class="level2" data-number="30.2">
+<h2 data-number="30.2" class="anchored" data-anchor-id="desventajas-1"><span class="header-section-number">30.2</span> Desventajas</h2>
 <ul>
 <li>Mayor comunicación entre procesos.</li>
 <li>Menor rendimiento que un monolítico.</li>
@@ -584,8 +772,8 @@ APP --&gt; MK
 <hr>
 </section>
 </section>
-<section id="kernel-híbrido" class="level1">
-<h1>Kernel Híbrido</h1>
+<section id="kernel-híbrido" class="level1" data-number="31">
+<h1 data-number="31"><span class="header-section-number">31</span> Kernel Híbrido</h1>
 <p>El <strong>Kernel Híbrido</strong> combina características del Kernel Monolítico y del Microkernel.</p>
 <p>Mantiene servicios importantes dentro del Kernel para mejorar el rendimiento y deja otros componentes fuera para aumentar la modularidad.</p>
 <div class="cell" data-layout-align="default">
@@ -603,15 +791,15 @@ EXT["Servicios adicionales"] --&gt; HK
 </div>
 </div>
 </div>
-<section id="ventajas-2" class="level2">
-<h2 class="anchored" data-anchor-id="ventajas-2">Ventajas</h2>
+<section id="ventajas-2" class="level2" data-number="31.1">
+<h2 data-number="31.1" class="anchored" data-anchor-id="ventajas-2"><span class="header-section-number">31.1</span> Ventajas</h2>
 <ul>
 <li>Buen equilibrio entre rendimiento y estabilidad.</li>
 <li>Muy utilizado en sistemas modernos.</li>
 </ul>
 </section>
-<section id="desventajas-2" class="level2">
-<h2 class="anchored" data-anchor-id="desventajas-2">Desventajas</h2>
+<section id="desventajas-2" class="level2" data-number="31.2">
+<h2 data-number="31.2" class="anchored" data-anchor-id="desventajas-2"><span class="header-section-number">31.2</span> Desventajas</h2>
 <ul>
 <li>Arquitectura más compleja.</li>
 </ul>
@@ -623,8 +811,8 @@ EXT["Servicios adicionales"] --&gt; HK
 <hr>
 </section>
 </section>
-<section id="comparación" class="level1">
-<h1>Comparación</h1>
+<section id="comparación" class="level1" data-number="32">
+<h1 data-number="32"><span class="header-section-number">32</span> Comparación</h1>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -667,7 +855,7 @@ EXT["Servicios adicionales"] --&gt; HK
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Idea clave
+<span class="screen-reader-only">Nota</span>Idea clave
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -676,23 +864,23 @@ EXT["Servicios adicionales"] --&gt; HK
 </div>
 </div>
 </section>
-<section id="preparándonos-para-el-cierre" class="level1">
-<h1>Preparándonos para el cierre</h1>
+<section id="preparándonos-para-el-cierre" class="level1" data-number="33">
+<h1 data-number="33"><span class="header-section-number">33</span> Preparándonos para el cierre</h1>
 <p>En la siguiente sección seguiremos el recorrido completo de una aplicación desde que el usuario hace doble clic hasta que aparece en pantalla y resumiremos todo lo aprendido en este capítulo.</p>
 </section>
-<section id="caso-integrador-qué-ocurre-cuando-abrimos-una-aplicación" class="level1">
-<h1>Caso integrador: ¿Qué ocurre cuando abrimos una aplicación?</h1>
+<section id="caso-integrador-qué-ocurre-cuando-abrimos-una-aplicación" class="level1" data-number="34">
+<h1 data-number="34"><span class="header-section-number">34</span> Caso integrador: ¿Qué ocurre cuando abrimos una aplicación?</h1>
 <p>Llegó el momento de integrar todo lo aprendido.</p>
 <p>Imagina que haces doble clic sobre <strong>Google Chrome</strong>.</p>
 <p>A simple vista únicamente aparece una ventana en la pantalla.</p>
 <p>Sin embargo, internamente ocurre una secuencia de eventos perfectamente organizada.</p>
-<section id="paso-1.-el-usuario-solicita-abrir-la-aplicación" class="level2">
-<h2 class="anchored" data-anchor-id="paso-1.-el-usuario-solicita-abrir-la-aplicación">Paso 1. El usuario solicita abrir la aplicación</h2>
+<section id="paso-1.-el-usuario-solicita-abrir-la-aplicación" class="level2" data-number="34.1">
+<h2 data-number="34.1" class="anchored" data-anchor-id="paso-1.-el-usuario-solicita-abrir-la-aplicación"><span class="header-section-number">34.1</span> Paso 1. El usuario solicita abrir la aplicación</h2>
 <p>El usuario hace doble clic sobre el icono.</p>
 <p>La solicitud llega a la <strong>Interfaz Gráfica (GUI)</strong>.</p>
 </section>
-<section id="paso-2.-la-aplicación-solicita-servicios" class="level2">
-<h2 class="anchored" data-anchor-id="paso-2.-la-aplicación-solicita-servicios">Paso 2. La aplicación solicita servicios</h2>
+<section id="paso-2.-la-aplicación-solicita-servicios" class="level2" data-number="34.2">
+<h2 data-number="34.2" class="anchored" data-anchor-id="paso-2.-la-aplicación-solicita-servicios"><span class="header-section-number">34.2</span> Paso 2. La aplicación solicita servicios</h2>
 <p>La aplicación necesita:</p>
 <ul>
 <li>Leer su archivo ejecutable.</li>
@@ -702,8 +890,8 @@ EXT["Servicios adicionales"] --&gt; HK
 </ul>
 <p>Para ello realiza <strong>llamadas al sistema (System Calls)</strong>.</p>
 </section>
-<section id="paso-3.-el-kernel-entra-en-acción" class="level2">
-<h2 class="anchored" data-anchor-id="paso-3.-el-kernel-entra-en-acción">Paso 3. El Kernel entra en acción</h2>
+<section id="paso-3.-el-kernel-entra-en-acción" class="level2" data-number="34.3">
+<h2 data-number="34.3" class="anchored" data-anchor-id="paso-3.-el-kernel-entra-en-acción"><span class="header-section-number">34.3</span> Paso 3. El Kernel entra en acción</h2>
 <p>El Kernel recibe la solicitud y comienza a coordinar todos los recursos necesarios.</p>
 <p>Entre otras tareas:</p>
 <ul>
@@ -714,8 +902,8 @@ EXT["Servicios adicionales"] --&gt; HK
 <li>Se comunica con los Drivers.</li>
 </ul>
 </section>
-<section id="paso-4.-los-drivers-controlan-el-hardware" class="level2">
-<h2 class="anchored" data-anchor-id="paso-4.-los-drivers-controlan-el-hardware">Paso 4. Los Drivers controlan el hardware</h2>
+<section id="paso-4.-los-drivers-controlan-el-hardware" class="level2" data-number="34.4">
+<h2 data-number="34.4" class="anchored" data-anchor-id="paso-4.-los-drivers-controlan-el-hardware"><span class="header-section-number">34.4</span> Paso 4. Los Drivers controlan el hardware</h2>
 <p>Los Drivers permiten que el Sistema Operativo se comunique con:</p>
 <ul>
 <li>Disco duro o SSD.</li>
@@ -725,8 +913,8 @@ EXT["Servicios adicionales"] --&gt; HK
 <li>Monitor.</li>
 </ul>
 </section>
-<section id="paso-5.-la-aplicación-aparece-en-pantalla" class="level2">
-<h2 class="anchored" data-anchor-id="paso-5.-la-aplicación-aparece-en-pantalla">Paso 5. La aplicación aparece en pantalla</h2>
+<section id="paso-5.-la-aplicación-aparece-en-pantalla" class="level2" data-number="34.5">
+<h2 data-number="34.5" class="anchored" data-anchor-id="paso-5.-la-aplicación-aparece-en-pantalla"><span class="header-section-number">34.5</span> Paso 5. La aplicación aparece en pantalla</h2>
 <p>Cuando todos los recursos están preparados, la ventana finalmente aparece y el usuario puede comenzar a trabajar.</p>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
@@ -763,8 +951,8 @@ HW --&gt; APP["✅ Aplicación en ejecución"]
 <hr>
 </section>
 </section>
-<section id="autoevaluación" class="level1">
-<h1>Autoevaluación</h1>
+<section id="autoevaluación" class="level1" data-number="35">
+<h1 data-number="35"><span class="header-section-number">35</span> Autoevaluación</h1>
 <ol type="1">
 <li>¿Cuál es la función principal del Kernel?</li>
 <li>¿Qué capa recibe directamente las solicitudes de las aplicaciones?</li>
@@ -779,8 +967,8 @@ HW --&gt; APP["✅ Aplicación en ejecución"]
 </ol>
 <hr>
 </section>
-<section id="resumen-del-capítulo" class="level1">
-<h1>Resumen del capítulo</h1>
+<section id="resumen-del-capítulo" class="level1" data-number="36">
+<h1 data-number="36"><span class="header-section-number">36</span> Resumen del capítulo</h1>
 <p>Durante este capítulo comprendimos que un Sistema Operativo está organizado por capas para facilitar la administración de los recursos del computador.</p>
 <p>Aprendimos que:</p>
 <ul>
@@ -821,7 +1009,7 @@ HW --&gt; APP["✅ Aplicación en ejecución"]
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Para recordar
+<span class="screen-reader-only">Nota</span>Para recordar
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -831,18 +1019,19 @@ HW --&gt; APP["✅ Aplicación en ejecución"]
 </div>
 <hr>
 </section>
-<section id="conexión-con-el-siguiente-capítulo" class="level1">
-<h1>Conexión con el siguiente capítulo</h1>
+<section id="conexión-con-el-siguiente-capítulo" class="level1" data-number="37">
+<h1 data-number="37"><span class="header-section-number">37</span> Conexión con el siguiente capítulo</h1>
 <p>Ya comprendemos cómo el Sistema Operativo organiza sus componentes y administra el procesador.</p>
 <p>En el siguiente capítulo estudiaremos cómo administra otro recurso fundamental:</p>
 <blockquote class="blockquote">
 <p><strong>La memoria principal (RAM).</strong></p>
 </blockquote>
 <p>Descubriremos cómo el Sistema Operativo asigna, protege y libera memoria para que múltiples procesos puedan ejecutarse de forma segura y eficiente.</p>
+
+
 </section>
 
-</main>
-<!-- /main column -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -868,12 +1057,12 @@ HW --&gt; APP["✅ Aplicación en ejecución"]
       // flash "checked"
       button.classList.add('code-copy-button-checked');
       var currentTitle = button.getAttribute("title");
-      button.setAttribute("title", "Copied!");
+      button.setAttribute("title", "Copiado");
       let tooltip;
       if (window.bootstrap) {
         button.setAttribute("data-bs-toggle", "tooltip");
         button.setAttribute("data-bs-placement", "left");
-        button.setAttribute("data-bs-title", "Copied!");
+        button.setAttribute("data-bs-title", "Copiado");
         tooltip = new bootstrap.Tooltip(button, 
           { trigger: "manual", 
             customClass: "code-copy-button-tooltip",
@@ -1243,9 +1432,35 @@ HW --&gt; APP["✅ Aplicación en ejecución"]
     }
   });
   </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../capitulos/06_algoritmos_de_planificacion.html" class="pagination-link" aria-label="Capítulo 6. ¿Cómo decide el Sistema Operativo quién utiliza el procesador?">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Capítulo 6. ¿Cómo decide el Sistema Operativo quién utiliza el procesador?</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../capitulos/99_cierre.html" class="pagination-link" aria-label="Cierre de la clase">
+        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Cierre de la clase</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Editorial Académica de Ingeniería en Sistemas</p>
+</div>   
+    <div class="nav-footer-center">
+<p>Diseñar una vez. Enseñar toda la vida.</p>
+</div>
+    <div class="nav-footer-right">
+<p>Ing. Jorge Luis García Chacón</p>
+</div>
+  </div>
+</footer>
 
 
 
 
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
 </body></html>

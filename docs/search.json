@@ -1760,13 +1760,153 @@
     ]
   },
   {
+    "objectID": "capitulos/07_capas_del_sistema_operativo.html",
+    "href": "capitulos/07_capas_del_sistema_operativo.html",
+    "title": "8  Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo",
+    "section": "",
+    "text": "9 Capítulo 7. Capas del Sistema Operativo",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/07_capas_del_sistema_operativo.html#relación-con-la-clase-anterior",
+    "href": "capitulos/07_capas_del_sistema_operativo.html#relación-con-la-clase-anterior",
+    "title": "8  Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo",
+    "section": "9.1 Relación con la clase anterior",
+    "text": "9.1 Relación con la clase anterior\nEn el capítulo anterior aprendimos que el Scheduler decide qué proceso utilizará el procesador y que el Kernel coordina esa decisión.\nAhora responderemos una nueva pregunta:\n\n¿Qué ocurre dentro de una computadora desde que hacemos doble clic sobre una aplicación hasta que aparece en pantalla?\n\nEsta pregunta nos permitirá comprender cómo trabajan juntas las diferentes capas de un Sistema Operativo.",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/07_capas_del_sistema_operativo.html#vista-general",
+    "href": "capitulos/07_capas_del_sistema_operativo.html#vista-general",
+    "title": "8  Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo",
+    "section": "16.1 Vista general",
+    "text": "16.1 Vista general\n\n\n\n\n\nflowchart TD\nU[\"👤 Usuario\"]\nAPP[\"🪟 Aplicaciones\"]\nGUI[\"🖥️ Interfaz gráfica (GUI)\"]\nAPI[\"📞 Llamadas al sistema\"]\nK[\"🧠 Kernel\"]\nDRV[\"🔌 Drivers\"]\nHW[\"💻 Hardware\"]\n\nU --&gt; APP --&gt; GUI --&gt; API --&gt; K --&gt; DRV --&gt; HW\n\n\n\n\n\n\nCada capa tiene una responsabilidad específica y colabora con las demás.",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/07_capas_del_sistema_operativo.html#ventajas",
+    "href": "capitulos/07_capas_del_sistema_operativo.html#ventajas",
+    "title": "8  Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo",
+    "section": "29.1 Ventajas",
+    "text": "29.1 Ventajas\n\nMuy rápido.\nExcelente rendimiento.\nMenor sobrecarga.",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/07_capas_del_sistema_operativo.html#desventajas",
+    "href": "capitulos/07_capas_del_sistema_operativo.html#desventajas",
+    "title": "8  Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo",
+    "section": "29.2 Desventajas",
+    "text": "29.2 Desventajas\n\nUn error en un componente puede afectar todo el sistema.\nMayor complejidad para mantener.\n\nEjemplo: Linux.",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/07_capas_del_sistema_operativo.html#ventajas-1",
+    "href": "capitulos/07_capas_del_sistema_operativo.html#ventajas-1",
+    "title": "8  Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo",
+    "section": "30.1 Ventajas",
+    "text": "30.1 Ventajas\n\nMayor estabilidad.\nMás seguro.\nFácil de mantener.",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/07_capas_del_sistema_operativo.html#desventajas-1",
+    "href": "capitulos/07_capas_del_sistema_operativo.html#desventajas-1",
+    "title": "8  Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo",
+    "section": "30.2 Desventajas",
+    "text": "30.2 Desventajas\n\nMayor comunicación entre procesos.\nMenor rendimiento que un monolítico.\n\nEjemplo clásico: MINIX.",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/07_capas_del_sistema_operativo.html#ventajas-2",
+    "href": "capitulos/07_capas_del_sistema_operativo.html#ventajas-2",
+    "title": "8  Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo",
+    "section": "31.1 Ventajas",
+    "text": "31.1 Ventajas\n\nBuen equilibrio entre rendimiento y estabilidad.\nMuy utilizado en sistemas modernos.",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/07_capas_del_sistema_operativo.html#desventajas-2",
+    "href": "capitulos/07_capas_del_sistema_operativo.html#desventajas-2",
+    "title": "8  Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo",
+    "section": "31.2 Desventajas",
+    "text": "31.2 Desventajas\n\nArquitectura más compleja.\n\nEjemplos:\n\nWindows\nmacOS",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/07_capas_del_sistema_operativo.html#paso-1.-el-usuario-solicita-abrir-la-aplicación",
+    "href": "capitulos/07_capas_del_sistema_operativo.html#paso-1.-el-usuario-solicita-abrir-la-aplicación",
+    "title": "8  Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo",
+    "section": "34.1 Paso 1. El usuario solicita abrir la aplicación",
+    "text": "34.1 Paso 1. El usuario solicita abrir la aplicación\nEl usuario hace doble clic sobre el icono.\nLa solicitud llega a la Interfaz Gráfica (GUI).",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/07_capas_del_sistema_operativo.html#paso-2.-la-aplicación-solicita-servicios",
+    "href": "capitulos/07_capas_del_sistema_operativo.html#paso-2.-la-aplicación-solicita-servicios",
+    "title": "8  Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo",
+    "section": "34.2 Paso 2. La aplicación solicita servicios",
+    "text": "34.2 Paso 2. La aplicación solicita servicios\nLa aplicación necesita:\n\nLeer su archivo ejecutable.\nReservar memoria.\nCrear un proceso.\nObtener tiempo de CPU.\n\nPara ello realiza llamadas al sistema (System Calls).",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/07_capas_del_sistema_operativo.html#paso-3.-el-kernel-entra-en-acción",
+    "href": "capitulos/07_capas_del_sistema_operativo.html#paso-3.-el-kernel-entra-en-acción",
+    "title": "8  Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo",
+    "section": "34.3 Paso 3. El Kernel entra en acción",
+    "text": "34.3 Paso 3. El Kernel entra en acción\nEl Kernel recibe la solicitud y comienza a coordinar todos los recursos necesarios.\nEntre otras tareas:\n\nCrea el proceso.\nReserva memoria.\nConsulta el sistema de archivos.\nCoordina el Scheduler.\nSe comunica con los Drivers.",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/07_capas_del_sistema_operativo.html#paso-4.-los-drivers-controlan-el-hardware",
+    "href": "capitulos/07_capas_del_sistema_operativo.html#paso-4.-los-drivers-controlan-el-hardware",
+    "title": "8  Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo",
+    "section": "34.4 Paso 4. Los Drivers controlan el hardware",
+    "text": "34.4 Paso 4. Los Drivers controlan el hardware\nLos Drivers permiten que el Sistema Operativo se comunique con:\n\nDisco duro o SSD.\nTarjeta gráfica.\nTeclado.\nMouse.\nMonitor.",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/07_capas_del_sistema_operativo.html#paso-5.-la-aplicación-aparece-en-pantalla",
+    "href": "capitulos/07_capas_del_sistema_operativo.html#paso-5.-la-aplicación-aparece-en-pantalla",
+    "title": "8  Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo",
+    "section": "34.5 Paso 5. La aplicación aparece en pantalla",
+    "text": "34.5 Paso 5. La aplicación aparece en pantalla\nCuando todos los recursos están preparados, la ventana finalmente aparece y el usuario puede comenzar a trabajar.\n\n\n\n\n\nflowchart TD\nU[\"👤 Usuario\"] --&gt; GUI[\"🖥️ GUI\"]\nGUI --&gt; SYS[\"📞 System Calls\"]\nSYS --&gt; K[\"🧠 Kernel\"]\nK --&gt; DRV[\"🔌 Drivers\"]\nDRV --&gt; HW[\"💻 Hardware\"]\nHW --&gt; APP[\"✅ Aplicación en ejecución\"]\n\n\n\n\n\n\n\n\n\n\n\n\nTipIdea clave\n\n\n\nEl usuario observa un único clic.\nEl Sistema Operativo coordina cientos de operaciones en apenas unos milisegundos.",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</span>"
+    ]
+  },
+  {
     "objectID": "capitulos/99_cierre.html",
     "href": "capitulos/99_cierre.html",
-    "title": "8  Cierre de la clase",
+    "title": "9  Cierre de la clase",
     "section": "",
-    "text": "8.1 Próximo paso\nEn la siguiente clase profundizaremos en la estructura y los componentes de un sistema operativo, relacionando kernel, procesos, memoria, dispositivos y servicios.",
+    "text": "9.1 Próximo paso\nEn la siguiente clase profundizaremos en la estructura y los componentes de un sistema operativo, relacionando kernel, procesos, memoria, dispositivos y servicios.",
     "crumbs": [
-      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Cierre de la clase</span>"
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Cierre de la clase</span>"
     ]
   }
 ]
