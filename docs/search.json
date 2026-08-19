@@ -2080,16 +2080,6 @@
     ]
   },
   {
-    "objectID": "capitulos/99_cierre.html",
-    "href": "capitulos/99_cierre.html",
-    "title": "10  Cierre de la clase",
-    "section": "",
-    "text": "10.1 Próximo paso\nEn la siguiente clase profundizaremos en la estructura y los componentes de un sistema operativo, relacionando kernel, procesos, memoria, dispositivos y servicios.",
-    "crumbs": [
-      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Cierre de la clase</span>"
-    ]
-  },
-  {
     "objectID": "capitulos/09_prevencion_deteccion_interbloqueos.html",
     "href": "capitulos/09_prevencion_deteccion_interbloqueos.html",
     "title": "10  Capítulo 9. Prevención, detección y recuperación de interbloqueos",
@@ -2217,6 +2207,16 @@
     "text": "26.4 Nivel 4. Recuperación\nSi ya ocurrió:\n\n¿terminarías P1 o P2?\n¿intentarías retirar un recurso?\n¿qué información necesitarías para decidir?\n\n\n\n\n\n\n\nTip✅ Ver solución\n\n\n\n\n\n\n26.4.1 Nivel 1. Diagnóstico\nSí existe interbloqueo, suponiendo que Archivo A y la Impresora son recursos exclusivos con una sola instancia. Se cumplen las cuatro condiciones: exclusión mutua, retención y espera, no expropiación y espera circular.\n\n\n26.4.2 Nivel 2. Prevención\nPodemos romper la espera circular imponiendo un orden global, por ejemplo:\nArchivo A → Impresora\nTodos los procesos que necesiten ambos recursos deberán solicitarlos en ese mismo orden.\n\n\n26.4.3 Nivel 3. Detección\nEl grafo contiene:\nArchivo A → P1\nP1 → Impresora\nImpresora → P2\nP2 → Archivo A\nPor tanto aparece el ciclo:\nArchivo A → P1 → Impresora → P2 → Archivo A\nCon una sola instancia de cada recurso, el ciclo representa un interbloqueo.\n\n\n26.4.4 Nivel 4. Recuperación\nNo podemos decidir automáticamente si conviene terminar P1 o P2 únicamente con la información del enunciado. Para elegir una víctima deberíamos considerar, entre otros factores:\n\nprioridad de cada proceso;\ncantidad de trabajo realizado;\ncosto de reiniciarlo;\nrecursos que liberaría;\nconsecuencias de cancelar la operación;\nposibilidad de repetir o recuperar el trabajo.\n\nTambién podría intentarse expropiar un recurso si la operación permite hacerlo de manera segura.\nIdea clave: detectar el interbloqueo no resuelve el problema por sí solo; la recuperación puede tener un costo importante.",
     "crumbs": [
       "<span class='chapter-number'>10</span>  <span class='chapter-title'>Capítulo 9. Prevención, detección y recuperación de interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/99_cierre.html",
+    "href": "capitulos/99_cierre.html",
+    "title": "11  Cierre de la clase",
+    "section": "",
+    "text": "11.1 Próximo paso\nEn la siguiente clase profundizaremos en la estructura y los componentes de un sistema operativo, relacionando kernel, procesos, memoria, dispositivos y servicios.",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Cierre de la clase</span>"
     ]
   }
 ]
