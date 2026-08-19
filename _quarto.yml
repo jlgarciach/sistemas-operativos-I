@@ -17,6 +17,7 @@ book:
     - capitulos/05_control_procesos_concurrencia.qmd
     - capitulos/06_algoritmos_de_planificacion.qmd
     - capitulos/07_capas_del_sistema_operativo.qmd
+    - capitulos/08_interbloqueos.qmd
     - capitulos/99_cierre.qmd
   page-footer:
     left: "Editorial Académica de Ingeniería en Sistemas"

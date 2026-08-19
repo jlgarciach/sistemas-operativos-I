@@ -1900,13 +1900,193 @@
     ]
   },
   {
+    "objectID": "capitulos/08_interbloqueos.html",
+    "href": "capitulos/08_interbloqueos.html",
+    "title": "9  Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos",
+    "section": "",
+    "text": "10 Capítulo 8. Interbloqueos (Deadlocks)",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/08_interbloqueos.html#relación-con-la-clase-anterior",
+    "href": "capitulos/08_interbloqueos.html#relación-con-la-clase-anterior",
+    "title": "9  Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos",
+    "section": "10.1 Relación con la clase anterior",
+    "text": "10.1 Relación con la clase anterior\nEn el capítulo anterior estudiamos que el Kernel administra los recursos del computador y coordina la ejecución de los procesos.\nTambién vimos que múltiples procesos pueden necesitar al mismo tiempo recursos como:\n\nCPU.\nMemoria.\nArchivos.\nDispositivos de entrada y salida.\nImpresoras.\nRecursos compartidos.\n\nAhora aparece una nueva pregunta:\n\n¿Qué ocurre cuando dos o más procesos tienen recursos que otros necesitan y ninguno puede continuar?\n\nEse problema recibe el nombre de interbloqueo o deadlock.",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/08_interbloqueos.html#exclusión-mutua",
+    "href": "capitulos/08_interbloqueos.html#exclusión-mutua",
+    "title": "9  Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos",
+    "section": "15.1 1. Exclusión mutua",
+    "text": "15.1 1. Exclusión mutua\nAl menos un recurso debe estar disponible para un solo proceso a la vez.\nEjemplos:\n\nUna impresora.\nUn archivo abierto exclusivamente para escritura.\nUn escáner.\nUn bloqueo de base de datos.\n\nSi un proceso está utilizando ese recurso, otro proceso debe esperar.",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/08_interbloqueos.html#recursos-exclusivos",
+    "href": "capitulos/08_interbloqueos.html#recursos-exclusivos",
+    "title": "9  Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos",
+    "section": "20.1 Recursos exclusivos",
+    "text": "20.1 Recursos exclusivos\nSolo un proceso puede utilizarlos en un momento determinado.\nEjemplos:\n\nImpresora.\nEscáner.\nArchivo con bloqueo exclusivo.\nSección crítica protegida por un mutex.\n\nEstos recursos son especialmente importantes cuando estudiamos interbloqueos.",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/08_interbloqueos.html#recursos-compartidos",
+    "href": "capitulos/08_interbloqueos.html#recursos-compartidos",
+    "title": "9  Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos",
+    "section": "20.2 Recursos compartidos",
+    "text": "20.2 Recursos compartidos\nPueden ser utilizados por varios procesos, dependiendo de las reglas de acceso.\nEjemplos:\n\nMemoria compartida.\nDatos de solo lectura.\nAlgunos recursos del sistema con acceso concurrente controlado.\n\n\n\n\n\n\n\nNotaImportante\n\n\n\nLos interbloqueos aparecen con mayor frecuencia cuando existen recursos de uso exclusivo y varios procesos compiten por ellos.",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/08_interbloqueos.html#cómo-podría-evitarse",
+    "href": "capitulos/08_interbloqueos.html#cómo-podría-evitarse",
+    "title": "9  Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos",
+    "section": "25.1 ¿Cómo podría evitarse?",
+    "text": "25.1 ¿Cómo podría evitarse?\nDos ideas sencillas son:\n\nestablecer un orden obligatorio para solicitar recursos,\nliberar un recurso antes de solicitar otro.",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/08_interbloqueos.html#grupo-1.-cruce-vehicular",
+    "href": "capitulos/08_interbloqueos.html#grupo-1.-cruce-vehicular",
+    "title": "9  Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos",
+    "section": "29.1 Grupo 1. Cruce vehicular",
+    "text": "29.1 Grupo 1. Cruce vehicular\nDibujen una intersección con cuatro autos sin semáforo.\nIdentifiquen:\n\nQué recurso tiene cada auto.\nQué recurso espera.\nDónde está la espera circular.",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/08_interbloqueos.html#grupo-2.-filósofos-comensales",
+    "href": "capitulos/08_interbloqueos.html#grupo-2.-filósofos-comensales",
+    "title": "9  Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos",
+    "section": "29.2 Grupo 2. Filósofos comensales",
+    "text": "29.2 Grupo 2. Filósofos comensales\nAnalicen el problema clásico.\nRespondan:\n\n¿Qué representa cada filósofo?\n¿Qué representan los tenedores?\n¿Cómo podría evitarse el interbloqueo?",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/08_interbloqueos.html#grupo-3.-las-cuatro-condiciones",
+    "href": "capitulos/08_interbloqueos.html#grupo-3.-las-cuatro-condiciones",
+    "title": "9  Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos",
+    "section": "29.3 Grupo 3. Las cuatro condiciones",
+    "text": "29.3 Grupo 3. Las cuatro condiciones\nUtilicen el escenario de la impresora y la base de datos.\nIdentifiquen:\n\nExclusión mutua.\nRetención y espera.\nNo expropiación.\nEspera circular.",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/08_interbloqueos.html#grupo-4.-clasificación-de-recursos",
+    "href": "capitulos/08_interbloqueos.html#grupo-4.-clasificación-de-recursos",
+    "title": "9  Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos",
+    "section": "29.4 Grupo 4. Clasificación de recursos",
+    "text": "29.4 Grupo 4. Clasificación de recursos\nClasifiquen como exclusivos o compartidos:\n\nImpresora.\nArchivo.\nCPU.\nMemoria compartida.\nEscáner.\nVariables globales.",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/08_interbloqueos.html#grupo-5.-una-historia-de-interbloqueo",
+    "href": "capitulos/08_interbloqueos.html#grupo-5.-una-historia-de-interbloqueo",
+    "title": "9  Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos",
+    "section": "29.5 Grupo 5. Una historia de interbloqueo",
+    "text": "29.5 Grupo 5. Una historia de interbloqueo\nInventen una historia con:\n\n2 personas,\n2 recursos,\nuna situación de bloqueo mutuo.\n\nLuego indiquen:\n\nquiénes representan los procesos,\ncuáles son los recursos,\ny cómo podría evitarse.",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/08_interbloqueos.html#grupo-6.-semáforo-lógico",
+    "href": "capitulos/08_interbloqueos.html#grupo-6.-semáforo-lógico",
+    "title": "9  Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos",
+    "section": "29.6 Grupo 6. Semáforo lógico",
+    "text": "29.6 Grupo 6. Semáforo lógico\nSimulen cómo un semáforo o un árbitro podría evitar:\n\nel interbloqueo del cruce,\no el interbloqueo de los filósofos.\n\nRespondan:\n\n¿Qué condición deja de cumplirse cuando existe ese mecanismo de control?",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/08_interbloqueos.html#grupo-1",
+    "href": "capitulos/08_interbloqueos.html#grupo-1",
+    "title": "9  Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos",
+    "section": "30.1 Grupo 1",
+    "text": "30.1 Grupo 1\nCada automóvil ocupa un espacio y espera el siguiente.\nSe forma un ciclo:\nA → B → C → D → A",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/08_interbloqueos.html#grupo-2",
+    "href": "capitulos/08_interbloqueos.html#grupo-2",
+    "title": "9  Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos",
+    "section": "30.2 Grupo 2",
+    "text": "30.2 Grupo 2\n\nFilósofos → procesos.\nTenedores → recursos exclusivos.\nPosibles soluciones: tomar ambos tenedores a la vez, limitar cuántos intentan comer o utilizar un árbitro.",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/08_interbloqueos.html#grupo-3",
+    "href": "capitulos/08_interbloqueos.html#grupo-3",
+    "title": "9  Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos",
+    "section": "30.3 Grupo 3",
+    "text": "30.3 Grupo 3\nSe cumplen:\n\nExclusión mutua.\nRetención y espera.\nNo expropiación.\nEspera circular.",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/08_interbloqueos.html#grupo-4",
+    "href": "capitulos/08_interbloqueos.html#grupo-4",
+    "title": "9  Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos",
+    "section": "30.4 Grupo 4",
+    "text": "30.4 Grupo 4\nDe acuerdo con la clasificación planteada en el material de clase:\n\nExclusivos: impresora, archivo, CPU, escáner.\nCompartidos: memoria compartida, variables globales.",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/08_interbloqueos.html#grupo-5",
+    "href": "capitulos/08_interbloqueos.html#grupo-5",
+    "title": "9  Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos",
+    "section": "30.5 Grupo 5",
+    "text": "30.5 Grupo 5\nEjemplo del material:\n\nAna utiliza el microondas y espera el cuchillo. Carlos tiene el cuchillo y espera el microondas.\n\nUna forma de evitarlo es liberar un recurso antes de solicitar otro o imponer un orden de solicitud.",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/08_interbloqueos.html#grupo-6",
+    "href": "capitulos/08_interbloqueos.html#grupo-6",
+    "title": "9  Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos",
+    "section": "30.6 Grupo 6",
+    "text": "30.6 Grupo 6\nEl semáforo o árbitro controla el acceso y evita que todos entren simultáneamente en una situación de espera circular.",
+    "crumbs": [
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos</span>"
+    ]
+  },
+  {
     "objectID": "capitulos/99_cierre.html",
     "href": "capitulos/99_cierre.html",
-    "title": "9  Cierre de la clase",
+    "title": "10  Cierre de la clase",
     "section": "",
-    "text": "9.1 Próximo paso\nEn la siguiente clase profundizaremos en la estructura y los componentes de un sistema operativo, relacionando kernel, procesos, memoria, dispositivos y servicios.",
+    "text": "10.1 Próximo paso\nEn la siguiente clase profundizaremos en la estructura y los componentes de un sistema operativo, relacionando kernel, procesos, memoria, dispositivos y servicios.",
     "crumbs": [
-      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Cierre de la clase</span>"
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Cierre de la clase</span>"
     ]
   }
 ]

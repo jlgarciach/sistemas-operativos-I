@@ -37,5 +37,8 @@
   },
   "capitulos/07_capas_del_sistema_operativo.qmd": {
     "07_capas_del_sistema_operativo.html": "3e7aeb5c"
+  },
+  "capitulos/08_interbloqueos.qmd": {
+    "08_interbloqueos.html": "e4a23ddd"
   }
 }
