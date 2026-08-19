@@ -40,5 +40,8 @@
   },
   "capitulos/08_interbloqueos.qmd": {
     "08_interbloqueos.html": "e4a23ddd"
+  },
+  "capitulos/09_prevencion_deteccion_interbloqueos.qmd": {
+    "09_prevencion_deteccion_interbloqueos.html": "514c2484"
   }
 }

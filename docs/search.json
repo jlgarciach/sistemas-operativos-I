@@ -2088,5 +2088,135 @@
     "crumbs": [
       "<span class='chapter-number'>10</span>  <span class='chapter-title'>Cierre de la clase</span>"
     ]
+  },
+  {
+    "objectID": "capitulos/09_prevencion_deteccion_interbloqueos.html",
+    "href": "capitulos/09_prevencion_deteccion_interbloqueos.html",
+    "title": "10  Capítulo 9. Prevención, detección y recuperación de interbloqueos",
+    "section": "",
+    "text": "10.1 Relación con la clase anterior\nEn el capítulo anterior aprendimos a reconocer un interbloqueo (deadlock) y estudiamos las cuatro condiciones necesarias para que pueda aparecer:\nTambién analizamos casos con procesos que conservan recursos mientras esperan otros. Ahora damos el siguiente paso:",
+    "crumbs": [
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Capítulo 9. Prevención, detección y recuperación de interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/09_prevencion_deteccion_interbloqueos.html#relación-con-la-clase-anterior",
+    "href": "capitulos/09_prevencion_deteccion_interbloqueos.html#relación-con-la-clase-anterior",
+    "title": "10  Capítulo 9. Prevención, detección y recuperación de interbloqueos",
+    "section": "",
+    "text": "Exclusión mutua.\nRetención y espera.\nNo expropiación.\nEspera circular.\n\n\n\nSi ya sabemos cómo se forma un interbloqueo, ¿qué puede hacer el Sistema Operativo para impedirlo, detectarlo o recuperarse cuando ya ocurrió?",
+    "crumbs": [
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Capítulo 9. Prevención, detección y recuperación de interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/09_prevencion_deteccion_interbloqueos.html#exclusión-mutua",
+    "href": "capitulos/09_prevencion_deteccion_interbloqueos.html#exclusión-mutua",
+    "title": "10  Capítulo 9. Prevención, detección y recuperación de interbloqueos",
+    "section": "14.1 3.1 Exclusión mutua",
+    "text": "14.1 3.1 Exclusión mutua\nLa exclusión mutua existe cuando un recurso no puede compartirse simultáneamente.\nUna estrategia consiste en hacer compartibles los recursos siempre que sea posible.\nEjemplo:\n\nvarios procesos pueden leer simultáneamente un archivo de solo lectura;\npero no siempre es posible compartir una impresora durante la impresión física de un documento.\n\n\n\n\n\n\n\nAdvertenciaLimitación\n\n\n\nNo podemos eliminar la exclusión mutua de todos los recursos. Algunos son inherentemente exclusivos.\n\n\n\n14.1.1 Mini ejercicio\nClasifica estos recursos como potencialmente compartibles o normalmente exclusivos:\n\nArchivo de solo lectura.\nImpresora.\nBase de datos con múltiples lectores.\nEscáner.\n\n\n\n\n\n\n\nTip✅ Ver solución\n\n\n\n\n\n\nArchivo de solo lectura → Potencialmente compartible. Varios procesos pueden leerlo simultáneamente sin modificar su contenido.\nImpresora → Normalmente exclusiva. Los trabajos deben coordinarse para evitar que varias salidas se mezclen.\nBase de datos con múltiples lectores → Potencialmente compartible. Varias lecturas pueden realizarse simultáneamente; las escrituras requieren mecanismos de sincronización.\nEscáner → Normalmente exclusivo. Una operación de captura suele ser controlada por un proceso a la vez.\n\nIdea clave: si un recurso puede compartirse de forma segura, la exclusión mutua deja de ser necesaria para ese recurso.",
+    "crumbs": [
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Capítulo 9. Prevención, detección y recuperación de interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/09_prevencion_deteccion_interbloqueos.html#qué-ocurre",
+    "href": "capitulos/09_prevencion_deteccion_interbloqueos.html#qué-ocurre",
+    "title": "10  Capítulo 9. Prevención, detección y recuperación de interbloqueos",
+    "section": "15.1 ¿Qué ocurre?",
+    "text": "15.1 ¿Qué ocurre?\nUn proceso ya posee un recurso y solicita otro sin liberar el primero.\nEjemplo:\nP1 tiene Impresora\nP1 solicita Disco\nSi el disco está ocupado, P1 queda esperando mientras conserva la impresora.",
+    "crumbs": [
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Capítulo 9. Prevención, detección y recuperación de interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/09_prevencion_deteccion_interbloqueos.html#cómo-podemos-prevenirlo",
+    "href": "capitulos/09_prevencion_deteccion_interbloqueos.html#cómo-podemos-prevenirlo",
+    "title": "10  Capítulo 9. Prevención, detección y recuperación de interbloqueos",
+    "section": "15.2 ¿Cómo podemos prevenirlo?",
+    "text": "15.2 ¿Cómo podemos prevenirlo?\nUna política posible es exigir que el proceso:\n\nsolicite todos los recursos que necesitará al inicio, o\nno pueda solicitar nuevos recursos mientras conserve otros.\n\nSi no obtiene todos los recursos necesarios, espera sin conservar parcialmente el conjunto.\n\n15.2.1 Ventaja\nReduce la posibilidad de que se formen cadenas de procesos reteniendo recursos.\n\n\n15.2.2 Desventaja\nPuede disminuir el aprovechamiento de recursos.\nUn proceso podría reservar una impresora desde el inicio aunque no la utilice hasta mucho después.\n\n\n\n\n\n\nNotaPregunta\n\n\n\n¿Qué preferimos: máxima seguridad contra interbloqueos o máximo aprovechamiento de recursos?\nEsta tensión aparecerá varias veces en Sistemas Operativos.",
+    "crumbs": [
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Capítulo 9. Prevención, detección y recuperación de interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/09_prevencion_deteccion_interbloqueos.html#el-problema",
+    "href": "capitulos/09_prevencion_deteccion_interbloqueos.html#el-problema",
+    "title": "10  Capítulo 9. Prevención, detección y recuperación de interbloqueos",
+    "section": "16.1 El problema",
+    "text": "16.1 El problema\nNo todos los recursos pueden expropiarse de forma segura.\nQuitar memoria o determinados recursos puede ser viable si existe un mecanismo de recuperación; interrumpir una escritura crítica o retirar una impresora a mitad de una operación puede dejar resultados inconsistentes.\n\n\n\n\n\n\nAdvertenciaIdea clave\n\n\n\nLa expropiación requiere una política para decidir:\n\nqué recurso retirar;\na qué proceso;\ncómo recuperar posteriormente su estado.",
+    "crumbs": [
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Capítulo 9. Prevención, detección y recuperación de interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/09_prevencion_deteccion_interbloqueos.html#practiquemos",
+    "href": "capitulos/09_prevencion_deteccion_interbloqueos.html#practiquemos",
+    "title": "10  Capítulo 9. Prevención, detección y recuperación de interbloqueos",
+    "section": "20.1 Practiquemos",
+    "text": "20.1 Practiquemos\nAnaliza:\nR1 → P1\nP1 → R2\nR2 → P2\nP2 → R1\nResponde:\n\n¿Qué recurso posee P1?\n¿Qué recurso solicita P1?\n¿Qué recurso posee P2?\n¿Qué recurso solicita P2?\n¿Existe un ciclo?\n¿Existe interbloqueo en este caso?\n\n\n\n\n\n\n\nTip✅ Ver solución\n\n\n\n\n\n\nP1 posee R1.\nP1 solicita R2.\nP2 posee R2.\nP2 solicita R1.\nSí existe un ciclo: R1 → P1 → R2 → P2 → R1.\nSi R1 y R2 tienen una sola instancia cada uno, sí existe interbloqueo: P1 espera R2, que posee P2, mientras P2 espera R1, que posee P1.\n\nImportante: con una sola instancia por tipo de recurso, el ciclo confirma el interbloqueo. Con múltiples instancias se necesita un análisis adicional.",
+    "crumbs": [
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Capítulo 9. Prevención, detección y recuperación de interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/09_prevencion_deteccion_interbloqueos.html#finalizar-procesos",
+    "href": "capitulos/09_prevencion_deteccion_interbloqueos.html#finalizar-procesos",
+    "title": "10  Capítulo 9. Prevención, detección y recuperación de interbloqueos",
+    "section": "25.1 Finalizar procesos",
+    "text": "25.1 Finalizar procesos\nEl Sistema Operativo puede:\n\nterminar todos los procesos involucrados, o\nterminar procesos uno por uno hasta romper el ciclo.",
+    "crumbs": [
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Capítulo 9. Prevención, detección y recuperación de interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/09_prevencion_deteccion_interbloqueos.html#retirar-recursos-selectivamente",
+    "href": "capitulos/09_prevencion_deteccion_interbloqueos.html#retirar-recursos-selectivamente",
+    "title": "10  Capítulo 9. Prevención, detección y recuperación de interbloqueos",
+    "section": "25.2 Retirar recursos selectivamente",
+    "text": "25.2 Retirar recursos selectivamente\nEl sistema puede intentar expropiar un recurso y reasignarlo.\nPara elegir una víctima deben considerarse factores como:\n\nprioridad del proceso;\ntiempo que lleva ejecutándose;\ncantidad de trabajo realizado;\nrecursos que posee;\ncosto de reiniciarlo;\nriesgo de pérdida o inconsistencia de datos.",
+    "crumbs": [
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Capítulo 9. Prevención, detección y recuperación de interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/09_prevencion_deteccion_interbloqueos.html#nivel-1.-diagnóstico",
+    "href": "capitulos/09_prevencion_deteccion_interbloqueos.html#nivel-1.-diagnóstico",
+    "title": "10  Capítulo 9. Prevención, detección y recuperación de interbloqueos",
+    "section": "26.1 Nivel 1. Diagnóstico",
+    "text": "26.1 Nivel 1. Diagnóstico\n\n¿Existe interbloqueo?\n¿Cuáles condiciones se cumplen?",
+    "crumbs": [
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Capítulo 9. Prevención, detección y recuperación de interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/09_prevencion_deteccion_interbloqueos.html#nivel-2.-prevención",
+    "href": "capitulos/09_prevencion_deteccion_interbloqueos.html#nivel-2.-prevención",
+    "title": "10  Capítulo 9. Prevención, detección y recuperación de interbloqueos",
+    "section": "26.2 Nivel 2. Prevención",
+    "text": "26.2 Nivel 2. Prevención\n\n¿Qué condición podríamos romper?\n¿Cómo impondríamos un orden de recursos?",
+    "crumbs": [
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Capítulo 9. Prevención, detección y recuperación de interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/09_prevencion_deteccion_interbloqueos.html#nivel-3.-detección",
+    "href": "capitulos/09_prevencion_deteccion_interbloqueos.html#nivel-3.-detección",
+    "title": "10  Capítulo 9. Prevención, detección y recuperación de interbloqueos",
+    "section": "26.3 Nivel 3. Detección",
+    "text": "26.3 Nivel 3. Detección\nDibuja el grafo utilizando:\nProceso → Recurso solicitado\nRecurso → Proceso que lo posee",
+    "crumbs": [
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Capítulo 9. Prevención, detección y recuperación de interbloqueos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/09_prevencion_deteccion_interbloqueos.html#nivel-4.-recuperación",
+    "href": "capitulos/09_prevencion_deteccion_interbloqueos.html#nivel-4.-recuperación",
+    "title": "10  Capítulo 9. Prevención, detección y recuperación de interbloqueos",
+    "section": "26.4 Nivel 4. Recuperación",
+    "text": "26.4 Nivel 4. Recuperación\nSi ya ocurrió:\n\n¿terminarías P1 o P2?\n¿intentarías retirar un recurso?\n¿qué información necesitarías para decidir?\n\n\n\n\n\n\n\nTip✅ Ver solución\n\n\n\n\n\n\n26.4.1 Nivel 1. Diagnóstico\nSí existe interbloqueo, suponiendo que Archivo A y la Impresora son recursos exclusivos con una sola instancia. Se cumplen las cuatro condiciones: exclusión mutua, retención y espera, no expropiación y espera circular.\n\n\n26.4.2 Nivel 2. Prevención\nPodemos romper la espera circular imponiendo un orden global, por ejemplo:\nArchivo A → Impresora\nTodos los procesos que necesiten ambos recursos deberán solicitarlos en ese mismo orden.\n\n\n26.4.3 Nivel 3. Detección\nEl grafo contiene:\nArchivo A → P1\nP1 → Impresora\nImpresora → P2\nP2 → Archivo A\nPor tanto aparece el ciclo:\nArchivo A → P1 → Impresora → P2 → Archivo A\nCon una sola instancia de cada recurso, el ciclo representa un interbloqueo.\n\n\n26.4.4 Nivel 4. Recuperación\nNo podemos decidir automáticamente si conviene terminar P1 o P2 únicamente con la información del enunciado. Para elegir una víctima deberíamos considerar, entre otros factores:\n\nprioridad de cada proceso;\ncantidad de trabajo realizado;\ncosto de reiniciarlo;\nrecursos que liberaría;\nconsecuencias de cancelar la operación;\nposibilidad de repetir o recuperar el trabajo.\n\nTambién podría intentarse expropiar un recurso si la operación permite hacerlo de manera segura.\nIdea clave: detectar el interbloqueo no resuelve el problema por sí solo; la recuperación puede tener un costo importante.",
+    "crumbs": [
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Capítulo 9. Prevención, detección y recuperación de interbloqueos</span>"
+    ]
   }
 ]
