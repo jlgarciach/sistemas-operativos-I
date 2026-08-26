@@ -1,0 +1,215 @@
+---
+title: "Actividad - Diagnóstico de un Sistema Operativo"
+author: "Ing. Jorge Luis García Chacón"
+date: "2026"
+format:
+  pdf:
+    pdf-engine: xelatex
+    toc: false
+    number-sections: false
+    documentclass: article
+    papersize: letter
+    geometry:
+      - top=1.5cm
+      - bottom=1.5cm
+      - left=1.7cm
+      - right=1.7cm
+    mainfont: Arial
+    monofont: "Courier New"
+    colorlinks: false
+    include-in-header:
+      text: |
+        \usepackage{fancyhdr}
+        \usepackage{array}
+        \usepackage{enumitem}
+        \usepackage{titlesec}
+        \pagestyle{fancy}
+        \fancyhf{}
+        \lhead{Sistemas Operativos I}
+        \chead{Actividad - Diagnóstico de un Sistema Operativo}
+        \rhead{UMG}
+        \cfoot{Página \thepage}
+        \setlength{\parindent}{0pt}
+        \setlength{\parskip}{4pt}
+        \titlespacing*{\section}{0pt}{6pt}{3pt}
+        \titlespacing*{\subsection}{0pt}{5pt}{2pt}
+        \setlist[itemize]{nosep,leftmargin=*}
+        \setlist[enumerate]{nosep,leftmargin=*}
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+\thispagestyle{empty}
+
+# Universidad Mariano Gálvez de Guatemala
+
+**Facultad de Ingeniería en Sistemas**  
+**Curso:** Sistemas Operativos I  
+**Docente:** Ing. Jorge Luis García Chacón  
+**Actividad:** Diagnóstico de un Sistema Operativo  
+**Valor:** 25 puntos  
+**Modalidad:** Trabajo en grupo  
+**Tiempo estimado:** 60 minutos
+
+**Grupo No.:** ____________________
+
+**Integrantes:**
+
+1. ____________________________________________
+2. ____________________________________________
+3. ____________________________________________
+4. ____________________________________________
+5. ____________________________________________
+6. ____________________________________________
+
+::: {.callout-important title="Reglas de trabajo"}
+- Esta actividad se resolverá **en papel** y en grupo.
+- Pueden consultar sus **apuntes o el libro del curso**.
+- No se permite utilizar teléfono, computadora ni herramientas de IA durante la actividad.
+- Todas las respuestas deben ser **razonadas**. No basta con escribir el nombre de un concepto.
+- El docente podrá pedir a cualquier integrante que explique una respuesta del grupo.
+:::
+
+## Escenario
+
+En el laboratorio de cómputo de una universidad, una computadora presenta problemas de rendimiento mientras varios usuarios realizan distintas tareas. El encargado del laboratorio reporta lo siguiente:
+
+- El equipo tarda en responder cuando se cambia entre aplicaciones.
+- Un navegador mantiene varias pestañas abiertas y reproduce video.
+- Un estudiante está descargando un archivo grande desde Internet.
+- Otro programa está enviando un documento a imprimir.
+- El antivirus realiza una revisión en segundo plano.
+- En algunos momentos una aplicación deja de responder durante varios segundos y luego continúa.
+
+El administrador consulta el estado del sistema y obtiene la siguiente información:
+
+| Proceso | Estado observado | CPU | Memoria | Observación |
+|---|---|---:|---:|---|
+| Navegador | Running | 55 % | 1.8 GB | Varias pestañas y video activo |
+| Descarga | Ready | 10 % | 220 MB | Archivo grande en proceso |
+| Procesador de texto | Ready | 4 % | 650 MB | Documento abierto |
+| Antivirus | Ready | 24 % | 900 MB | Análisis en segundo plano |
+| Impresión | Waiting | 0 % | 85 MB | Esperando respuesta de la impresora |
+| Reproductor multimedia | Ready | 7 % | 400 MB | Audio activo |
+
+La computadora posee **8 GB de RAM** y un procesador de **4 núcleos**.
+
+# Misión 1. Diagnóstico inicial — 5 puntos
+
+Analicen la información disponible y respondan:
+
+**1. ¿Cuál consideran que es el principal problema de rendimiento del equipo?**  
+Justifiquen su respuesta utilizando la información del escenario y los datos de los procesos.
+
+\vspace{2.3cm}
+
+**2. ¿Qué otros factores podrían estar contribuyendo al problema?**
+
+\vspace{1.7cm}
+
+**3. ¿Por qué no sería correcto afirmar inmediatamente que “la computadora está lenta porque la CPU está dañada”?**
+
+\vspace{1.8cm}
+
+# Misión 2. ¿Qué ocurre dentro del Sistema Operativo? — 5 puntos
+
+Sin limitarse a definir conceptos, expliquen qué componentes o mecanismos del Sistema Operativo intervienen en esta situación y **qué papel cumplen**.
+
+| Componente o mecanismo identificado | ¿Qué está haciendo en este escenario? |
+|---|---|
+| 1. ______________________________ | |
+| 2. ______________________________ | |
+| 3. ______________________________ | |
+| 4. ______________________________ | |
+
+\newpage
+
+# Misión 3. Sigan un proceso — 5 puntos
+
+Seleccionen el proceso **Impresión** y reconstruyan lo que probablemente ocurre desde que el usuario solicita imprimir hasta que el proceso vuelve a estar listo para continuar.
+
+Dibujen los estados y transiciones que consideren necesarios.
+
+\vspace{5cm}
+
+**a. ¿Por qué el proceso de impresión aparece en estado `Waiting`?**
+
+\vspace{1.4cm}
+
+**b. ¿Qué tendría que conservar el Sistema Operativo para poder suspender temporalmente ese proceso y luego continuar su ejecución correctamente?**
+
+\vspace{1.8cm}
+
+**c. Cuando la impresora responde, ¿qué debería ocurrir con el proceso? Expliquen la secuencia.**
+
+\vspace{1.8cm}
+
+# Misión 4. Ustedes son el Sistema Operativo — 5 puntos
+
+Supongan ahora que la CPU debe atender los siguientes procesos:
+
+| Proceso | Tiempo estimado de CPU | Prioridad | Tipo de trabajo |
+|---|---:|---:|---|
+| P1 | 8 ms | 3 | Navegador interactivo |
+| P2 | 2 ms | 1 | Proceso crítico del sistema |
+| P3 | 6 ms | 2 | Antivirus |
+| P4 | 3 ms | 3 | Reproductor multimedia |
+
+Respondan:
+
+**1. ¿Qué criterio de planificación utilizarían para atender estos procesos y por qué?**
+
+\vspace{2cm}
+
+**2. ¿Atenderían todos los procesos exactamente de la misma manera? Justifiquen.**
+
+\vspace{1.6cm}
+
+**3. ¿Qué riesgo habría si un solo proceso pudiera conservar la CPU durante demasiado tiempo?**
+
+\vspace{1.6cm}
+
+\newpage
+
+# Misión 5. Diagnóstico final — 5 puntos
+
+## A. Recorrido de una solicitud
+
+El usuario presiona **Imprimir** desde el procesador de texto.
+
+Dibujen el recorrido que sigue esa solicitud desde el usuario hasta el dispositivo físico. Incluyan únicamente los componentes que consideren necesarios y expliquen brevemente qué ocurre en cada paso.
+
+\vspace{5.5cm}
+
+## B. Decisión final del grupo
+
+Como equipo responsable del diagnóstico, indiquen:
+
+**1. ¿Qué acciones realizarían para mejorar el rendimiento del equipo sin apagarlo inmediatamente?**
+
+\vspace{2cm}
+
+**2. ¿Qué proceso o recurso observarían primero y por qué?**
+
+\vspace{1.5cm}
+
+**3. Diagnóstico definitivo del grupo:**
+
+\vspace{1.8cm}
+
+# Criterios de evaluación
+
+| Criterio | Punteo |
+|---|---:|
+| Diagnóstico y análisis del problema | 5 |
+| Identificación y explicación de componentes del SO | 5 |
+| Estados de procesos y razonamiento sobre el PCB | 5 |
+| Decisión de planificación y justificación | 5 |
+| Integración final: capas, diagnóstico y solución | 5 |
+| **Total** | **25** |
+
+::: {.callout-note title="Cierre"}
+La calidad de la respuesta se evaluará principalmente por la **capacidad de análisis y justificación del grupo**, no por repetir definiciones de memoria.
+:::

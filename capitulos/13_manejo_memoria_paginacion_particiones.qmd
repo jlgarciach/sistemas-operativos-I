@@ -1,0 +1,1256 @@
+---
+title: "Capítulo 13. Manejo de memoria: particiones y paginación"
+---
+
+# Capítulo 13. Manejo de memoria: particiones y paginación
+
+## ¿Cómo caben tantos programas en la memoria?
+
+En una computadora podemos tener abierto el navegador, un editor de código, música, una videollamada y otros programas al mismo tiempo.
+
+Todos necesitan **memoria RAM**.
+
+Pero la RAM es limitada.
+
+Entonces aparece una pregunta fundamental:
+
+> **¿Cómo decide el Sistema Operativo qué parte de la memoria utiliza cada proceso?**
+
+La respuesta nos lleva a uno de los trabajos más importantes del Sistema Operativo: la **gestión de memoria**.
+
+::: {.callout-tip title="Idea central"}
+El Sistema Operativo debe **asignar, proteger, controlar y liberar memoria** para que varios procesos puedan ejecutarse sin interferirse entre sí.
+:::
+
+```{mermaid}
+%%| fig-width: 7.3
+%%| fig-height: 4.8
+%%| fig-align: center
+flowchart LR
+    P1["Navegador"]
+    P2["Editor"]
+    P3["Música"]
+    P4["Otro proceso"]
+    SO["Sistema Operativo<br/>Gestor de memoria"]
+    RAM["Memoria RAM<br/>espacio limitado"]
+    P1 --> SO
+    P2 --> SO
+    P3 --> SO
+    P4 --> SO
+    SO --> RAM
+```
+
+---
+
+# Objetivos de aprendizaje
+
+Al finalizar este capítulo, el estudiante será capaz de:
+
+- Explicar por qué la gestión de memoria es una función crítica del Sistema Operativo.
+- Diferenciar una **dirección lógica** de una **dirección física**.
+- Comprender el funcionamiento de las **particiones fijas y dinámicas**.
+- Diferenciar **fragmentación interna** y **fragmentación externa**.
+- Aplicar conceptualmente los métodos **First Fit, Best Fit y Worst Fit**.
+- Explicar los conceptos de **página**, **marco** y **tabla de páginas**.
+- Comprender cómo se traduce una dirección lógica en una dirección física.
+- Explicar por qué la paginación permite utilizar memoria no contigua.
+- Relacionar paginación con **memoria virtual**.
+- Comparar particiones y paginación mediante situaciones prácticas.
+
+---
+
+# 1. La memoria RAM como recurso crítico
+
+La memoria RAM almacena temporalmente instrucciones y datos que necesitan los procesos mientras se ejecutan.
+
+Cuando un programa comienza a ejecutarse, no basta con tenerlo almacenado en el disco. Parte de su contenido debe encontrarse disponible en memoria.
+
+El Sistema Operativo debe decidir:
+
+1. **qué proceso recibe memoria;**
+2. **cuánta memoria recibe;**
+3. **dónde se coloca;**
+4. **cómo se protege de otros procesos;**
+5. **cuándo se libera.**
+
+::: {.callout-note title="Una analogía: el estacionamiento"}
+Imaginemos que la RAM es un estacionamiento y los procesos son vehículos.
+
+El Sistema Operativo funciona como el encargado que decide **dónde estacionar cada vehículo**, evita que dos ocupen el mismo espacio y libera el lugar cuando un vehículo se retira.
+:::
+
+## ¿Por qué importa?
+
+Una mala administración de memoria puede provocar:
+
+- desperdicio de espacio;
+- dificultad para cargar nuevos procesos;
+- bajo rendimiento;
+- errores de acceso;
+- imposibilidad de aprovechar correctamente la memoria disponible.
+
+---
+
+# 2. Dirección lógica y dirección física
+
+Cuando un programa utiliza memoria, normalmente no trabaja directamente con la posición física real de la RAM.
+
+Debemos distinguir dos conceptos.
+
+| Dirección | Significado |
+|---|---|
+| **Lógica** | Dirección que utiliza o genera el programa |
+| **Física** | Ubicación real correspondiente dentro de la memoria RAM |
+
+```{mermaid}
+%%| fig-width: 7
+%%| fig-height: 3.7
+%%| fig-align: center
+flowchart LR
+    P["Proceso<br/>Dirección lógica"]
+    T["Traducción<br/>Hardware + S.O."]
+    R["RAM<br/>Dirección física"]
+    P --> T --> R
+```
+
+::: {.callout-important title="No debemos confundirlas"}
+El proceso puede pensar en una dirección dentro de **su propio espacio de memoria**, mientras el hardware y el Sistema Operativo determinan dónde se encuentra realmente esa información en la RAM.
+:::
+
+---
+
+# 3. Primera estrategia: dividir la memoria en particiones
+
+Una forma sencilla de administrar memoria consiste en dividirla en **bloques o particiones**.
+
+Cada proceso ocupa una partición.
+
+Existen dos enfoques principales:
+
+```text
+PARTICIONES
+   │
+   ├── Fijas
+   │
+   └── Dinámicas
+```
+
+La diferencia parece pequeña, pero produce problemas de fragmentación diferentes.
+
+---
+
+# 4. Particiones fijas
+
+En las **particiones fijas**, la memoria se divide previamente en bloques de tamaño definido.
+
+Supongamos una memoria disponible de **8 MB**, dividida en cuatro particiones de **2 MB**:
+
+```text
+RAM
+┌──────────────────┐
+│ Partición 1: 2MB │
+├──────────────────┤
+│ Partición 2: 2MB │
+├──────────────────┤
+│ Partición 3: 2MB │
+├──────────────────┤
+│ Partición 4: 2MB │
+└──────────────────┘
+```
+
+Ahora llegan tres procesos:
+
+```text
+Proceso A = 1.2 MB
+Proceso B = 1.8 MB
+Proceso C = 0.9 MB
+```
+
+Podemos asignar uno a cada partición.
+
+Pero observemos lo que ocurre:
+
+| Partición | Tamaño | Proceso | Utilizado | Desperdiciado |
+|---|---:|---|---:|---:|
+| 1 | 2 MB | A | 1.2 MB | 0.8 MB |
+| 2 | 2 MB | B | 1.8 MB | 0.2 MB |
+| 3 | 2 MB | C | 0.9 MB | 1.1 MB |
+| 4 | 2 MB | Libre | — | — |
+
+Los espacios que sobran **dentro de una partición ocupada** no pueden ser aprovechados fácilmente por otro proceso.
+
+Eso se llama **fragmentación interna**.
+
+::: {.callout-warning title="Fragmentación interna"}
+Existe memoria asignada a un proceso que realmente **no está siendo utilizada**, pero permanece encerrada dentro del bloque asignado.
+:::
+
+## Ventaja principal
+
+- Es un esquema sencillo de administrar.
+
+## Problema principal
+
+- Puede desperdiciar bastante memoria debido a la fragmentación interna.
+
+---
+
+# 5. Particiones dinámicas
+
+¿Y si en lugar de construir bloques rígidos permitimos que cada proceso reciba aproximadamente el espacio que necesita?
+
+Ese es el principio de las **particiones dinámicas**.
+
+Supongamos:
+
+```text
+RAM disponible = 16 MB
+
+Proceso A = 4 MB
+Proceso B = 6 MB
+Proceso C = 2 MB
+```
+
+La memoria podría verse así:
+
+```text
+┌──────────────────┐
+│ Proceso A   4 MB │
+├──────────────────┤
+│ Proceso B   6 MB │
+├──────────────────┤
+│ Proceso C   2 MB │
+├──────────────────┤
+│ Libre       4 MB │
+└──────────────────┘
+```
+
+Hasta aquí parece una solución excelente.
+
+Pero los procesos terminan.
+
+Imaginemos que **Proceso B finaliza**:
+
+```text
+┌──────────────────┐
+│ Proceso A   4 MB │
+├──────────────────┤
+│ LIBRE       6 MB │
+├──────────────────┤
+│ Proceso C   2 MB │
+├──────────────────┤
+│ LIBRE       4 MB │
+└──────────────────┘
+```
+
+Ahora tenemos **10 MB libres**, pero están separados en dos huecos.
+
+Esto introduce otro problema.
+
+---
+
+# 6. Fragmentación interna y externa
+
+Estos conceptos suelen confundirse.
+
+## Fragmentación interna
+
+El desperdicio se encuentra **dentro del espacio asignado**.
+
+```text
+Partición de 4 KB
+┌────────────────────┐
+│ Proceso: 3 KB      │
+│                    │
+│ Desperdicio: 1 KB  │ ← dentro
+└────────────────────┘
+```
+
+## Fragmentación externa
+
+Existe suficiente memoria libre en total, pero se encuentra **dispersa entre espacios ocupados**.
+
+```text
+┌──────────────┐
+│ Proceso A    │
+├──────────────┤
+│ Libre 2 MB   │
+├──────────────┤
+│ Proceso B    │
+├──────────────┤
+│ Libre 3 MB   │
+├──────────────┤
+│ Proceso C    │
+├──────────────┤
+│ Libre 1 MB   │
+└──────────────┘
+```
+
+Tenemos:
+
+```text
+2 + 3 + 1 = 6 MB libres
+```
+
+pero **no existe necesariamente un bloque contiguo de 6 MB**.
+
+| Tipo | ¿Dónde está el desperdicio? | Ejemplo típico |
+|---|---|---|
+| **Interna** | Dentro del bloque asignado | Particiones fijas / último marco de una página |
+| **Externa** | Entre bloques ocupados | Particiones dinámicas |
+
+::: {.callout-tip title="Truco para recordarlo"}
+**Interna → adentro del bloque.**  
+**Externa → afuera, entre los bloques.**
+:::
+
+---
+
+# 7. ¿Qué hueco debemos utilizar?
+
+Con particiones dinámicas aparece otra pregunta:
+
+> Si existen varios espacios libres, ¿en cuál colocamos el nuevo proceso?
+
+Tres estrategias clásicas son:
+
+- **First Fit**
+- **Best Fit**
+- **Worst Fit**
+
+Supongamos que tenemos estos huecos:
+
+```text
+10 KB   4 KB   20 KB   7 KB
+```
+
+y llega un proceso de:
+
+```text
+6 KB
+```
+
+---
+
+# 8. First Fit: el primer espacio suficiente
+
+**First Fit** recorre la memoria y selecciona el **primer hueco que sea suficientemente grande**.
+
+Para nuestro proceso de 6 KB:
+
+```text
+Huecos: 10 KB | 4 KB | 20 KB | 7 KB
+          ↑
+       elegido
+```
+
+El primer hueco de 10 KB puede alojarlo.
+
+Quedan:
+
+```text
+10 - 6 = 4 KB
+```
+
+::: {.callout-note title="Idea de First Fit"}
+No busca el hueco perfecto. Busca **el primero que funcione**.
+:::
+
+---
+
+# 9. Best Fit: el espacio más ajustado
+
+**Best Fit** busca el hueco disponible más pequeño que todavía pueda alojar el proceso.
+
+```text
+Huecos: 10 KB | 4 KB | 20 KB | 7 KB
+                                  ↑
+                               elegido
+```
+
+Para un proceso de 6 KB, el hueco de 7 KB es el más ajustado.
+
+Queda:
+
+```text
+7 - 6 = 1 KB
+```
+
+La idea parece eficiente porque deja poco sobrante en esa asignación, aunque puede producir huecos pequeños difíciles de reutilizar.
+
+---
+
+# 10. Worst Fit: el espacio más grande
+
+**Worst Fit** hace lo contrario: selecciona el hueco más grande.
+
+```text
+Huecos: 10 KB | 4 KB | 20 KB | 7 KB
+                         ↑
+                      elegido
+```
+
+El proceso de 6 KB entra en el hueco de 20 KB.
+
+Quedan:
+
+```text
+20 - 6 = 14 KB
+```
+
+La intención es conservar un espacio sobrante suficientemente grande para ser útil posteriormente.
+
+---
+
+# 11. Comparando los tres métodos
+
+Para:
+
+```text
+Huecos = 10, 4, 20, 7 KB
+Proceso = 6 KB
+```
+
+| Método | Hueco elegido | Espacio restante |
+|---|---:|---:|
+| First Fit | 10 KB | 4 KB |
+| Best Fit | 7 KB | 1 KB |
+| Worst Fit | 20 KB | 14 KB |
+
+::: {.callout-important title="No existe magia"}
+Estos algoritmos toman decisiones distintas sobre el mismo estado de memoria. La elección puede influir en cómo quedan distribuidos los huecos para futuras solicitudes.
+:::
+
+## Actividad rápida
+
+Tenemos:
+
+```text
+Huecos libres: 5 KB, 12 KB, 8 KB, 20 KB
+Proceso nuevo: 7 KB
+```
+
+Determina qué hueco seleccionaría:
+
+1. First Fit.
+2. Best Fit.
+3. Worst Fit.
+
+::: {.callout-tip collapse="true" title="✅ Solución propuesta"}
+- **First Fit:** 12 KB, porque es el primer hueco suficientemente grande.
+- **Best Fit:** 8 KB, porque es el hueco válido más pequeño.
+- **Worst Fit:** 20 KB, porque es el hueco más grande.
+
+Después de colocar un proceso de 7 KB quedarían, respectivamente:
+
+- First Fit → 5 KB libres en ese hueco.
+- Best Fit → 1 KB libre.
+- Worst Fit → 13 KB libres.
+:::
+
+---
+
+# 12. El problema de exigir memoria contigua
+
+Las particiones tienen una limitación importante: un proceso necesita tradicionalmente un bloque continuo de memoria.
+
+Supongamos:
+
+```text
+Libre total = 12 KB
+```
+
+pero distribuido así:
+
+```text
+4 KB + 3 KB + 5 KB
+```
+
+Un proceso de **10 KB** no cabe en ninguno de los huecos individualmente.
+
+Entonces surge una idea poderosa:
+
+> **¿Y si dividimos el proceso en pequeñas partes y permitimos colocarlas en distintos lugares de la RAM?**
+
+Esa idea nos lleva a la **paginación**.
+
+---
+
+# 13. Introducción a la paginación
+
+La paginación divide:
+
+- el espacio lógico del proceso en **páginas**;
+- la memoria física en **marcos**.
+
+Y ambos tienen el **mismo tamaño**.
+
+```text
+PROCESO                     RAM
+┌──────────┐               ┌──────────┐
+│ Página 0 │               │ Marco 0  │
+├──────────┤               ├──────────┤
+│ Página 1 │               │ Marco 1  │
+├──────────┤               ├──────────┤
+│ Página 2 │               │ Marco 2  │
+├──────────┤               ├──────────┤
+│ Página 3 │               │ Marco 3  │
+└──────────┘               ├──────────┤
+                           │ Marco 4  │
+                           └──────────┘
+```
+
+::: {.callout-tip title="Dos palabras fundamentales"}
+**Página = unidad lógica del proceso.**  
+**Marco = unidad física de la RAM.**
+:::
+
+---
+
+# 14. La gran ventaja: memoria no contigua
+
+Supongamos un proceso de **4 páginas**.
+
+No es necesario colocarlas juntas.
+
+Podrían distribuirse así:
+
+```text
+Página 0 → Marco 5
+Página 1 → Marco 2
+Página 2 → Marco 8
+Página 3 → Marco 1
+```
+
+Visualmente:
+
+```text
+PROCESO                    MEMORIA FÍSICA
+P0 ─────────────────────→ M5
+P1 ───────────────→       M2
+P2 ─────────────────────→ M8
+P3 ───────→               M1
+```
+
+Para el proceso, sus páginas forman parte de un mismo espacio lógico.
+
+En la RAM, pueden encontrarse en lugares separados.
+
+::: {.callout-important title="Aquí está el cambio de paradigma"}
+Con paginación, **un proceso ya no necesita ocupar un único bloque físico contiguo de memoria**.
+:::
+
+---
+
+# 15. Ejemplo numérico de paginación
+
+Tenemos un proceso de:
+
+```text
+10 KB
+```
+
+y utilizamos páginas de:
+
+```text
+1 KB
+```
+
+Entonces:
+
+```text
+10 KB ÷ 1 KB = 10 páginas
+```
+
+El proceso tendrá:
+
+```text
+P0, P1, P2, P3, P4, P5, P6, P7, P8, P9
+```
+
+La RAM también se divide en marcos de **1 KB**.
+
+Cada página puede colocarse en cualquier marco disponible.
+
+```{mermaid}
+%%| fig-width: 7.2
+%%| fig-height: 5.1
+%%| fig-align: center
+flowchart LR
+    P0["P0"] --> M5["Marco 5"]
+    P1["P1"] --> M2["Marco 2"]
+    P2["P2"] --> M8["Marco 8"]
+    P3["P3"] --> M1["Marco 1"]
+```
+
+El diagrama muestra solo algunas páginas para concentrarnos en el mecanismo.
+
+---
+
+# 16. ¿Cómo sabe el Sistema Operativo dónde está cada página?
+
+Necesitamos una estructura que mantenga la relación entre:
+
+```text
+Página lógica ↔ Marco físico
+```
+
+Esa estructura es la **tabla de páginas**.
+
+Ejemplo:
+
+| Página | Marco |
+|---:|---:|
+| 0 | 5 |
+| 1 | 2 |
+| 2 | 8 |
+| 3 | 1 |
+
+Si el proceso solicita información de la **Página 2**, la tabla indica:
+
+```text
+Página 2 → Marco 8
+```
+
+::: {.callout-note title="La tabla funciona como un mapa"}
+El proceso trabaja con páginas. La tabla de páginas permite encontrar el **marco físico** donde se encuentra cada una.
+:::
+
+---
+
+# 17. Dirección lógica = página + desplazamiento
+
+Una dirección lógica paginada puede pensarse como dos componentes:
+
+```text
+┌────────────┬─────────────────┐
+│   Página   │ Desplazamiento  │
+└────────────┴─────────────────┘
+```
+
+La **página** indica qué página necesitamos.
+
+El **desplazamiento** indica la posición dentro de esa página.
+
+Supongamos:
+
+```text
+Dirección lógica:
+Página = 2
+Desplazamiento = 100
+```
+
+La tabla contiene:
+
+```text
+Página 2 → Marco 5
+```
+
+Entonces la dirección física será conceptualmente:
+
+```text
+Marco = 5
+Desplazamiento = 100
+```
+
+Observe algo importante:
+
+> **El desplazamiento no cambia.**
+
+Lo que cambia mediante la tabla es la página lógica por su marco físico correspondiente.
+
+```{mermaid}
+%%| fig-width: 7.4
+%%| fig-height: 3.6
+%%| fig-align: center
+flowchart LR
+    L["Dirección lógica<br/>Página 2 · Desp. 100"]
+    T["Tabla de páginas<br/>P2 → M5"]
+    F["Dirección física<br/>Marco 5 · Desp. 100"]
+    L --> T --> F
+```
+
+---
+
+# 18. Calculando una dirección física
+
+Podemos llevar el concepto un paso más adelante.
+
+Si cada página y marco mide **1 KB**, entonces:
+
+```text
+1 KB = 1024 bytes
+```
+
+Tenemos:
+
+```text
+Página lógica = 2
+Desplazamiento = 100
+Página 2 → Marco 5
+```
+
+La dirección física numérica puede calcularse como:
+
+```text
+Dirección física = (marco × tamaño del marco) + desplazamiento
+```
+
+Entonces:
+
+```text
+Dirección física = (5 × 1024) + 100
+                  = 5120 + 100
+                  = 5220
+```
+
+Por lo tanto:
+
+> La dirección lógica **(Página 2, desplazamiento 100)** corresponde a la dirección física **5220**.
+
+::: {.callout-warning title="No memorices sin comprender"}
+La fórmula tiene sentido porque primero llegamos al inicio del **Marco 5** y luego avanzamos **100 bytes** dentro de él.
+:::
+
+## Practiquemos
+
+Página de **1 KB**. La tabla indica:
+
+```text
+Página 3 → Marco 7
+```
+
+La dirección lógica es:
+
+```text
+Página = 3
+Desplazamiento = 200
+```
+
+¿Cuál es la dirección física?
+
+::: {.callout-tip collapse="true" title="✅ Solución propuesta"}
+Como:
+
+```text
+1 KB = 1024 bytes
+```
+
+y:
+
+```text
+Página 3 → Marco 7
+```
+
+calculamos:
+
+```text
+Dirección física = (7 × 1024) + 200
+                  = 7168 + 200
+                  = 7368
+```
+
+La dirección física es **7368**.
+:::
+
+---
+
+# 19. ¿La paginación elimina toda fragmentación?
+
+No.
+
+La paginación evita el problema clásico de **fragmentación externa**, porque las páginas pueden colocarse en marcos separados.
+
+Sin embargo, todavía puede existir **fragmentación interna**, especialmente en el último marco utilizado por un proceso.
+
+Ejemplo:
+
+```text
+Proceso = 10 KB
+Página  = 4 KB
+```
+
+Necesitamos:
+
+```text
+Página 0 = 4 KB
+Página 1 = 4 KB
+Página 2 = 2 KB utilizados
+```
+
+Pero el último marco mide 4 KB.
+
+```text
+Último marco:
+┌──────────────────┐
+│ 2 KB utilizados  │
+├──────────────────┤
+│ 2 KB sin utilizar│ ← fragmentación interna
+└──────────────────┘
+```
+
+Por tanto:
+
+```text
+Fragmentación interna = 2 KB
+```
+
+::: {.callout-important title="Una precisión importante"}
+La paginación **resuelve la necesidad de encontrar un gran bloque contiguo**, pero no significa que todo byte de cada marco asignado será aprovechado.
+:::
+
+---
+
+# 20. Ventajas y costos de la paginación
+
+## Ventajas
+
+- Evita la fragmentación externa clásica.
+- Permite memoria física **no contigua**.
+- Facilita una utilización más flexible de los marcos disponibles.
+- Es una base importante para implementar **memoria virtual**.
+
+## Costos o desventajas
+
+- Puede existir fragmentación interna.
+- Cada proceso necesita información de traducción.
+- Las tablas de páginas consumen memoria.
+- La traducción de direcciones agrega trabajo al sistema.
+
+| Particiones | Paginación |
+|---|---|
+| Conceptualmente simples | Más flexible |
+| Pueden requerir bloques contiguos | Permite marcos no contiguos |
+| Dinámicas: fragmentación externa | Evita fragmentación externa clásica |
+| Fijas: fragmentación interna | Puede presentar fragmentación interna |
+| Menor complejidad conceptual | Requiere tabla de páginas |
+
+---
+
+# 21. De la paginación a la memoria virtual
+
+Hasta ahora hemos supuesto que las páginas del proceso están en RAM.
+
+Pero aparece una posibilidad aún más interesante:
+
+> **¿Qué ocurre si un programa necesita más memoria de la que podemos mantener físicamente en RAM en ese momento?**
+
+La **memoria virtual** permite extender el espacio disponible utilizando almacenamiento secundario y mecanismos administrados por el Sistema Operativo.
+
+En un sistema paginado, algunas páginas pueden estar en RAM mientras otras no se encuentran cargadas en ese instante.
+
+```{mermaid}
+%%| fig-width: 7.4
+%%| fig-height: 4.3
+%%| fig-align: center
+flowchart LR
+    P["Proceso<br/>muchas páginas"]
+    RAM["RAM<br/>páginas necesarias"]
+    DISK["Almacenamiento<br/>otras páginas"]
+    P --> RAM
+    P --> DISK
+    DISK <-->|"intercambio según necesidad"| RAM
+```
+
+::: {.callout-note title="La idea que debemos conservar"}
+La memoria virtual permite que el espacio que observa un proceso no tenga que corresponder completamente, en todo momento, con la cantidad de RAM física que ocupa.
+:::
+
+---
+
+# 22. Caso práctico integrador
+
+Tenemos una RAM disponible de **16 KB**.
+
+Llegan tres procesos:
+
+```text
+Proceso X = 4 KB
+Proceso Y = 6 KB
+Proceso Z = 2 KB
+```
+
+## Escenario A: particiones dinámicas
+
+Inicialmente podrían almacenarse de forma contigua:
+
+```text
+┌──────────────────┐
+│ Proceso X   4 KB │
+├──────────────────┤
+│ Proceso Y   6 KB │
+├──────────────────┤
+│ Proceso Z   2 KB │
+├──────────────────┤
+│ Libre       4 KB │
+└──────────────────┘
+```
+
+Si posteriormente termina el Proceso Y:
+
+```text
+┌──────────────────┐
+│ Proceso X   4 KB │
+├──────────────────┤
+│ Libre       6 KB │
+├──────────────────┤
+│ Proceso Z   2 KB │
+├──────────────────┤
+│ Libre       4 KB │
+└──────────────────┘
+```
+
+Tenemos dos huecos separados.
+
+## Escenario B: paginación de 2 KB
+
+La RAM de 16 KB contiene:
+
+```text
+16 ÷ 2 = 8 marcos
+```
+
+Los procesos requieren:
+
+```text
+X = 4 KB → 2 páginas
+Y = 6 KB → 3 páginas
+Z = 2 KB → 1 página
+```
+
+En total:
+
+```text
+2 + 3 + 1 = 6 marcos utilizados
+```
+
+Las páginas podrían distribuirse, por ejemplo:
+
+| Página | Marco |
+|---|---:|
+| X0 | 0 |
+| Y0 | 1 |
+| Z0 | 2 |
+| X1 | 4 |
+| Y1 | 6 |
+| Y2 | 7 |
+
+No necesitan estar juntas.
+
+::: {.callout-tip title="Pregunta para discutir"}
+Si quedan libres los marcos 3 y 5, ¿representa eso el mismo problema que dos huecos separados en particiones dinámicas?
+
+**No necesariamente.** En paginación, un nuevo proceso puede utilizar marcos libres separados porque sus páginas tampoco necesitan quedar contiguas.
+:::
+
+---
+
+# 23. Laboratorio en clase: tú administras la RAM
+
+Supongamos una memoria de **32 KB**.
+
+Existen estos huecos libres:
+
+```text
+H1 = 8 KB
+H2 = 5 KB
+H3 = 12 KB
+H4 = 7 KB
+```
+
+Llegan, en este orden:
+
+```text
+Proceso A = 6 KB
+Proceso B = 4 KB
+Proceso C = 7 KB
+```
+
+## Parte A — Particiones dinámicas
+
+Realiza la asignación utilizando por separado:
+
+1. First Fit.
+2. Best Fit.
+3. Worst Fit.
+
+Después de cada proceso, anota cómo quedan los huecos.
+
+## Parte B — Paginación
+
+Ahora supongamos páginas y marcos de **2 KB**.
+
+Determina:
+
+1. cuántas páginas necesita cada proceso;
+2. cuántos marcos necesita cada proceso;
+3. si las páginas necesitan estar contiguas;
+4. qué sucede con el Proceso B de 4 KB;
+5. qué tipo de fragmentación puede existir.
+
+## Parte C — Reflexión
+
+Responde:
+
+> ¿Qué problema de las particiones dinámicas deja de ser crítico cuando utilizamos paginación?
+
+::: {.callout-tip collapse="true" title="✅ Solución propuesta"}
+### First Fit
+
+Huecos iniciales:
+
+```text
+8, 5, 12, 7
+```
+
+Proceso A = 6 KB:
+
+```text
+2, 5, 12, 7
+```
+
+Proceso B = 4 KB: el primer hueco suficiente es 5 KB.
+
+```text
+2, 1, 12, 7
+```
+
+Proceso C = 7 KB: el primer hueco suficiente es 12 KB.
+
+```text
+2, 1, 5, 7
+```
+
+### Best Fit
+
+Proceso A = 6 KB → utiliza 7 KB:
+
+```text
+8, 5, 12, 1
+```
+
+Proceso B = 4 KB → utiliza 5 KB:
+
+```text
+8, 1, 12, 1
+```
+
+Proceso C = 7 KB → utiliza 8 KB:
+
+```text
+1, 1, 12, 1
+```
+
+### Worst Fit
+
+Proceso A = 6 KB → utiliza 12 KB:
+
+```text
+8, 5, 6, 7
+```
+
+Proceso B = 4 KB → utiliza 8 KB:
+
+```text
+4, 5, 6, 7
+```
+
+Proceso C = 7 KB → utiliza 7 KB:
+
+```text
+4, 5, 6, 0
+```
+
+### Paginación de 2 KB
+
+- Proceso A = 6 KB → **3 páginas / 3 marcos**.
+- Proceso B = 4 KB → **2 páginas / 2 marcos**.
+- Proceso C = 7 KB → necesita **4 páginas / 4 marcos**; la última página utiliza solo 1 KB.
+
+Las páginas **no necesitan estar en marcos contiguos**.
+
+En el Proceso C aparece hasta **1 KB de fragmentación interna** en su último marco.
+
+La paginación evita que los **huecos libres dispersos** impidan por sí solos cargar un proceso, siempre que existan suficientes marcos libres.
+:::
+
+---
+
+# 24. Errores comunes
+
+## “Fragmentación interna y externa son lo mismo”
+
+No.
+
+- Interna → espacio desperdiciado **dentro** de una unidad asignada.
+- Externa → memoria libre **dispersa entre** unidades ocupadas.
+
+## “Best Fit siempre es la mejor estrategia”
+
+El nombre puede engañar. Significa que selecciona el hueco más ajustado, no que produzca necesariamente el mejor comportamiento en todas las situaciones.
+
+## “Las páginas deben quedar juntas en RAM”
+
+No. Precisamente una de las ventajas fundamentales de la paginación es permitir distribución **no contigua**.
+
+## “Página y marco son sinónimos”
+
+Tienen el mismo tamaño dentro de un esquema paginado, pero representan cosas distintas:
+
+```text
+Página → espacio lógico
+Marco  → memoria física
+```
+
+## “La paginación elimina toda fragmentación”
+
+No. Evita la fragmentación externa clásica, pero puede existir **fragmentación interna**.
+
+---
+
+# 25. Autoevaluación
+
+1. ¿Por qué la memoria es un recurso crítico?
+2. ¿Qué funciones realiza el Sistema Operativo sobre la memoria?
+3. ¿Qué diferencia existe entre dirección lógica y dirección física?
+4. ¿Qué es una partición fija?
+5. ¿Qué es una partición dinámica?
+6. Explica con tus palabras la fragmentación interna.
+7. Explica con tus palabras la fragmentación externa.
+8. ¿Cómo funciona First Fit?
+9. ¿Cómo funciona Best Fit?
+10. ¿Cómo funciona Worst Fit?
+11. ¿Qué problema aparece cuando existe suficiente memoria libre total, pero está dispersa?
+12. ¿Qué es una página?
+13. ¿Qué es un marco?
+14. ¿Por qué página y marco deben tener el mismo tamaño?
+15. ¿Qué función cumple la tabla de páginas?
+16. ¿Qué elementos forman una dirección lógica paginada?
+17. ¿Qué ocurre con el desplazamiento durante la traducción?
+18. ¿Por qué la paginación permite memoria no contigua?
+19. ¿Qué tipo de fragmentación puede aparecer en paginación?
+20. ¿Cómo se relacionan paginación y memoria virtual?
+
+---
+
+# 26. Reto final
+
+Un sistema utiliza páginas de **4 KB**.
+
+Un proceso necesita **18 KB**.
+
+Responde:
+
+1. ¿Cuántas páginas necesita?
+2. ¿Cuántos marcos debe recibir?
+3. ¿Cuánta memoria física se asignará en total?
+4. ¿Cuánta fragmentación interna tendrá el último marco?
+5. Si la Página 3 está en el Marco 9 y el desplazamiento es 500 bytes, ¿cuál es la dirección física?
+6. ¿Las cinco páginas deben quedar en marcos consecutivos?
+
+::: {.callout-tip collapse="true" title="✅ Solución propuesta"}
+### 1. Número de páginas
+
+```text
+18 KB ÷ 4 KB = 4.5
+```
+
+Necesitamos **5 páginas**.
+
+### 2. Número de marcos
+
+Cada página necesita un marco, por lo que necesitamos **5 marcos**.
+
+### 3. Memoria física asignada
+
+```text
+5 × 4 KB = 20 KB
+```
+
+### 4. Fragmentación interna
+
+```text
+20 KB - 18 KB = 2 KB
+```
+
+La fragmentación interna es **2 KB**.
+
+### 5. Dirección física
+
+Como:
+
+```text
+4 KB = 4096 bytes
+Marco = 9
+Desplazamiento = 500
+```
+
+entonces:
+
+```text
+Dirección física = (9 × 4096) + 500
+                  = 36864 + 500
+                  = 37364
+```
+
+La dirección física es **37364**.
+
+### 6. ¿Deben ser consecutivas?
+
+**No.** Las páginas pueden almacenarse en marcos físicos no contiguos.
+:::
+
+---
+
+# 27. Para recordar
+
+Podemos reconstruir el capítulo mediante esta secuencia:
+
+```text
+RAM ES LIMITADA
+      ↓
+EL S.O. DEBE ADMINISTRARLA
+      ↓
+PARTICIONES
+  ↓            ↓
+FIJAS       DINÁMICAS
+  ↓            ↓
+Frag.       Frag.
+interna     externa
+      ↓
+FIRST · BEST · WORST FIT
+      ↓
+¿Y SI NO EXIGIMOS CONTIGÜIDAD?
+      ↓
+PAGINACIÓN
+      ↓
+PÁGINAS ↔ TABLA ↔ MARCOS
+      ↓
+MEMORIA NO CONTIGUA
+      ↓
+MEMORIA VIRTUAL
+```
+
+::: {.callout-note title="Síntesis en una frase"}
+**La paginación permite dividir un proceso en páginas y ubicarlas en marcos físicos no contiguos, utilizando una tabla de páginas para traducir direcciones lógicas en direcciones físicas.**
+:::
+
+---
+
+# Conexión con la siguiente clase
+
+Ya comprendemos cómo el Sistema Operativo puede distribuir procesos en memoria y cómo la paginación rompe la necesidad de mantener un proceso completo en un bloque físico contiguo.
+
+A partir de aquí podemos profundizar en mecanismos relacionados con **memoria virtual**, carga de páginas bajo demanda y decisiones sobre qué páginas deben permanecer en RAM.
+
+---
+
+# Referencias
+
+Material base de clase:
+
+- Presentación **Manejo de memoria: Paginación y particiones**, Sistemas Operativos I.
+
+::: {.callout-tip title="Criterio editorial"}
+Este capítulo transforma el material de clase en una secuencia de razonamiento: **problema → estrategia → limitación → nueva estrategia**. El objetivo no es memorizar términos, sino comprender por qué surgieron las distintas técnicas de administración de memoria.
+:::

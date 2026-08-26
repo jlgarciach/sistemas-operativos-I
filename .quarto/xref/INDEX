@@ -43,5 +43,17 @@
   },
   "capitulos/09_prevencion_deteccion_interbloqueos.qmd": {
     "09_prevencion_deteccion_interbloqueos.html": "514c2484"
+  },
+  "capitulos/10_actividad_diagnostico_sistema_operativo.qmd": {
+    "10_actividad_diagnostico_sistema_operativo.html": "0624a943"
+  },
+  "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.qmd": {
+    "11_actividad_diagnostico_sistema_operativo_respuestas.html": "123e07ec"
+  },
+  "capitulos/12_virtualizacion_sistemas_operativos.qmd": {
+    "12_virtualizacion_sistemas_operativos.html": "57107ac6"
+  },
+  "capitulos/13_manejo_memoria_paginacion_particiones.qmd": {
+    "13_manejo_memoria_paginacion_particiones.html": "f63a6f14"
   }
 }

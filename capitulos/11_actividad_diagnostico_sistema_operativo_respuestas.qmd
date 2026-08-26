@@ -1,0 +1,323 @@
+---
+title: "Actividad - Diagnóstico de un Sistema Operativo"
+subtitle: "Guía de respuestas y retroalimentación"
+author: "Ing. Jorge Luis García Chacón"
+date: "2026"
+format:
+  html:
+    toc: true
+    number-sections: false
+  pdf:
+    pdf-engine: xelatex
+    toc: false
+    number-sections: false
+    documentclass: article
+    papersize: letter
+    geometry:
+      - top=1.7cm
+      - bottom=1.7cm
+      - left=1.8cm
+      - right=1.8cm
+    mainfont: Arial
+    monofont: "Courier New"
+    colorlinks: true
+    include-in-header:
+      text: |
+        \usepackage{fancyhdr}
+        \usepackage{array}
+        \pagestyle{fancy}
+        \fancyhf{}
+        \lhead{Sistemas Operativos I}
+        \chead{Retroalimentación de la actividad}
+        \rhead{UMG}
+        \cfoot{Página \thepage}
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+# Antes de revisar las respuestas
+
+Esta guía se publica **después de realizar y exponer la actividad**. Su propósito no es presentar una única respuesta posible, sino comparar el razonamiento del grupo con una solución técnicamente fundamentada.
+
+::: {.callout-important title="Una idea importante"}
+En un diagnóstico real no siempre existe una sola respuesta correcta. Una conclusión puede ser válida si utiliza correctamente la evidencia disponible y puede justificarse.
+:::
+
+# Recordemos el escenario
+
+El equipo tiene **8 GB de RAM**, un procesador de **4 núcleos** y varios procesos activos al mismo tiempo.
+
+| Proceso | Estado | CPU | Memoria |
+|---|---|---:|---:|
+| Navegador | Running | 55 % | 1.8 GB |
+| Descarga | Ready | 10 % | 220 MB |
+| Procesador de texto | Ready | 4 % | 650 MB |
+| Antivirus | Ready | 24 % | 900 MB |
+| Impresión | Waiting | 0 % | 85 MB |
+| Reproductor multimedia | Ready | 7 % | 400 MB |
+
+```{mermaid}
+flowchart LR
+    U["👤 Usuario"] --> A["🪟 Varias aplicaciones"]
+    A --> K["🧠 Sistema Operativo / Kernel"]
+    K --> CPU["⚙️ CPU"]
+    K --> RAM["🧩 Memoria"]
+    K --> IO["🔌 Entrada / Salida"]
+    IO --> NET["🌐 Red"]
+    IO --> PRN["🖨️ Impresora"]
+```
+
+# Misión 1. Diagnóstico inicial — 5 puntos
+
+## 1. ¿Cuál parece ser el principal problema?
+
+Una respuesta razonable sería que existe **alta competencia por tiempo de CPU**, especialmente por el navegador y el antivirus.
+
+El navegador aparece ejecutándose con **55 % de CPU** y el antivirus requiere otro **24 %**. Al mismo tiempo existen varios procesos en estado `Ready`, es decir, preparados para ejecutar pero esperando que el planificador les asigne CPU.
+
+Esto ayuda a explicar por qué el usuario percibe retrasos al cambiar entre aplicaciones.
+
+::: {.callout-note title="Pero cuidado"}
+Los datos no demuestran que exista un único culpable. Estamos realizando un diagnóstico con la evidencia disponible. También deben considerarse memoria, red, almacenamiento y dispositivos de entrada/salida.
+:::
+
+## 2. ¿Qué otros factores pueden contribuir?
+
+Entre las respuestas justificables están:
+
+- varias aplicaciones abiertas simultáneamente;
+- consumo de memoria del navegador y otros programas;
+- actividad del antivirus en segundo plano;
+- descarga de un archivo grande y utilización de red/almacenamiento;
+- reproducción de video y audio;
+- espera de la impresora;
+- posibles operaciones de entrada/salida;
+- cambios frecuentes entre procesos.
+
+La memoria reportada para los procesos mostrados suma aproximadamente **4 GB**, por lo que no podemos afirmar solamente con esta tabla que los 8 GB estén agotados. Sin embargo, el Sistema Operativo y otros procesos no mostrados también utilizan memoria.
+
+## 3. ¿La CPU está dañada?
+
+No existe evidencia suficiente para concluirlo.
+
+Una computadora puede sentirse lenta aunque el procesador funcione correctamente. El problema puede encontrarse en la **carga de trabajo**, la planificación, la memoria, el almacenamiento, la red, un dispositivo de E/S o un proceso específico.
+
+> **Diagnosticar no significa adivinar el componente dañado; significa interpretar evidencias.**
+
+# Misión 2. ¿Qué ocurre dentro del Sistema Operativo? — 5 puntos
+
+No era obligatorio mencionar exactamente cuatro componentes específicos. Lo importante era identificar mecanismos coherentes y explicar su participación.
+
+| Componente o mecanismo | Papel en el escenario |
+|---|---|
+| **Kernel** | Coordina el acceso de los procesos a CPU, memoria y dispositivos. |
+| **Scheduler** | Decide qué proceso preparado obtiene tiempo de CPU. |
+| **PCB** | Conserva la información necesaria para administrar cada proceso y reanudarlo después de una interrupción o espera. |
+| **Dispatcher / cambio de contexto** | Permite entregar la CPU a otro proceso y continuar posteriormente con el anterior. |
+| **Gestión de memoria** | Controla la memoria utilizada por los diferentes procesos. |
+| **Drivers y E/S** | Permiten al Sistema Operativo comunicarse con dispositivos como la impresora. |
+
+```{mermaid}
+flowchart TD
+    READY["Procesos Ready"] --> S["📋 Scheduler"]
+    S --> D["🔄 Dispatcher"]
+    D --> R["⚙️ Running"]
+    R -->|fin de quantum| READY
+    R -->|solicita E/S| W["⏳ Waiting"]
+    W -->|E/S terminada| READY
+```
+
+::: {.callout-tip title="Lo que buscábamos comprobar"}
+Que pudieran relacionar los conceptos. Por ejemplo: **Scheduler → selecciona → Dispatcher → entrega CPU → proceso ejecuta → PCB conserva el contexto**.
+:::
+
+# Misión 3. Sigan el proceso de impresión — 5 puntos
+
+## Una secuencia posible
+
+```{mermaid}
+flowchart LR
+    N["New"] --> R["Ready"]
+    R --> X["Running"]
+    X -->|"solicita imprimir"| W["Waiting"]
+    W -->|"impresora responde"| R
+    R --> X2["Running"]
+    X2 --> T["Terminated"]
+```
+
+## a. ¿Por qué aparece `Waiting`?
+
+Porque el proceso realizó una operación que depende de un evento externo: la operación de impresión.
+
+Mientras espera la respuesta correspondiente, no tiene sentido mantenerlo ocupando la CPU. El Sistema Operativo puede utilizar ese tiempo para ejecutar otros procesos.
+
+## b. ¿Qué debe conservar el Sistema Operativo?
+
+Debe conservar la información necesaria para poder continuar posteriormente la ejecución. Esa información se representa conceptualmente mediante el **PCB (Process Control Block)**.
+
+Entre otros elementos puede incluir:
+
+- identificador del proceso;
+- estado;
+- contador de programa;
+- registros;
+- información de planificación;
+- información relacionada con memoria;
+- recursos y archivos asociados.
+
+La idea central no era memorizar toda la lista, sino comprender que **el proceso debe poder detenerse y continuar sin comenzar desde cero**.
+
+## c. ¿Qué ocurre cuando responde la impresora?
+
+Una secuencia razonable es:
+
+**Waiting → Ready → Running**
+
+La finalización del evento de E/S permite que el proceso deje de estar bloqueado. Sin embargo, esto **no significa necesariamente que pase inmediatamente a Running**: primero queda disponible (`Ready`) y el Scheduler decidirá cuándo vuelve a utilizar CPU.
+
+# Misión 4. Ustedes son el Sistema Operativo — 5 puntos
+
+Los procesos eran:
+
+| Proceso | CPU | Prioridad | Tipo |
+|---|---:|---:|---|
+| P1 | 8 ms | 3 | Navegador interactivo |
+| P2 | 2 ms | 1 | Proceso crítico del sistema |
+| P3 | 6 ms | 2 | Antivirus |
+| P4 | 3 ms | 3 | Reproductor multimedia |
+
+## 1. ¿Qué criterio utilizar?
+
+Aquí **no buscábamos una única palabra**.
+
+Una respuesta bien argumentada puede proponer **planificación por prioridades** para favorecer P2, combinada con reparto de CPU para conservar la respuesta de los procesos interactivos.
+
+También era razonable mencionar **Round Robin** para los procesos interactivos, porque evita que uno conserve indefinidamente el procesador.
+
+```{mermaid}
+flowchart TD
+    P2["🚨 P2\nCrítico"] --> CPU["⚙️ CPU"]
+    P1["🌐 P1\nInteractivo"] --> Q["⏱️ Reparto de CPU"]
+    P3["🛡️ P3\nSegundo plano"] --> Q
+    P4["🎵 P4\nInteractivo"] --> Q
+    Q --> CPU
+```
+
+::: {.callout-warning title="No confundir"}
+SJF podría reducir el tiempo promedio de espera en ciertos escenarios, pero seleccionar siempre el proceso más corto no considera por sí mismo que **P2 es crítico** ni garantiza el comportamiento deseado para aplicaciones interactivas.
+:::
+
+## 2. ¿Todos deben tratarse igual?
+
+No necesariamente.
+
+P2 representa una tarea crítica del sistema, mientras P1 y P4 son interactivos y P3 corresponde a una tarea en segundo plano.
+
+El Sistema Operativo puede necesitar equilibrar:
+
+- prioridad;
+- capacidad de respuesta;
+- equidad;
+- utilización del procesador.
+
+## 3. ¿Qué pasa si uno conserva demasiado la CPU?
+
+Los demás procesos pueden permanecer demasiado tiempo esperando.
+
+El usuario percibiría aplicaciones congeladas o poco responsivas. Precisamente por eso los sistemas multitarea necesitan mecanismos de planificación y, según la política utilizada, **preempción y quantum de tiempo**.
+
+# Misión 5. Diagnóstico final — 5 puntos
+
+## A. ¿Qué ocurre cuando presionamos Imprimir?
+
+Una representación simplificada sería:
+
+```{mermaid}
+flowchart LR
+    U["👤 Usuario"] --> APP["📝 Procesador de texto"]
+    APP --> SC["📞 Llamada al sistema"]
+    SC --> K["🧠 Kernel"]
+    K --> DR["🔌 Driver"]
+    DR --> HW["🖨️ Impresora"]
+    HW -. "respuesta / evento" .-> DR
+    DR -.-> K
+```
+
+El usuario no controla directamente la impresora.
+
+1. El usuario solicita imprimir desde la aplicación.
+2. La aplicación solicita un servicio al Sistema Operativo.
+3. El Kernel coordina la operación.
+4. El controlador o **driver** permite la comunicación con el dispositivo.
+5. La impresora realiza la operación.
+6. Mientras se espera el evento de E/S, el proceso relacionado puede quedar bloqueado.
+7. Cuando la operación permite continuar, el proceso puede regresar a `Ready`.
+
+## B. ¿Qué acciones podrían realizarse?
+
+Una respuesta prudente sería **observar antes de cerrar procesos al azar**.
+
+Podrían:
+
+1. revisar qué proceso consume más CPU;
+2. observar si el consumo elevado se mantiene;
+3. verificar presión de memoria;
+4. revisar actividad de disco, red y dispositivos;
+5. comprobar el estado de la impresión;
+6. pausar o reprogramar tareas de segundo plano si están afectando el trabajo interactivo;
+7. cerrar únicamente aplicaciones o pestañas que no sean necesarias.
+
+### ¿Qué observar primero?
+
+Con los datos proporcionados, comenzar por **CPU y procesos activos** es razonable porque el navegador y el antivirus muestran una carga importante y existen varios procesos en `Ready`.
+
+Después habría que revisar memoria y E/S para confirmar o descartar otros cuellos de botella.
+
+# Uniendo todo
+
+```{mermaid}
+flowchart TD
+    U["👤 Usuario percibe lentitud"] --> OBS["🔎 Observamos el sistema"]
+    OBS --> PROC["Procesos y estados"]
+    OBS --> RES["CPU · memoria · E/S"]
+    PROC --> SCH["Scheduler"]
+    SCH --> CPU["CPU"]
+    PROC --> PCB["PCB / contexto"]
+    PROC --> IO["Operaciones de E/S"]
+    IO --> DEV["Drivers y dispositivos"]
+    CPU --> DIAG["🩺 Diagnóstico"]
+    PCB --> DIAG
+    DEV --> DIAG
+    RES --> DIAG
+```
+
+::: {.callout-important title="La respuesta más importante de toda la actividad"}
+Un buen diagnóstico de Sistemas Operativos **no consiste en encontrar rápidamente un culpable**. Consiste en observar procesos, estados, recursos y eventos; relacionarlos con el funcionamiento del Kernel; formular una explicación y comprobar si la evidencia la respalda.
+:::
+
+# ¿Cómo podía obtenerse el punteo?
+
+| Área evaluada | 5 puntos cuando... |
+|---|---|
+| Diagnóstico | Utiliza los datos del escenario y evita conclusiones sin evidencia. |
+| Componentes del SO | Identifica componentes correctos y explica su relación con el caso. |
+| Procesos y PCB | Interpreta correctamente `Running`, `Ready`, `Waiting` y la conservación del contexto. |
+| Planificación | Propone un criterio coherente y lo justifica según el tipo de proceso. |
+| Integración | Relaciona aplicación, Kernel, llamadas al sistema, drivers, hardware y propone acciones razonables. |
+
+# Para cerrar
+
+Si algunas respuestas de tu grupo fueron diferentes de esta guía, pregúntate:
+
+- ¿Nuestra respuesta estaba sustentada por los datos?
+- ¿Utilizamos correctamente los conceptos?
+- ¿Podíamos explicar por qué llegamos a esa conclusión?
+- ¿Cambiaríamos algo después de escuchar a los demás grupos?
+
+::: {.callout-tip title="Consejo del Ingeniero"}
+En Sistemas Operativos, aprender los nombres de los componentes es apenas el comienzo.
+
+**El verdadero aprendizaje aparece cuando puedes explicar qué están haciendo y por qué.**
+:::

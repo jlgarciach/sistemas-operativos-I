@@ -2210,13 +2210,613 @@
     ]
   },
   {
+    "objectID": "capitulos/10_actividad_diagnostico_sistema_operativo.html",
+    "href": "capitulos/10_actividad_diagnostico_sistema_operativo.html",
+    "title": "11  Actividad - Diagnóstico de un Sistema Operativo",
+    "section": "",
+    "text": "12 Universidad Mariano Gálvez de Guatemala\nFacultad de Ingeniería en Sistemas\nCurso: Sistemas Operativos I\nDocente: Ing. Jorge Luis García Chacón\nActividad: Diagnóstico de un Sistema Operativo\nValor: 25 puntos\nModalidad: Trabajo en grupo\nTiempo estimado: 60 minutos\nGrupo No.: ____________________\nIntegrantes:",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Actividad - Diagnóstico de un Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/10_actividad_diagnostico_sistema_operativo.html#escenario",
+    "href": "capitulos/10_actividad_diagnostico_sistema_operativo.html#escenario",
+    "title": "11  Actividad - Diagnóstico de un Sistema Operativo",
+    "section": "12.1 Escenario",
+    "text": "12.1 Escenario\nEn el laboratorio de cómputo de una universidad, una computadora presenta problemas de rendimiento mientras varios usuarios realizan distintas tareas. El encargado del laboratorio reporta lo siguiente:\n\nEl equipo tarda en responder cuando se cambia entre aplicaciones.\nUn navegador mantiene varias pestañas abiertas y reproduce video.\nUn estudiante está descargando un archivo grande desde Internet.\nOtro programa está enviando un documento a imprimir.\nEl antivirus realiza una revisión en segundo plano.\nEn algunos momentos una aplicación deja de responder durante varios segundos y luego continúa.\n\nEl administrador consulta el estado del sistema y obtiene la siguiente información:\n\n\n\n\n\n\n\n\n\n\nProceso\nEstado observado\nCPU\nMemoria\nObservación\n\n\n\n\nNavegador\nRunning\n55 %\n1.8 GB\nVarias pestañas y video activo\n\n\nDescarga\nReady\n10 %\n220 MB\nArchivo grande en proceso\n\n\nProcesador de texto\nReady\n4 %\n650 MB\nDocumento abierto\n\n\nAntivirus\nReady\n24 %\n900 MB\nAnálisis en segundo plano\n\n\nImpresión\nWaiting\n0 %\n85 MB\nEsperando respuesta de la impresora\n\n\nReproductor multimedia\nReady\n7 %\n400 MB\nAudio activo\n\n\n\nLa computadora posee 8 GB de RAM y un procesador de 4 núcleos.",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Actividad - Diagnóstico de un Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/10_actividad_diagnostico_sistema_operativo.html#a.-recorrido-de-una-solicitud",
+    "href": "capitulos/10_actividad_diagnostico_sistema_operativo.html#a.-recorrido-de-una-solicitud",
+    "title": "11  Actividad - Diagnóstico de un Sistema Operativo",
+    "section": "17.1 A. Recorrido de una solicitud",
+    "text": "17.1 A. Recorrido de una solicitud\nEl usuario presiona Imprimir desde el procesador de texto.\nDibujen el recorrido que sigue esa solicitud desde el usuario hasta el dispositivo físico. Incluyan únicamente los componentes que consideren necesarios y expliquen brevemente qué ocurre en cada paso.",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Actividad - Diagnóstico de un Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/10_actividad_diagnostico_sistema_operativo.html#b.-decisión-final-del-grupo",
+    "href": "capitulos/10_actividad_diagnostico_sistema_operativo.html#b.-decisión-final-del-grupo",
+    "title": "11  Actividad - Diagnóstico de un Sistema Operativo",
+    "section": "17.2 B. Decisión final del grupo",
+    "text": "17.2 B. Decisión final del grupo\nComo equipo responsable del diagnóstico, indiquen:\n1. ¿Qué acciones realizarían para mejorar el rendimiento del equipo sin apagarlo inmediatamente?\n2. ¿Qué proceso o recurso observarían primero y por qué?\n3. Diagnóstico definitivo del grupo:",
+    "crumbs": [
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Actividad - Diagnóstico de un Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html",
+    "href": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html",
+    "title": "Actividad - Diagnóstico de un Sistema Operativo",
+    "section": "",
+    "text": "Antes de revisar las respuestas\nEsta guía se publica después de realizar y exponer la actividad. Su propósito no es presentar una única respuesta posible, sino comparar el razonamiento del grupo con una solución técnicamente fundamentada.",
+    "crumbs": [
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Actividad - Diagnóstico de un Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html#cuál-parece-ser-el-principal-problema",
+    "href": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html#cuál-parece-ser-el-principal-problema",
+    "title": "Actividad - Diagnóstico de un Sistema Operativo",
+    "section": "1. ¿Cuál parece ser el principal problema?",
+    "text": "1. ¿Cuál parece ser el principal problema?\nUna respuesta razonable sería que existe alta competencia por tiempo de CPU, especialmente por el navegador y el antivirus.\nEl navegador aparece ejecutándose con 55 % de CPU y el antivirus requiere otro 24 %. Al mismo tiempo existen varios procesos en estado Ready, es decir, preparados para ejecutar pero esperando que el planificador les asigne CPU.\nEsto ayuda a explicar por qué el usuario percibe retrasos al cambiar entre aplicaciones.\n\n\n\n\n\n\nNotaPero cuidado\n\n\n\nLos datos no demuestran que exista un único culpable. Estamos realizando un diagnóstico con la evidencia disponible. También deben considerarse memoria, red, almacenamiento y dispositivos de entrada/salida.",
+    "crumbs": [
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Actividad - Diagnóstico de un Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html#qué-otros-factores-pueden-contribuir",
+    "href": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html#qué-otros-factores-pueden-contribuir",
+    "title": "Actividad - Diagnóstico de un Sistema Operativo",
+    "section": "2. ¿Qué otros factores pueden contribuir?",
+    "text": "2. ¿Qué otros factores pueden contribuir?\nEntre las respuestas justificables están:\n\nvarias aplicaciones abiertas simultáneamente;\nconsumo de memoria del navegador y otros programas;\nactividad del antivirus en segundo plano;\ndescarga de un archivo grande y utilización de red/almacenamiento;\nreproducción de video y audio;\nespera de la impresora;\nposibles operaciones de entrada/salida;\ncambios frecuentes entre procesos.\n\nLa memoria reportada para los procesos mostrados suma aproximadamente 4 GB, por lo que no podemos afirmar solamente con esta tabla que los 8 GB estén agotados. Sin embargo, el Sistema Operativo y otros procesos no mostrados también utilizan memoria.",
+    "crumbs": [
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Actividad - Diagnóstico de un Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html#la-cpu-está-dañada",
+    "href": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html#la-cpu-está-dañada",
+    "title": "Actividad - Diagnóstico de un Sistema Operativo",
+    "section": "3. ¿La CPU está dañada?",
+    "text": "3. ¿La CPU está dañada?\nNo existe evidencia suficiente para concluirlo.\nUna computadora puede sentirse lenta aunque el procesador funcione correctamente. El problema puede encontrarse en la carga de trabajo, la planificación, la memoria, el almacenamiento, la red, un dispositivo de E/S o un proceso específico.\n\nDiagnosticar no significa adivinar el componente dañado; significa interpretar evidencias.",
+    "crumbs": [
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Actividad - Diagnóstico de un Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html#una-secuencia-posible",
+    "href": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html#una-secuencia-posible",
+    "title": "Actividad - Diagnóstico de un Sistema Operativo",
+    "section": "Una secuencia posible",
+    "text": "Una secuencia posible\n\n\n\n\n\nflowchart LR\n    N[\"New\"] --&gt; R[\"Ready\"]\n    R --&gt; X[\"Running\"]\n    X --&gt;|\"solicita imprimir\"| W[\"Waiting\"]\n    W --&gt;|\"impresora responde\"| R\n    R --&gt; X2[\"Running\"]\n    X2 --&gt; T[\"Terminated\"]",
+    "crumbs": [
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Actividad - Diagnóstico de un Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html#a.-por-qué-aparece-waiting",
+    "href": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html#a.-por-qué-aparece-waiting",
+    "title": "Actividad - Diagnóstico de un Sistema Operativo",
+    "section": "a. ¿Por qué aparece Waiting?",
+    "text": "a. ¿Por qué aparece Waiting?\nPorque el proceso realizó una operación que depende de un evento externo: la operación de impresión.\nMientras espera la respuesta correspondiente, no tiene sentido mantenerlo ocupando la CPU. El Sistema Operativo puede utilizar ese tiempo para ejecutar otros procesos.",
+    "crumbs": [
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Actividad - Diagnóstico de un Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html#b.-qué-debe-conservar-el-sistema-operativo",
+    "href": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html#b.-qué-debe-conservar-el-sistema-operativo",
+    "title": "Actividad - Diagnóstico de un Sistema Operativo",
+    "section": "b. ¿Qué debe conservar el Sistema Operativo?",
+    "text": "b. ¿Qué debe conservar el Sistema Operativo?\nDebe conservar la información necesaria para poder continuar posteriormente la ejecución. Esa información se representa conceptualmente mediante el PCB (Process Control Block).\nEntre otros elementos puede incluir:\n\nidentificador del proceso;\nestado;\ncontador de programa;\nregistros;\ninformación de planificación;\ninformación relacionada con memoria;\nrecursos y archivos asociados.\n\nLa idea central no era memorizar toda la lista, sino comprender que el proceso debe poder detenerse y continuar sin comenzar desde cero.",
+    "crumbs": [
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Actividad - Diagnóstico de un Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html#c.-qué-ocurre-cuando-responde-la-impresora",
+    "href": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html#c.-qué-ocurre-cuando-responde-la-impresora",
+    "title": "Actividad - Diagnóstico de un Sistema Operativo",
+    "section": "c. ¿Qué ocurre cuando responde la impresora?",
+    "text": "c. ¿Qué ocurre cuando responde la impresora?\nUna secuencia razonable es:\nWaiting → Ready → Running\nLa finalización del evento de E/S permite que el proceso deje de estar bloqueado. Sin embargo, esto no significa necesariamente que pase inmediatamente a Running: primero queda disponible (Ready) y el Scheduler decidirá cuándo vuelve a utilizar CPU.",
+    "crumbs": [
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Actividad - Diagnóstico de un Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html#qué-criterio-utilizar",
+    "href": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html#qué-criterio-utilizar",
+    "title": "Actividad - Diagnóstico de un Sistema Operativo",
+    "section": "1. ¿Qué criterio utilizar?",
+    "text": "1. ¿Qué criterio utilizar?\nAquí no buscábamos una única palabra.\nUna respuesta bien argumentada puede proponer planificación por prioridades para favorecer P2, combinada con reparto de CPU para conservar la respuesta de los procesos interactivos.\nTambién era razonable mencionar Round Robin para los procesos interactivos, porque evita que uno conserve indefinidamente el procesador.\n\n\n\n\n\nflowchart TD\n    P2[\"🚨 P2\\nCrítico\"] --&gt; CPU[\"⚙️ CPU\"]\n    P1[\"🌐 P1\\nInteractivo\"] --&gt; Q[\"⏱️ Reparto de CPU\"]\n    P3[\"🛡️ P3\\nSegundo plano\"] --&gt; Q\n    P4[\"🎵 P4\\nInteractivo\"] --&gt; Q\n    Q --&gt; CPU\n\n\n\n\n\n\n\n\n\n\n\n\nAdvertenciaNo confundir\n\n\n\nSJF podría reducir el tiempo promedio de espera en ciertos escenarios, pero seleccionar siempre el proceso más corto no considera por sí mismo que P2 es crítico ni garantiza el comportamiento deseado para aplicaciones interactivas.",
+    "crumbs": [
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Actividad - Diagnóstico de un Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html#todos-deben-tratarse-igual",
+    "href": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html#todos-deben-tratarse-igual",
+    "title": "Actividad - Diagnóstico de un Sistema Operativo",
+    "section": "2. ¿Todos deben tratarse igual?",
+    "text": "2. ¿Todos deben tratarse igual?\nNo necesariamente.\nP2 representa una tarea crítica del sistema, mientras P1 y P4 son interactivos y P3 corresponde a una tarea en segundo plano.\nEl Sistema Operativo puede necesitar equilibrar:\n\nprioridad;\ncapacidad de respuesta;\nequidad;\nutilización del procesador.",
+    "crumbs": [
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Actividad - Diagnóstico de un Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html#qué-pasa-si-uno-conserva-demasiado-la-cpu",
+    "href": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html#qué-pasa-si-uno-conserva-demasiado-la-cpu",
+    "title": "Actividad - Diagnóstico de un Sistema Operativo",
+    "section": "3. ¿Qué pasa si uno conserva demasiado la CPU?",
+    "text": "3. ¿Qué pasa si uno conserva demasiado la CPU?\nLos demás procesos pueden permanecer demasiado tiempo esperando.\nEl usuario percibiría aplicaciones congeladas o poco responsivas. Precisamente por eso los sistemas multitarea necesitan mecanismos de planificación y, según la política utilizada, preempción y quantum de tiempo.",
+    "crumbs": [
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Actividad - Diagnóstico de un Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html#a.-qué-ocurre-cuando-presionamos-imprimir",
+    "href": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html#a.-qué-ocurre-cuando-presionamos-imprimir",
+    "title": "Actividad - Diagnóstico de un Sistema Operativo",
+    "section": "A. ¿Qué ocurre cuando presionamos Imprimir?",
+    "text": "A. ¿Qué ocurre cuando presionamos Imprimir?\nUna representación simplificada sería:\n\n\n\n\n\nflowchart LR\n    U[\"👤 Usuario\"] --&gt; APP[\"📝 Procesador de texto\"]\n    APP --&gt; SC[\"📞 Llamada al sistema\"]\n    SC --&gt; K[\"🧠 Kernel\"]\n    K --&gt; DR[\"🔌 Driver\"]\n    DR --&gt; HW[\"🖨️ Impresora\"]\n    HW -. \"respuesta / evento\" .-&gt; DR\n    DR -.-&gt; K\n\n\n\n\n\n\nEl usuario no controla directamente la impresora.\n\nEl usuario solicita imprimir desde la aplicación.\nLa aplicación solicita un servicio al Sistema Operativo.\nEl Kernel coordina la operación.\nEl controlador o driver permite la comunicación con el dispositivo.\nLa impresora realiza la operación.\nMientras se espera el evento de E/S, el proceso relacionado puede quedar bloqueado.\nCuando la operación permite continuar, el proceso puede regresar a Ready.",
+    "crumbs": [
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Actividad - Diagnóstico de un Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html#b.-qué-acciones-podrían-realizarse",
+    "href": "capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html#b.-qué-acciones-podrían-realizarse",
+    "title": "Actividad - Diagnóstico de un Sistema Operativo",
+    "section": "B. ¿Qué acciones podrían realizarse?",
+    "text": "B. ¿Qué acciones podrían realizarse?\nUna respuesta prudente sería observar antes de cerrar procesos al azar.\nPodrían:\n\nrevisar qué proceso consume más CPU;\nobservar si el consumo elevado se mantiene;\nverificar presión de memoria;\nrevisar actividad de disco, red y dispositivos;\ncomprobar el estado de la impresión;\npausar o reprogramar tareas de segundo plano si están afectando el trabajo interactivo;\ncerrar únicamente aplicaciones o pestañas que no sean necesarias.\n\n\n¿Qué observar primero?\nCon los datos proporcionados, comenzar por CPU y procesos activos es razonable porque el navegador y el antivirus muestran una carga importante y existen varios procesos en Ready.\nDespués habría que revisar memoria y E/S para confirmar o descartar otros cuellos de botella.",
+    "crumbs": [
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Actividad - Diagnóstico de un Sistema Operativo</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/12_virtualizacion_sistemas_operativos.html",
+    "href": "capitulos/12_virtualizacion_sistemas_operativos.html",
+    "title": "13  Capítulo 12. Virtualización de Sistemas Operativos",
+    "section": "",
+    "text": "14 Capítulo 12. Virtualización de Sistemas Operativos",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Capítulo 12. Virtualización de Sistemas Operativos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/12_virtualizacion_sistemas_operativos.html#de-una-computadora-a-varias-computadoras",
+    "href": "capitulos/12_virtualizacion_sistemas_operativos.html#de-una-computadora-a-varias-computadoras",
+    "title": "13  Capítulo 12. Virtualización de Sistemas Operativos",
+    "section": "14.1 De una computadora… a varias computadoras",
+    "text": "14.1 De una computadora… a varias computadoras\nHasta ahora hemos estudiado cómo el Sistema Operativo administra procesos, recursos, hardware e interbloqueos. Ahora utilizaremos esos conocimientos para comprender una tecnología que permite ejecutar varios sistemas operativos sobre un mismo equipo físico.\nImaginemos una computadora con:\n\nprocesador;\n16 GB de memoria RAM;\n512 GB de almacenamiento;\nconexión de red;\nWindows, macOS o Linux como sistema principal.\n\nLa pregunta es:\n\n¿Podemos utilizar parte de esos recursos para construir otra computadora sin comprar otro equipo físico?\n\nSí. Esa es precisamente una de las ideas fundamentales de la virtualización.\n\n\n\n\n\n\nTipIdea central\n\n\n\nUna máquina virtual se comporta como una computadora independiente, pero utiliza recursos proporcionados por una computadora física.\n\n\n\n\n\nPanorama visual de la virtualización: una computadora física puede alojar varias máquinas virtuales.",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Capítulo 12. Virtualización de Sistemas Operativos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/12_virtualizacion_sistemas_operativos.html#ejemplo",
+    "href": "capitulos/12_virtualizacion_sistemas_operativos.html#ejemplo",
+    "title": "13  Capítulo 12. Virtualización de Sistemas Operativos",
+    "section": "17.1 Ejemplo",
+    "text": "17.1 Ejemplo\nSupongamos que tenemos una Mac con macOS y ejecutamos Ubuntu mediante una VM:\nMac física       → Hardware\nmacOS            → Host\nVMware/UTM       → Hipervisor\nMáquina Ubuntu   → VM\nUbuntu           → Guest\n\n\n\n\n\n\nImportantePregunta para el grupo\n\n\n\nSi utilizamos una computadora con Windows 11 para ejecutar una máquina virtual con Ubuntu:\n¿Cuál es el host y cuál es el guest?",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Capítulo 12. Virtualización de Sistemas Operativos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/12_virtualizacion_sistemas_operativos.html#snapshot-el-punto-de-guardado",
+    "href": "capitulos/12_virtualizacion_sistemas_operativos.html#snapshot-el-punto-de-guardado",
+    "title": "13  Capítulo 12. Virtualización de Sistemas Operativos",
+    "section": "21.1 Snapshot: el punto de guardado",
+    "text": "21.1 Snapshot: el punto de guardado\nPodemos imaginar un snapshot como el punto de guardado de un videojuego.\nVM recién instalada\n       ↓\n[Snapshot A]\n       ↓\nInstalamos programas\n       ↓\n[Snapshot B]\n       ↓\nHacemos una prueba peligrosa\n       ↓\nAlgo sale mal\n       ↓\nRegresamos al Snapshot B\n\n\n\n\n\n\nAdvertenciaSnapshot no significa backup completo\n\n\n\nUn snapshot es muy útil para regresar rápidamente a un estado anterior de una VM, pero no debe confundirse con una estrategia completa de copias de seguridad.",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Capítulo 12. Virtualización de Sistemas Operativos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/12_virtualizacion_sistemas_operativos.html#imagen-iso",
+    "href": "capitulos/12_virtualizacion_sistemas_operativos.html#imagen-iso",
+    "title": "13  Capítulo 12. Virtualización de Sistemas Operativos",
+    "section": "22.1 Imagen ISO",
+    "text": "22.1 Imagen ISO\nUna ISO contiene una imagen de un medio de instalación.\nPodemos imaginarla como el equivalente digital del DVD o USB desde el cual instalaríamos un Sistema Operativo.",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Capítulo 12. Virtualización de Sistemas Operativos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/12_virtualizacion_sistemas_operativos.html#disco-virtual",
+    "href": "capitulos/12_virtualizacion_sistemas_operativos.html#disco-virtual",
+    "title": "13  Capítulo 12. Virtualización de Sistemas Operativos",
+    "section": "22.2 Disco virtual",
+    "text": "22.2 Disco virtual\nEs un archivo que el guest interpreta como si fuera un disco duro o SSD.\nEn VirtualBox es común encontrar formatos como VDI; otras plataformas utilizan formatos diferentes.",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Capítulo 12. Virtualización de Sistemas Operativos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/12_virtualizacion_sistemas_operativos.html#la-relación",
+    "href": "capitulos/12_virtualizacion_sistemas_operativos.html#la-relación",
+    "title": "13  Capítulo 12. Virtualización de Sistemas Operativos",
+    "section": "22.3 La relación",
+    "text": "22.3 La relación\n\n\n\n\n\nflowchart LR\n    ISO[\"Imagen ISO&lt;br/&gt;instalador\"]\n    VM[\"Máquina virtual\"]\n    VD[\"Disco virtual\"]\n    OS[\"Sistema Operativo&lt;br/&gt;instalado\"]\n    ISO --&gt; VM\n    VM --&gt; VD\n    VD --&gt; OS\n\n\n\n\n\n\n\n\n\n\n\n\nNotaUna comparación sencilla\n\n\n\nISO = instalador.\nDisco virtual = lugar donde quedará instalado el Sistema Operativo.",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Capítulo 12. Virtualización de Sistemas Operativos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/12_virtualizacion_sistemas_operativos.html#x86-64",
+    "href": "capitulos/12_virtualizacion_sistemas_operativos.html#x86-64",
+    "title": "13  Capítulo 12. Virtualización de Sistemas Operativos",
+    "section": "23.1 x86-64",
+    "text": "23.1 x86-64\nEs común en equipos con procesadores:\n\nIntel;\nAMD.",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Capítulo 12. Virtualización de Sistemas Operativos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/12_virtualizacion_sistemas_operativos.html#arm64",
+    "href": "capitulos/12_virtualizacion_sistemas_operativos.html#arm64",
+    "title": "13  Capítulo 12. Virtualización de Sistemas Operativos",
+    "section": "23.2 ARM64",
+    "text": "23.2 ARM64\nActualmente aparece, entre otros, en:\n\nMac con Apple Silicon;\nalgunos equipos Windows con procesadores ARM.\n\n\n\n\n\n\n\nImportanteLa arquitectura importa\n\n\n\nNo debemos asumir que cualquier ISO funcionará de la misma manera en cualquier computadora.\nUn Mac Apple Silicon utiliza arquitectura ARM64. Por eso conviene utilizar Sistemas Operativos invitados y herramientas compatibles con ARM64 cuando queremos virtualización eficiente.",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Capítulo 12. Virtualización de Sistemas Operativos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/12_virtualizacion_sistemas_operativos.html#virtualización",
+    "href": "capitulos/12_virtualizacion_sistemas_operativos.html#virtualización",
+    "title": "13  Capítulo 12. Virtualización de Sistemas Operativos",
+    "section": "24.1 Virtualización",
+    "text": "24.1 Virtualización\nCuando host y guest utilizan arquitecturas compatibles, el software puede aprovechar directamente las capacidades de virtualización del procesador.\nResultado habitual:\n\nmejor rendimiento.",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Capítulo 12. Virtualización de Sistemas Operativos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/12_virtualizacion_sistemas_operativos.html#emulación",
+    "href": "capitulos/12_virtualizacion_sistemas_operativos.html#emulación",
+    "title": "13  Capítulo 12. Virtualización de Sistemas Operativos",
+    "section": "24.2 Emulación",
+    "text": "24.2 Emulación\nLa emulación reproduce mediante software el comportamiento de otra arquitectura.\nEjemplo conceptual:\nHost ARM64\n    ↓\nEmular x86-64\n    ↓\nGuest x86-64\nEsto permite escenarios que la virtualización directa no permite, pero normalmente tiene un costo de rendimiento.\n\n\n\n\n\n\n\n\nCaracterística\nVirtualización\nEmulación\n\n\n\n\nArquitectura\nNormalmente compatible\nPuede ser diferente\n\n\nRendimiento\nGeneralmente mayor\nGeneralmente menor\n\n\nUso típico\nVM cotidiana\nCompatibilidad o sistemas de otra arquitectura",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Capítulo 12. Virtualización de Sistemas Operativos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/12_virtualizacion_sistemas_operativos.html#hipervisores",
+    "href": "capitulos/12_virtualizacion_sistemas_operativos.html#hipervisores",
+    "title": "13  Capítulo 12. Virtualización de Sistemas Operativos",
+    "section": "26.1 Hipervisores",
+    "text": "26.1 Hipervisores\n\nOracle VirtualBox\nVMware Workstation / VMware Fusion — instrucciones oficiales de Broadcom\nUTM para macOS",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Capítulo 12. Virtualización de Sistemas Operativos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/12_virtualizacion_sistemas_operativos.html#sistemas-operativos",
+    "href": "capitulos/12_virtualizacion_sistemas_operativos.html#sistemas-operativos",
+    "title": "13  Capítulo 12. Virtualización de Sistemas Operativos",
+    "section": "26.2 Sistemas Operativos",
+    "text": "26.2 Sistemas Operativos\n\nWindows 11\nUbuntu Desktop\nDebian\nFedora\nLinux Mint\n\n\n\n\n\n\n\nNotaVMware en la actualidad\n\n\n\nVMware Workstation Pro y VMware Fusion Pro cuentan con versiones gratuitas para usuarios personales, educativos y comerciales. Broadcom solicita una cuenta básica para acceder a las descargas.",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Capítulo 12. Virtualización de Sistemas Operativos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/12_virtualizacion_sistemas_operativos.html#caso-a-pc-windows-intelamd",
+    "href": "capitulos/12_virtualizacion_sistemas_operativos.html#caso-a-pc-windows-intelamd",
+    "title": "13  Capítulo 12. Virtualización de Sistemas Operativos",
+    "section": "27.1 Caso A: PC Windows Intel/AMD",
+    "text": "27.1 Caso A: PC Windows Intel/AMD\nUna opción sencilla:\nHost: Windows 10/11\nArquitectura: x86-64\nHerramienta: VirtualBox o VMware Workstation\nGuest: Ubuntu x86-64",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Capítulo 12. Virtualización de Sistemas Operativos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/12_virtualizacion_sistemas_operativos.html#caso-b-mac-intel",
+    "href": "capitulos/12_virtualizacion_sistemas_operativos.html#caso-b-mac-intel",
+    "title": "13  Capítulo 12. Virtualización de Sistemas Operativos",
+    "section": "27.2 Caso B: Mac Intel",
+    "text": "27.2 Caso B: Mac Intel\nHost: macOS\nArquitectura: x86-64\nHerramienta: VirtualBox o VMware Fusion\nGuest: Linux x86-64",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Capítulo 12. Virtualización de Sistemas Operativos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/12_virtualizacion_sistemas_operativos.html#caso-c-mac-apple-silicon",
+    "href": "capitulos/12_virtualizacion_sistemas_operativos.html#caso-c-mac-apple-silicon",
+    "title": "13  Capítulo 12. Virtualización de Sistemas Operativos",
+    "section": "27.3 Caso C: Mac Apple Silicon",
+    "text": "27.3 Caso C: Mac Apple Silicon\nHost: macOS\nArquitectura: ARM64\nHerramienta: VirtualBox, VMware Fusion o UTM\nGuest recomendado: versión ARM64 compatible\n\n\n\n\n\n\nAdvertenciaEspecialmente importante en Apple Silicon\n\n\n\nNo basta con leer “Ubuntu”, “Windows” o “Linux”. Debemos verificar también para qué arquitectura fue construida la imagen.",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Capítulo 12. Virtualización de Sistemas Operativos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/12_virtualizacion_sistemas_operativos.html#ejemplo-didáctico",
+    "href": "capitulos/12_virtualizacion_sistemas_operativos.html#ejemplo-didáctico",
+    "title": "13  Capítulo 12. Virtualización de Sistemas Operativos",
+    "section": "28.1 Ejemplo didáctico",
+    "text": "28.1 Ejemplo didáctico\nEquipo físico:\n16 GB RAM\n8 núcleos\n512 GB almacenamiento\nVM Linux para prácticas:\n4 GB RAM\n2 CPU virtuales\n40 GB disco virtual\nEsto no es una regla obligatoria. Es solamente un punto de partida razonable para un laboratorio sencillo.",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Capítulo 12. Virtualización de Sistemas Operativos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/12_virtualizacion_sistemas_operativos.html#le-asignaré-toda-la-ram-a-la-vm",
+    "href": "capitulos/12_virtualizacion_sistemas_operativos.html#le-asignaré-toda-la-ram-a-la-vm",
+    "title": "13  Capítulo 12. Virtualización de Sistemas Operativos",
+    "section": "32.1 “Le asignaré toda la RAM a la VM”",
+    "text": "32.1 “Le asignaré toda la RAM a la VM”\nIncorrecto. El host también necesita memoria.",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Capítulo 12. Virtualización de Sistemas Operativos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/12_virtualizacion_sistemas_operativos.html#descargué-cualquier-iso-de-internet",
+    "href": "capitulos/12_virtualizacion_sistemas_operativos.html#descargué-cualquier-iso-de-internet",
+    "title": "13  Capítulo 12. Virtualización de Sistemas Operativos",
+    "section": "32.2 “Descargué cualquier ISO de Internet”",
+    "text": "32.2 “Descargué cualquier ISO de Internet”\nDebemos utilizar fuentes oficiales y comprobar arquitectura.",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Capítulo 12. Virtualización de Sistemas Operativos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/12_virtualizacion_sistemas_operativos.html#si-tengo-apple-silicon-puedo-ejecutar-cualquier-x86-como-si-fuera-nativo",
+    "href": "capitulos/12_virtualizacion_sistemas_operativos.html#si-tengo-apple-silicon-puedo-ejecutar-cualquier-x86-como-si-fuera-nativo",
+    "title": "13  Capítulo 12. Virtualización de Sistemas Operativos",
+    "section": "32.3 “Si tengo Apple Silicon puedo ejecutar cualquier x86 como si fuera nativo”",
+    "text": "32.3 “Si tengo Apple Silicon puedo ejecutar cualquier x86 como si fuera nativo”\nNo necesariamente. Debemos distinguir virtualización de emulación.",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Capítulo 12. Virtualización de Sistemas Operativos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/12_virtualizacion_sistemas_operativos.html#snapshot-significa-que-ya-tengo-backup",
+    "href": "capitulos/12_virtualizacion_sistemas_operativos.html#snapshot-significa-que-ya-tengo-backup",
+    "title": "13  Capítulo 12. Virtualización de Sistemas Operativos",
+    "section": "32.4 “Snapshot significa que ya tengo backup”",
+    "text": "32.4 “Snapshot significa que ya tengo backup”\nNo. Son conceptos relacionados con recuperación, pero no equivalentes.",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Capítulo 12. Virtualización de Sistemas Operativos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/12_virtualizacion_sistemas_operativos.html#virtualbox-es-la-única-opción",
+    "href": "capitulos/12_virtualizacion_sistemas_operativos.html#virtualbox-es-la-única-opción",
+    "title": "13  Capítulo 12. Virtualización de Sistemas Operativos",
+    "section": "32.5 “VirtualBox es la única opción”",
+    "text": "32.5 “VirtualBox es la única opción”\nNo. Es una herramienta muy conocida, pero existen alternativas.",
+    "crumbs": [
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Capítulo 12. Virtualización de Sistemas Operativos</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/13_manejo_memoria_paginacion_particiones.html",
+    "href": "capitulos/13_manejo_memoria_paginacion_particiones.html",
+    "title": "14  Capítulo 13. Manejo de memoria: particiones y paginación",
+    "section": "",
+    "text": "15 Capítulo 13. Manejo de memoria: particiones y paginación",
+    "crumbs": [
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Capítulo 13. Manejo de memoria: particiones y paginación</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/13_manejo_memoria_paginacion_particiones.html#cómo-caben-tantos-programas-en-la-memoria",
+    "href": "capitulos/13_manejo_memoria_paginacion_particiones.html#cómo-caben-tantos-programas-en-la-memoria",
+    "title": "14  Capítulo 13. Manejo de memoria: particiones y paginación",
+    "section": "15.1 ¿Cómo caben tantos programas en la memoria?",
+    "text": "15.1 ¿Cómo caben tantos programas en la memoria?\nEn una computadora podemos tener abierto el navegador, un editor de código, música, una videollamada y otros programas al mismo tiempo.\nTodos necesitan memoria RAM.\nPero la RAM es limitada.\nEntonces aparece una pregunta fundamental:\n\n¿Cómo decide el Sistema Operativo qué parte de la memoria utiliza cada proceso?\n\nLa respuesta nos lleva a uno de los trabajos más importantes del Sistema Operativo: la gestión de memoria.\n\n\n\n\n\n\nTipIdea central\n\n\n\nEl Sistema Operativo debe asignar, proteger, controlar y liberar memoria para que varios procesos puedan ejecutarse sin interferirse entre sí.\n\n\n\n\n\n\n\nflowchart LR\n    P1[\"Navegador\"]\n    P2[\"Editor\"]\n    P3[\"Música\"]\n    P4[\"Otro proceso\"]\n    SO[\"Sistema Operativo&lt;br/&gt;Gestor de memoria\"]\n    RAM[\"Memoria RAM&lt;br/&gt;espacio limitado\"]\n    P1 --&gt; SO\n    P2 --&gt; SO\n    P3 --&gt; SO\n    P4 --&gt; SO\n    SO --&gt; RAM",
+    "crumbs": [
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Capítulo 13. Manejo de memoria: particiones y paginación</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/13_manejo_memoria_paginacion_particiones.html#por-qué-importa",
+    "href": "capitulos/13_manejo_memoria_paginacion_particiones.html#por-qué-importa",
+    "title": "14  Capítulo 13. Manejo de memoria: particiones y paginación",
+    "section": "17.1 ¿Por qué importa?",
+    "text": "17.1 ¿Por qué importa?\nUna mala administración de memoria puede provocar:\n\ndesperdicio de espacio;\ndificultad para cargar nuevos procesos;\nbajo rendimiento;\nerrores de acceso;\nimposibilidad de aprovechar correctamente la memoria disponible.",
+    "crumbs": [
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Capítulo 13. Manejo de memoria: particiones y paginación</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/13_manejo_memoria_paginacion_particiones.html#ventaja-principal",
+    "href": "capitulos/13_manejo_memoria_paginacion_particiones.html#ventaja-principal",
+    "title": "14  Capítulo 13. Manejo de memoria: particiones y paginación",
+    "section": "20.1 Ventaja principal",
+    "text": "20.1 Ventaja principal\n\nEs un esquema sencillo de administrar.",
+    "crumbs": [
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Capítulo 13. Manejo de memoria: particiones y paginación</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/13_manejo_memoria_paginacion_particiones.html#problema-principal",
+    "href": "capitulos/13_manejo_memoria_paginacion_particiones.html#problema-principal",
+    "title": "14  Capítulo 13. Manejo de memoria: particiones y paginación",
+    "section": "20.2 Problema principal",
+    "text": "20.2 Problema principal\n\nPuede desperdiciar bastante memoria debido a la fragmentación interna.",
+    "crumbs": [
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Capítulo 13. Manejo de memoria: particiones y paginación</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/13_manejo_memoria_paginacion_particiones.html#fragmentación-interna",
+    "href": "capitulos/13_manejo_memoria_paginacion_particiones.html#fragmentación-interna",
+    "title": "14  Capítulo 13. Manejo de memoria: particiones y paginación",
+    "section": "22.1 Fragmentación interna",
+    "text": "22.1 Fragmentación interna\nEl desperdicio se encuentra dentro del espacio asignado.\nPartición de 4 KB\n┌────────────────────┐\n│ Proceso: 3 KB      │\n│                    │\n│ Desperdicio: 1 KB  │ ← dentro\n└────────────────────┘",
+    "crumbs": [
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Capítulo 13. Manejo de memoria: particiones y paginación</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/13_manejo_memoria_paginacion_particiones.html#fragmentación-externa",
+    "href": "capitulos/13_manejo_memoria_paginacion_particiones.html#fragmentación-externa",
+    "title": "14  Capítulo 13. Manejo de memoria: particiones y paginación",
+    "section": "22.2 Fragmentación externa",
+    "text": "22.2 Fragmentación externa\nExiste suficiente memoria libre en total, pero se encuentra dispersa entre espacios ocupados.\n┌──────────────┐\n│ Proceso A    │\n├──────────────┤\n│ Libre 2 MB   │\n├──────────────┤\n│ Proceso B    │\n├──────────────┤\n│ Libre 3 MB   │\n├──────────────┤\n│ Proceso C    │\n├──────────────┤\n│ Libre 1 MB   │\n└──────────────┘\nTenemos:\n2 + 3 + 1 = 6 MB libres\npero no existe necesariamente un bloque contiguo de 6 MB.\n\n\n\n\n\n\n\n\nTipo\n¿Dónde está el desperdicio?\nEjemplo típico\n\n\n\n\nInterna\nDentro del bloque asignado\nParticiones fijas / último marco de una página\n\n\nExterna\nEntre bloques ocupados\nParticiones dinámicas\n\n\n\n\n\n\n\n\n\nTipTruco para recordarlo\n\n\n\nInterna → adentro del bloque.\nExterna → afuera, entre los bloques.",
+    "crumbs": [
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Capítulo 13. Manejo de memoria: particiones y paginación</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/13_manejo_memoria_paginacion_particiones.html#actividad-rápida",
+    "href": "capitulos/13_manejo_memoria_paginacion_particiones.html#actividad-rápida",
+    "title": "14  Capítulo 13. Manejo de memoria: particiones y paginación",
+    "section": "27.1 Actividad rápida",
+    "text": "27.1 Actividad rápida\nTenemos:\nHuecos libres: 5 KB, 12 KB, 8 KB, 20 KB\nProceso nuevo: 7 KB\nDetermina qué hueco seleccionaría:\n\nFirst Fit.\nBest Fit.\nWorst Fit.\n\n\n\n\n\n\n\nTip✅ Solución propuesta\n\n\n\n\n\n\nFirst Fit: 12 KB, porque es el primer hueco suficientemente grande.\nBest Fit: 8 KB, porque es el hueco válido más pequeño.\nWorst Fit: 20 KB, porque es el hueco más grande.\n\nDespués de colocar un proceso de 7 KB quedarían, respectivamente:\n\nFirst Fit → 5 KB libres en ese hueco.\nBest Fit → 1 KB libre.\nWorst Fit → 13 KB libres.",
+    "crumbs": [
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Capítulo 13. Manejo de memoria: particiones y paginación</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/13_manejo_memoria_paginacion_particiones.html#practiquemos",
+    "href": "capitulos/13_manejo_memoria_paginacion_particiones.html#practiquemos",
+    "title": "14  Capítulo 13. Manejo de memoria: particiones y paginación",
+    "section": "34.1 Practiquemos",
+    "text": "34.1 Practiquemos\nPágina de 1 KB. La tabla indica:\nPágina 3 → Marco 7\nLa dirección lógica es:\nPágina = 3\nDesplazamiento = 200\n¿Cuál es la dirección física?\n\n\n\n\n\n\nTip✅ Solución propuesta\n\n\n\n\n\nComo:\n1 KB = 1024 bytes\ny:\nPágina 3 → Marco 7\ncalculamos:\nDirección física = (7 × 1024) + 200\n                  = 7168 + 200\n                  = 7368\nLa dirección física es 7368.",
+    "crumbs": [
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Capítulo 13. Manejo de memoria: particiones y paginación</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/13_manejo_memoria_paginacion_particiones.html#ventajas",
+    "href": "capitulos/13_manejo_memoria_paginacion_particiones.html#ventajas",
+    "title": "14  Capítulo 13. Manejo de memoria: particiones y paginación",
+    "section": "36.1 Ventajas",
+    "text": "36.1 Ventajas\n\nEvita la fragmentación externa clásica.\nPermite memoria física no contigua.\nFacilita una utilización más flexible de los marcos disponibles.\nEs una base importante para implementar memoria virtual.",
+    "crumbs": [
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Capítulo 13. Manejo de memoria: particiones y paginación</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/13_manejo_memoria_paginacion_particiones.html#costos-o-desventajas",
+    "href": "capitulos/13_manejo_memoria_paginacion_particiones.html#costos-o-desventajas",
+    "title": "14  Capítulo 13. Manejo de memoria: particiones y paginación",
+    "section": "36.2 Costos o desventajas",
+    "text": "36.2 Costos o desventajas\n\nPuede existir fragmentación interna.\nCada proceso necesita información de traducción.\nLas tablas de páginas consumen memoria.\nLa traducción de direcciones agrega trabajo al sistema.\n\n\n\n\n\n\n\n\nParticiones\nPaginación\n\n\n\n\nConceptualmente simples\nMás flexible\n\n\nPueden requerir bloques contiguos\nPermite marcos no contiguos\n\n\nDinámicas: fragmentación externa\nEvita fragmentación externa clásica\n\n\nFijas: fragmentación interna\nPuede presentar fragmentación interna\n\n\nMenor complejidad conceptual\nRequiere tabla de páginas",
+    "crumbs": [
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Capítulo 13. Manejo de memoria: particiones y paginación</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/13_manejo_memoria_paginacion_particiones.html#escenario-a-particiones-dinámicas",
+    "href": "capitulos/13_manejo_memoria_paginacion_particiones.html#escenario-a-particiones-dinámicas",
+    "title": "14  Capítulo 13. Manejo de memoria: particiones y paginación",
+    "section": "38.1 Escenario A: particiones dinámicas",
+    "text": "38.1 Escenario A: particiones dinámicas\nInicialmente podrían almacenarse de forma contigua:\n┌──────────────────┐\n│ Proceso X   4 KB │\n├──────────────────┤\n│ Proceso Y   6 KB │\n├──────────────────┤\n│ Proceso Z   2 KB │\n├──────────────────┤\n│ Libre       4 KB │\n└──────────────────┘\nSi posteriormente termina el Proceso Y:\n┌──────────────────┐\n│ Proceso X   4 KB │\n├──────────────────┤\n│ Libre       6 KB │\n├──────────────────┤\n│ Proceso Z   2 KB │\n├──────────────────┤\n│ Libre       4 KB │\n└──────────────────┘\nTenemos dos huecos separados.",
+    "crumbs": [
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Capítulo 13. Manejo de memoria: particiones y paginación</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/13_manejo_memoria_paginacion_particiones.html#escenario-b-paginación-de-2-kb",
+    "href": "capitulos/13_manejo_memoria_paginacion_particiones.html#escenario-b-paginación-de-2-kb",
+    "title": "14  Capítulo 13. Manejo de memoria: particiones y paginación",
+    "section": "38.2 Escenario B: paginación de 2 KB",
+    "text": "38.2 Escenario B: paginación de 2 KB\nLa RAM de 16 KB contiene:\n16 ÷ 2 = 8 marcos\nLos procesos requieren:\nX = 4 KB → 2 páginas\nY = 6 KB → 3 páginas\nZ = 2 KB → 1 página\nEn total:\n2 + 3 + 1 = 6 marcos utilizados\nLas páginas podrían distribuirse, por ejemplo:\n\n\n\nPágina\nMarco\n\n\n\n\nX0\n0\n\n\nY0\n1\n\n\nZ0\n2\n\n\nX1\n4\n\n\nY1\n6\n\n\nY2\n7\n\n\n\nNo necesitan estar juntas.\n\n\n\n\n\n\nTipPregunta para discutir\n\n\n\nSi quedan libres los marcos 3 y 5, ¿representa eso el mismo problema que dos huecos separados en particiones dinámicas?\nNo necesariamente. En paginación, un nuevo proceso puede utilizar marcos libres separados porque sus páginas tampoco necesitan quedar contiguas.",
+    "crumbs": [
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Capítulo 13. Manejo de memoria: particiones y paginación</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/13_manejo_memoria_paginacion_particiones.html#parte-a-particiones-dinámicas",
+    "href": "capitulos/13_manejo_memoria_paginacion_particiones.html#parte-a-particiones-dinámicas",
+    "title": "14  Capítulo 13. Manejo de memoria: particiones y paginación",
+    "section": "39.1 Parte A — Particiones dinámicas",
+    "text": "39.1 Parte A — Particiones dinámicas\nRealiza la asignación utilizando por separado:\n\nFirst Fit.\nBest Fit.\nWorst Fit.\n\nDespués de cada proceso, anota cómo quedan los huecos.",
+    "crumbs": [
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Capítulo 13. Manejo de memoria: particiones y paginación</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/13_manejo_memoria_paginacion_particiones.html#parte-b-paginación",
+    "href": "capitulos/13_manejo_memoria_paginacion_particiones.html#parte-b-paginación",
+    "title": "14  Capítulo 13. Manejo de memoria: particiones y paginación",
+    "section": "39.2 Parte B — Paginación",
+    "text": "39.2 Parte B — Paginación\nAhora supongamos páginas y marcos de 2 KB.\nDetermina:\n\ncuántas páginas necesita cada proceso;\ncuántos marcos necesita cada proceso;\nsi las páginas necesitan estar contiguas;\nqué sucede con el Proceso B de 4 KB;\nqué tipo de fragmentación puede existir.",
+    "crumbs": [
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Capítulo 13. Manejo de memoria: particiones y paginación</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/13_manejo_memoria_paginacion_particiones.html#parte-c-reflexión",
+    "href": "capitulos/13_manejo_memoria_paginacion_particiones.html#parte-c-reflexión",
+    "title": "14  Capítulo 13. Manejo de memoria: particiones y paginación",
+    "section": "39.3 Parte C — Reflexión",
+    "text": "39.3 Parte C — Reflexión\nResponde:\n\n¿Qué problema de las particiones dinámicas deja de ser crítico cuando utilizamos paginación?\n\n\n\n\n\n\n\nTip✅ Solución propuesta\n\n\n\n\n\n\n39.3.1 First Fit\nHuecos iniciales:\n8, 5, 12, 7\nProceso A = 6 KB:\n2, 5, 12, 7\nProceso B = 4 KB: el primer hueco suficiente es 5 KB.\n2, 1, 12, 7\nProceso C = 7 KB: el primer hueco suficiente es 12 KB.\n2, 1, 5, 7\n\n\n39.3.2 Best Fit\nProceso A = 6 KB → utiliza 7 KB:\n8, 5, 12, 1\nProceso B = 4 KB → utiliza 5 KB:\n8, 1, 12, 1\nProceso C = 7 KB → utiliza 8 KB:\n1, 1, 12, 1\n\n\n39.3.3 Worst Fit\nProceso A = 6 KB → utiliza 12 KB:\n8, 5, 6, 7\nProceso B = 4 KB → utiliza 8 KB:\n4, 5, 6, 7\nProceso C = 7 KB → utiliza 7 KB:\n4, 5, 6, 0\n\n\n39.3.4 Paginación de 2 KB\n\nProceso A = 6 KB → 3 páginas / 3 marcos.\nProceso B = 4 KB → 2 páginas / 2 marcos.\nProceso C = 7 KB → necesita 4 páginas / 4 marcos; la última página utiliza solo 1 KB.\n\nLas páginas no necesitan estar en marcos contiguos.\nEn el Proceso C aparece hasta 1 KB de fragmentación interna en su último marco.\nLa paginación evita que los huecos libres dispersos impidan por sí solos cargar un proceso, siempre que existan suficientes marcos libres.",
+    "crumbs": [
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Capítulo 13. Manejo de memoria: particiones y paginación</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/13_manejo_memoria_paginacion_particiones.html#fragmentación-interna-y-externa-son-lo-mismo",
+    "href": "capitulos/13_manejo_memoria_paginacion_particiones.html#fragmentación-interna-y-externa-son-lo-mismo",
+    "title": "14  Capítulo 13. Manejo de memoria: particiones y paginación",
+    "section": "40.1 “Fragmentación interna y externa son lo mismo”",
+    "text": "40.1 “Fragmentación interna y externa son lo mismo”\nNo.\n\nInterna → espacio desperdiciado dentro de una unidad asignada.\nExterna → memoria libre dispersa entre unidades ocupadas.",
+    "crumbs": [
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Capítulo 13. Manejo de memoria: particiones y paginación</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/13_manejo_memoria_paginacion_particiones.html#best-fit-siempre-es-la-mejor-estrategia",
+    "href": "capitulos/13_manejo_memoria_paginacion_particiones.html#best-fit-siempre-es-la-mejor-estrategia",
+    "title": "14  Capítulo 13. Manejo de memoria: particiones y paginación",
+    "section": "40.2 “Best Fit siempre es la mejor estrategia”",
+    "text": "40.2 “Best Fit siempre es la mejor estrategia”\nEl nombre puede engañar. Significa que selecciona el hueco más ajustado, no que produzca necesariamente el mejor comportamiento en todas las situaciones.",
+    "crumbs": [
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Capítulo 13. Manejo de memoria: particiones y paginación</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/13_manejo_memoria_paginacion_particiones.html#las-páginas-deben-quedar-juntas-en-ram",
+    "href": "capitulos/13_manejo_memoria_paginacion_particiones.html#las-páginas-deben-quedar-juntas-en-ram",
+    "title": "14  Capítulo 13. Manejo de memoria: particiones y paginación",
+    "section": "40.3 “Las páginas deben quedar juntas en RAM”",
+    "text": "40.3 “Las páginas deben quedar juntas en RAM”\nNo. Precisamente una de las ventajas fundamentales de la paginación es permitir distribución no contigua.",
+    "crumbs": [
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Capítulo 13. Manejo de memoria: particiones y paginación</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/13_manejo_memoria_paginacion_particiones.html#página-y-marco-son-sinónimos",
+    "href": "capitulos/13_manejo_memoria_paginacion_particiones.html#página-y-marco-son-sinónimos",
+    "title": "14  Capítulo 13. Manejo de memoria: particiones y paginación",
+    "section": "40.4 “Página y marco son sinónimos”",
+    "text": "40.4 “Página y marco son sinónimos”\nTienen el mismo tamaño dentro de un esquema paginado, pero representan cosas distintas:\nPágina → espacio lógico\nMarco  → memoria física",
+    "crumbs": [
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Capítulo 13. Manejo de memoria: particiones y paginación</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/13_manejo_memoria_paginacion_particiones.html#la-paginación-elimina-toda-fragmentación-1",
+    "href": "capitulos/13_manejo_memoria_paginacion_particiones.html#la-paginación-elimina-toda-fragmentación-1",
+    "title": "14  Capítulo 13. Manejo de memoria: particiones y paginación",
+    "section": "40.5 “La paginación elimina toda fragmentación”",
+    "text": "40.5 “La paginación elimina toda fragmentación”\nNo. Evita la fragmentación externa clásica, pero puede existir fragmentación interna.",
+    "crumbs": [
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Capítulo 13. Manejo de memoria: particiones y paginación</span>"
+    ]
+  },
+  {
     "objectID": "capitulos/99_cierre.html",
     "href": "capitulos/99_cierre.html",
-    "title": "11  Cierre de la clase",
+    "title": "15  Cierre de la clase",
     "section": "",
-    "text": "11.1 Próximo paso\nEn la siguiente clase profundizaremos en la estructura y los componentes de un sistema operativo, relacionando kernel, procesos, memoria, dispositivos y servicios.",
+    "text": "15.1 Próximo paso\nEn la siguiente clase profundizaremos en la estructura y los componentes de un sistema operativo, relacionando kernel, procesos, memoria, dispositivos y servicios.",
     "crumbs": [
-      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Cierre de la clase</span>"
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Cierre de la clase</span>"
     ]
   }
 ]

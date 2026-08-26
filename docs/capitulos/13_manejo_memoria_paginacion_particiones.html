@@ -1,0 +1,2055 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>14&nbsp; Capítulo 13. Manejo de memoria: particiones y paginación – Sistemas Operativos I</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../capitulos/99_cierre.html" rel="next">
+<link href="../capitulos/12_virtualizacion_sistemas_operativos.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-00cb48ef4f8381ff23467c959274e61b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-663c59e08f2ec96d6b2ddc79a12e8e5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No se han encontrado resultados",
+    "search-matching-documents-text": "documentos encontrados",
+    "search-copy-link-title": "Copiar el enlace en la búsqueda",
+    "search-hide-matches-text": "Ocultar resultados adicionales",
+    "search-more-match-text": "resultado adicional en este documento",
+    "search-more-matches-text": "resultados adicionales en este documento",
+    "search-clear-button-title": "Borrar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Buscar"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<script src="../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../capitulos/13_manejo_memoria_paginacion_particiones.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Capítulo 13. Manejo de memoria: particiones y paginación</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Buscar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Sistemas Operativos I</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Buscar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">index.html</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/01_introduccion_sistemas_operativos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Presentación de la clase</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/02_administracion_sistema_archivos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Administración del sistema de archivos desde la línea de comandos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/03_sistemas_operativos_red.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Clase 3. Sistemas Operativos de Red</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/04_administracion_procesos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Clase 4. Administración de Procesos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/05_control_procesos_concurrencia.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Clase 5. Control de Procesos y Concurrencia</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/06_algoritmos_de_planificacion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Capítulo 6. ¿Cómo decide el Sistema Operativo quién utiliza el procesador?</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/07_capas_del_sistema_operativo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/08_interbloqueos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/09_prevencion_deteccion_interbloqueos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Capítulo 9. Prevención, detección y recuperación de interbloqueos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/10_actividad_diagnostico_sistema_operativo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Actividad - Diagnóstico de un Sistema Operativo</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Actividad - Diagnóstico de un Sistema Operativo</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/12_virtualizacion_sistemas_operativos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Capítulo 12. Virtualización de Sistemas Operativos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/13_manejo_memoria_paginacion_particiones.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Capítulo 13. Manejo de memoria: particiones y paginación</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/99_cierre.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Cierre de la clase</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Tabla de contenidos</h2>
+   
+  <ul>
+  <li><a href="#capítulo-13.-manejo-de-memoria-particiones-y-paginación" id="toc-capítulo-13.-manejo-de-memoria-particiones-y-paginación" class="nav-link active" data-scroll-target="#capítulo-13.-manejo-de-memoria-particiones-y-paginación"><span class="header-section-number">15</span> Capítulo 13. Manejo de memoria: particiones y paginación</a>
+  <ul class="collapse">
+  <li><a href="#cómo-caben-tantos-programas-en-la-memoria" id="toc-cómo-caben-tantos-programas-en-la-memoria" class="nav-link" data-scroll-target="#cómo-caben-tantos-programas-en-la-memoria"><span class="header-section-number">15.1</span> ¿Cómo caben tantos programas en la memoria?</a></li>
+  </ul></li>
+  <li><a href="#objetivos-de-aprendizaje" id="toc-objetivos-de-aprendizaje" class="nav-link" data-scroll-target="#objetivos-de-aprendizaje"><span class="header-section-number">16</span> Objetivos de aprendizaje</a></li>
+  <li><a href="#la-memoria-ram-como-recurso-crítico" id="toc-la-memoria-ram-como-recurso-crítico" class="nav-link" data-scroll-target="#la-memoria-ram-como-recurso-crítico"><span class="header-section-number">17</span> 1. La memoria RAM como recurso crítico</a>
+  <ul class="collapse">
+  <li><a href="#por-qué-importa" id="toc-por-qué-importa" class="nav-link" data-scroll-target="#por-qué-importa"><span class="header-section-number">17.1</span> ¿Por qué importa?</a></li>
+  </ul></li>
+  <li><a href="#dirección-lógica-y-dirección-física" id="toc-dirección-lógica-y-dirección-física" class="nav-link" data-scroll-target="#dirección-lógica-y-dirección-física"><span class="header-section-number">18</span> 2. Dirección lógica y dirección física</a></li>
+  <li><a href="#primera-estrategia-dividir-la-memoria-en-particiones" id="toc-primera-estrategia-dividir-la-memoria-en-particiones" class="nav-link" data-scroll-target="#primera-estrategia-dividir-la-memoria-en-particiones"><span class="header-section-number">19</span> 3. Primera estrategia: dividir la memoria en particiones</a></li>
+  <li><a href="#particiones-fijas" id="toc-particiones-fijas" class="nav-link" data-scroll-target="#particiones-fijas"><span class="header-section-number">20</span> 4. Particiones fijas</a>
+  <ul class="collapse">
+  <li><a href="#ventaja-principal" id="toc-ventaja-principal" class="nav-link" data-scroll-target="#ventaja-principal"><span class="header-section-number">20.1</span> Ventaja principal</a></li>
+  <li><a href="#problema-principal" id="toc-problema-principal" class="nav-link" data-scroll-target="#problema-principal"><span class="header-section-number">20.2</span> Problema principal</a></li>
+  </ul></li>
+  <li><a href="#particiones-dinámicas" id="toc-particiones-dinámicas" class="nav-link" data-scroll-target="#particiones-dinámicas"><span class="header-section-number">21</span> 5. Particiones dinámicas</a></li>
+  <li><a href="#fragmentación-interna-y-externa" id="toc-fragmentación-interna-y-externa" class="nav-link" data-scroll-target="#fragmentación-interna-y-externa"><span class="header-section-number">22</span> 6. Fragmentación interna y externa</a>
+  <ul class="collapse">
+  <li><a href="#fragmentación-interna" id="toc-fragmentación-interna" class="nav-link" data-scroll-target="#fragmentación-interna"><span class="header-section-number">22.1</span> Fragmentación interna</a></li>
+  <li><a href="#fragmentación-externa" id="toc-fragmentación-externa" class="nav-link" data-scroll-target="#fragmentación-externa"><span class="header-section-number">22.2</span> Fragmentación externa</a></li>
+  </ul></li>
+  <li><a href="#qué-hueco-debemos-utilizar" id="toc-qué-hueco-debemos-utilizar" class="nav-link" data-scroll-target="#qué-hueco-debemos-utilizar"><span class="header-section-number">23</span> 7. ¿Qué hueco debemos utilizar?</a></li>
+  <li><a href="#first-fit-el-primer-espacio-suficiente" id="toc-first-fit-el-primer-espacio-suficiente" class="nav-link" data-scroll-target="#first-fit-el-primer-espacio-suficiente"><span class="header-section-number">24</span> 8. First Fit: el primer espacio suficiente</a></li>
+  <li><a href="#best-fit-el-espacio-más-ajustado" id="toc-best-fit-el-espacio-más-ajustado" class="nav-link" data-scroll-target="#best-fit-el-espacio-más-ajustado"><span class="header-section-number">25</span> 9. Best Fit: el espacio más ajustado</a></li>
+  <li><a href="#worst-fit-el-espacio-más-grande" id="toc-worst-fit-el-espacio-más-grande" class="nav-link" data-scroll-target="#worst-fit-el-espacio-más-grande"><span class="header-section-number">26</span> 10. Worst Fit: el espacio más grande</a></li>
+  <li><a href="#comparando-los-tres-métodos" id="toc-comparando-los-tres-métodos" class="nav-link" data-scroll-target="#comparando-los-tres-métodos"><span class="header-section-number">27</span> 11. Comparando los tres métodos</a>
+  <ul class="collapse">
+  <li><a href="#actividad-rápida" id="toc-actividad-rápida" class="nav-link" data-scroll-target="#actividad-rápida"><span class="header-section-number">27.1</span> Actividad rápida</a></li>
+  </ul></li>
+  <li><a href="#el-problema-de-exigir-memoria-contigua" id="toc-el-problema-de-exigir-memoria-contigua" class="nav-link" data-scroll-target="#el-problema-de-exigir-memoria-contigua"><span class="header-section-number">28</span> 12. El problema de exigir memoria contigua</a></li>
+  <li><a href="#introducción-a-la-paginación" id="toc-introducción-a-la-paginación" class="nav-link" data-scroll-target="#introducción-a-la-paginación"><span class="header-section-number">29</span> 13. Introducción a la paginación</a></li>
+  <li><a href="#la-gran-ventaja-memoria-no-contigua" id="toc-la-gran-ventaja-memoria-no-contigua" class="nav-link" data-scroll-target="#la-gran-ventaja-memoria-no-contigua"><span class="header-section-number">30</span> 14. La gran ventaja: memoria no contigua</a></li>
+  <li><a href="#ejemplo-numérico-de-paginación" id="toc-ejemplo-numérico-de-paginación" class="nav-link" data-scroll-target="#ejemplo-numérico-de-paginación"><span class="header-section-number">31</span> 15. Ejemplo numérico de paginación</a></li>
+  <li><a href="#cómo-sabe-el-sistema-operativo-dónde-está-cada-página" id="toc-cómo-sabe-el-sistema-operativo-dónde-está-cada-página" class="nav-link" data-scroll-target="#cómo-sabe-el-sistema-operativo-dónde-está-cada-página"><span class="header-section-number">32</span> 16. ¿Cómo sabe el Sistema Operativo dónde está cada página?</a></li>
+  <li><a href="#dirección-lógica-página-desplazamiento" id="toc-dirección-lógica-página-desplazamiento" class="nav-link" data-scroll-target="#dirección-lógica-página-desplazamiento"><span class="header-section-number">33</span> 17. Dirección lógica = página + desplazamiento</a></li>
+  <li><a href="#calculando-una-dirección-física" id="toc-calculando-una-dirección-física" class="nav-link" data-scroll-target="#calculando-una-dirección-física"><span class="header-section-number">34</span> 18. Calculando una dirección física</a>
+  <ul class="collapse">
+  <li><a href="#practiquemos" id="toc-practiquemos" class="nav-link" data-scroll-target="#practiquemos"><span class="header-section-number">34.1</span> Practiquemos</a></li>
+  </ul></li>
+  <li><a href="#la-paginación-elimina-toda-fragmentación" id="toc-la-paginación-elimina-toda-fragmentación" class="nav-link" data-scroll-target="#la-paginación-elimina-toda-fragmentación"><span class="header-section-number">35</span> 19. ¿La paginación elimina toda fragmentación?</a></li>
+  <li><a href="#ventajas-y-costos-de-la-paginación" id="toc-ventajas-y-costos-de-la-paginación" class="nav-link" data-scroll-target="#ventajas-y-costos-de-la-paginación"><span class="header-section-number">36</span> 20. Ventajas y costos de la paginación</a>
+  <ul class="collapse">
+  <li><a href="#ventajas" id="toc-ventajas" class="nav-link" data-scroll-target="#ventajas"><span class="header-section-number">36.1</span> Ventajas</a></li>
+  <li><a href="#costos-o-desventajas" id="toc-costos-o-desventajas" class="nav-link" data-scroll-target="#costos-o-desventajas"><span class="header-section-number">36.2</span> Costos o desventajas</a></li>
+  </ul></li>
+  <li><a href="#de-la-paginación-a-la-memoria-virtual" id="toc-de-la-paginación-a-la-memoria-virtual" class="nav-link" data-scroll-target="#de-la-paginación-a-la-memoria-virtual"><span class="header-section-number">37</span> 21. De la paginación a la memoria virtual</a></li>
+  <li><a href="#caso-práctico-integrador" id="toc-caso-práctico-integrador" class="nav-link" data-scroll-target="#caso-práctico-integrador"><span class="header-section-number">38</span> 22. Caso práctico integrador</a>
+  <ul class="collapse">
+  <li><a href="#escenario-a-particiones-dinámicas" id="toc-escenario-a-particiones-dinámicas" class="nav-link" data-scroll-target="#escenario-a-particiones-dinámicas"><span class="header-section-number">38.1</span> Escenario A: particiones dinámicas</a></li>
+  <li><a href="#escenario-b-paginación-de-2-kb" id="toc-escenario-b-paginación-de-2-kb" class="nav-link" data-scroll-target="#escenario-b-paginación-de-2-kb"><span class="header-section-number">38.2</span> Escenario B: paginación de 2 KB</a></li>
+  </ul></li>
+  <li><a href="#laboratorio-en-clase-tú-administras-la-ram" id="toc-laboratorio-en-clase-tú-administras-la-ram" class="nav-link" data-scroll-target="#laboratorio-en-clase-tú-administras-la-ram"><span class="header-section-number">39</span> 23. Laboratorio en clase: tú administras la RAM</a>
+  <ul class="collapse">
+  <li><a href="#parte-a-particiones-dinámicas" id="toc-parte-a-particiones-dinámicas" class="nav-link" data-scroll-target="#parte-a-particiones-dinámicas"><span class="header-section-number">39.1</span> Parte A — Particiones dinámicas</a></li>
+  <li><a href="#parte-b-paginación" id="toc-parte-b-paginación" class="nav-link" data-scroll-target="#parte-b-paginación"><span class="header-section-number">39.2</span> Parte B — Paginación</a></li>
+  <li><a href="#parte-c-reflexión" id="toc-parte-c-reflexión" class="nav-link" data-scroll-target="#parte-c-reflexión"><span class="header-section-number">39.3</span> Parte C — Reflexión</a></li>
+  </ul></li>
+  <li><a href="#errores-comunes" id="toc-errores-comunes" class="nav-link" data-scroll-target="#errores-comunes"><span class="header-section-number">40</span> 24. Errores comunes</a>
+  <ul class="collapse">
+  <li><a href="#fragmentación-interna-y-externa-son-lo-mismo" id="toc-fragmentación-interna-y-externa-son-lo-mismo" class="nav-link" data-scroll-target="#fragmentación-interna-y-externa-son-lo-mismo"><span class="header-section-number">40.1</span> “Fragmentación interna y externa son lo mismo”</a></li>
+  <li><a href="#best-fit-siempre-es-la-mejor-estrategia" id="toc-best-fit-siempre-es-la-mejor-estrategia" class="nav-link" data-scroll-target="#best-fit-siempre-es-la-mejor-estrategia"><span class="header-section-number">40.2</span> “Best Fit siempre es la mejor estrategia”</a></li>
+  <li><a href="#las-páginas-deben-quedar-juntas-en-ram" id="toc-las-páginas-deben-quedar-juntas-en-ram" class="nav-link" data-scroll-target="#las-páginas-deben-quedar-juntas-en-ram"><span class="header-section-number">40.3</span> “Las páginas deben quedar juntas en RAM”</a></li>
+  <li><a href="#página-y-marco-son-sinónimos" id="toc-página-y-marco-son-sinónimos" class="nav-link" data-scroll-target="#página-y-marco-son-sinónimos"><span class="header-section-number">40.4</span> “Página y marco son sinónimos”</a></li>
+  <li><a href="#la-paginación-elimina-toda-fragmentación-1" id="toc-la-paginación-elimina-toda-fragmentación-1" class="nav-link" data-scroll-target="#la-paginación-elimina-toda-fragmentación-1"><span class="header-section-number">40.5</span> “La paginación elimina toda fragmentación”</a></li>
+  </ul></li>
+  <li><a href="#autoevaluación" id="toc-autoevaluación" class="nav-link" data-scroll-target="#autoevaluación"><span class="header-section-number">41</span> 25. Autoevaluación</a></li>
+  <li><a href="#reto-final" id="toc-reto-final" class="nav-link" data-scroll-target="#reto-final"><span class="header-section-number">42</span> 26. Reto final</a></li>
+  <li><a href="#para-recordar" id="toc-para-recordar" class="nav-link" data-scroll-target="#para-recordar"><span class="header-section-number">43</span> 27. Para recordar</a></li>
+  <li><a href="#conexión-con-la-siguiente-clase" id="toc-conexión-con-la-siguiente-clase" class="nav-link" data-scroll-target="#conexión-con-la-siguiente-clase"><span class="header-section-number">44</span> Conexión con la siguiente clase</a></li>
+  <li><a href="#referencias" id="toc-referencias" class="nav-link" data-scroll-target="#referencias"><span class="header-section-number">45</span> Referencias</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Capítulo 13. Manejo de memoria: particiones y paginación</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="capítulo-13.-manejo-de-memoria-particiones-y-paginación" class="level1" data-number="15">
+<h1 data-number="15"><span class="header-section-number">15</span> Capítulo 13. Manejo de memoria: particiones y paginación</h1>
+<section id="cómo-caben-tantos-programas-en-la-memoria" class="level2" data-number="15.1">
+<h2 data-number="15.1" class="anchored" data-anchor-id="cómo-caben-tantos-programas-en-la-memoria"><span class="header-section-number">15.1</span> ¿Cómo caben tantos programas en la memoria?</h2>
+<p>En una computadora podemos tener abierto el navegador, un editor de código, música, una videollamada y otros programas al mismo tiempo.</p>
+<p>Todos necesitan <strong>memoria RAM</strong>.</p>
+<p>Pero la RAM es limitada.</p>
+<p>Entonces aparece una pregunta fundamental:</p>
+<blockquote class="blockquote">
+<p><strong>¿Cómo decide el Sistema Operativo qué parte de la memoria utiliza cada proceso?</strong></p>
+</blockquote>
+<p>La respuesta nos lleva a uno de los trabajos más importantes del Sistema Operativo: la <strong>gestión de memoria</strong>.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Idea central">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Idea central
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>El Sistema Operativo debe <strong>asignar, proteger, controlar y liberar memoria</strong> para que varios procesos puedan ejecutarse sin interferirse entre sí.</p>
+</div>
+</div>
+<div class="cell" data-fig-width="7.3" data-fig-height="4.8" data-layout-align="center">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+    P1["Navegador"]
+    P2["Editor"]
+    P3["Música"]
+    P4["Otro proceso"]
+    SO["Sistema Operativo&lt;br/&gt;Gestor de memoria"]
+    RAM["Memoria RAM&lt;br/&gt;espacio limitado"]
+    P1 --&gt; SO
+    P2 --&gt; SO
+    P3 --&gt; SO
+    P4 --&gt; SO
+    SO --&gt; RAM
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="objetivos-de-aprendizaje" class="level1" data-number="16">
+<h1 data-number="16"><span class="header-section-number">16</span> Objetivos de aprendizaje</h1>
+<p>Al finalizar este capítulo, el estudiante será capaz de:</p>
+<ul>
+<li>Explicar por qué la gestión de memoria es una función crítica del Sistema Operativo.</li>
+<li>Diferenciar una <strong>dirección lógica</strong> de una <strong>dirección física</strong>.</li>
+<li>Comprender el funcionamiento de las <strong>particiones fijas y dinámicas</strong>.</li>
+<li>Diferenciar <strong>fragmentación interna</strong> y <strong>fragmentación externa</strong>.</li>
+<li>Aplicar conceptualmente los métodos <strong>First Fit, Best Fit y Worst Fit</strong>.</li>
+<li>Explicar los conceptos de <strong>página</strong>, <strong>marco</strong> y <strong>tabla de páginas</strong>.</li>
+<li>Comprender cómo se traduce una dirección lógica en una dirección física.</li>
+<li>Explicar por qué la paginación permite utilizar memoria no contigua.</li>
+<li>Relacionar paginación con <strong>memoria virtual</strong>.</li>
+<li>Comparar particiones y paginación mediante situaciones prácticas.</li>
+</ul>
+<hr>
+</section>
+<section id="la-memoria-ram-como-recurso-crítico" class="level1" data-number="17">
+<h1 data-number="17"><span class="header-section-number">17</span> 1. La memoria RAM como recurso crítico</h1>
+<p>La memoria RAM almacena temporalmente instrucciones y datos que necesitan los procesos mientras se ejecutan.</p>
+<p>Cuando un programa comienza a ejecutarse, no basta con tenerlo almacenado en el disco. Parte de su contenido debe encontrarse disponible en memoria.</p>
+<p>El Sistema Operativo debe decidir:</p>
+<ol type="1">
+<li><strong>qué proceso recibe memoria;</strong></li>
+<li><strong>cuánta memoria recibe;</strong></li>
+<li><strong>dónde se coloca;</strong></li>
+<li><strong>cómo se protege de otros procesos;</strong></li>
+<li><strong>cuándo se libera.</strong></li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled" title="Una analogía: el estacionamiento">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Una analogía: el estacionamiento
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Imaginemos que la RAM es un estacionamiento y los procesos son vehículos.</p>
+<p>El Sistema Operativo funciona como el encargado que decide <strong>dónde estacionar cada vehículo</strong>, evita que dos ocupen el mismo espacio y libera el lugar cuando un vehículo se retira.</p>
+</div>
+</div>
+<section id="por-qué-importa" class="level2" data-number="17.1">
+<h2 data-number="17.1" class="anchored" data-anchor-id="por-qué-importa"><span class="header-section-number">17.1</span> ¿Por qué importa?</h2>
+<p>Una mala administración de memoria puede provocar:</p>
+<ul>
+<li>desperdicio de espacio;</li>
+<li>dificultad para cargar nuevos procesos;</li>
+<li>bajo rendimiento;</li>
+<li>errores de acceso;</li>
+<li>imposibilidad de aprovechar correctamente la memoria disponible.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="dirección-lógica-y-dirección-física" class="level1" data-number="18">
+<h1 data-number="18"><span class="header-section-number">18</span> 2. Dirección lógica y dirección física</h1>
+<p>Cuando un programa utiliza memoria, normalmente no trabaja directamente con la posición física real de la RAM.</p>
+<p>Debemos distinguir dos conceptos.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Dirección</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Lógica</strong></td>
+<td>Dirección que utiliza o genera el programa</td>
+</tr>
+<tr class="even">
+<td><strong>Física</strong></td>
+<td>Ubicación real correspondiente dentro de la memoria RAM</td>
+</tr>
+</tbody>
+</table>
+<div class="cell" data-fig-width="7" data-fig-height="3.7" data-layout-align="center">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+    P["Proceso&lt;br/&gt;Dirección lógica"]
+    T["Traducción&lt;br/&gt;Hardware + S.O."]
+    R["RAM&lt;br/&gt;Dirección física"]
+    P --&gt; T --&gt; R
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled" title="No debemos confundirlas">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Importante</span>No debemos confundirlas
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>El proceso puede pensar en una dirección dentro de <strong>su propio espacio de memoria</strong>, mientras el hardware y el Sistema Operativo determinan dónde se encuentra realmente esa información en la RAM.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="primera-estrategia-dividir-la-memoria-en-particiones" class="level1" data-number="19">
+<h1 data-number="19"><span class="header-section-number">19</span> 3. Primera estrategia: dividir la memoria en particiones</h1>
+<p>Una forma sencilla de administrar memoria consiste en dividirla en <strong>bloques o particiones</strong>.</p>
+<p>Cada proceso ocupa una partición.</p>
+<p>Existen dos enfoques principales:</p>
+<pre class="text"><code>PARTICIONES
+   │
+   ├── Fijas
+   │
+   └── Dinámicas</code></pre>
+<p>La diferencia parece pequeña, pero produce problemas de fragmentación diferentes.</p>
+<hr>
+</section>
+<section id="particiones-fijas" class="level1" data-number="20">
+<h1 data-number="20"><span class="header-section-number">20</span> 4. Particiones fijas</h1>
+<p>En las <strong>particiones fijas</strong>, la memoria se divide previamente en bloques de tamaño definido.</p>
+<p>Supongamos una memoria disponible de <strong>8 MB</strong>, dividida en cuatro particiones de <strong>2 MB</strong>:</p>
+<pre class="text"><code>RAM
+┌──────────────────┐
+│ Partición 1: 2MB │
+├──────────────────┤
+│ Partición 2: 2MB │
+├──────────────────┤
+│ Partición 3: 2MB │
+├──────────────────┤
+│ Partición 4: 2MB │
+└──────────────────┘</code></pre>
+<p>Ahora llegan tres procesos:</p>
+<pre class="text"><code>Proceso A = 1.2 MB
+Proceso B = 1.8 MB
+Proceso C = 0.9 MB</code></pre>
+<p>Podemos asignar uno a cada partición.</p>
+<p>Pero observemos lo que ocurre:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Partición</th>
+<th style="text-align: right;">Tamaño</th>
+<th>Proceso</th>
+<th style="text-align: right;">Utilizado</th>
+<th style="text-align: right;">Desperdiciado</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td style="text-align: right;">2 MB</td>
+<td>A</td>
+<td style="text-align: right;">1.2 MB</td>
+<td style="text-align: right;">0.8 MB</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td style="text-align: right;">2 MB</td>
+<td>B</td>
+<td style="text-align: right;">1.8 MB</td>
+<td style="text-align: right;">0.2 MB</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td style="text-align: right;">2 MB</td>
+<td>C</td>
+<td style="text-align: right;">0.9 MB</td>
+<td style="text-align: right;">1.1 MB</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td style="text-align: right;">2 MB</td>
+<td>Libre</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">—</td>
+</tr>
+</tbody>
+</table>
+<p>Los espacios que sobran <strong>dentro de una partición ocupada</strong> no pueden ser aprovechados fácilmente por otro proceso.</p>
+<p>Eso se llama <strong>fragmentación interna</strong>.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="Fragmentación interna">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Advertencia</span>Fragmentación interna
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Existe memoria asignada a un proceso que realmente <strong>no está siendo utilizada</strong>, pero permanece encerrada dentro del bloque asignado.</p>
+</div>
+</div>
+<section id="ventaja-principal" class="level2" data-number="20.1">
+<h2 data-number="20.1" class="anchored" data-anchor-id="ventaja-principal"><span class="header-section-number">20.1</span> Ventaja principal</h2>
+<ul>
+<li>Es un esquema sencillo de administrar.</li>
+</ul>
+</section>
+<section id="problema-principal" class="level2" data-number="20.2">
+<h2 data-number="20.2" class="anchored" data-anchor-id="problema-principal"><span class="header-section-number">20.2</span> Problema principal</h2>
+<ul>
+<li>Puede desperdiciar bastante memoria debido a la fragmentación interna.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="particiones-dinámicas" class="level1" data-number="21">
+<h1 data-number="21"><span class="header-section-number">21</span> 5. Particiones dinámicas</h1>
+<p>¿Y si en lugar de construir bloques rígidos permitimos que cada proceso reciba aproximadamente el espacio que necesita?</p>
+<p>Ese es el principio de las <strong>particiones dinámicas</strong>.</p>
+<p>Supongamos:</p>
+<pre class="text"><code>RAM disponible = 16 MB
+
+Proceso A = 4 MB
+Proceso B = 6 MB
+Proceso C = 2 MB</code></pre>
+<p>La memoria podría verse así:</p>
+<pre class="text"><code>┌──────────────────┐
+│ Proceso A   4 MB │
+├──────────────────┤
+│ Proceso B   6 MB │
+├──────────────────┤
+│ Proceso C   2 MB │
+├──────────────────┤
+│ Libre       4 MB │
+└──────────────────┘</code></pre>
+<p>Hasta aquí parece una solución excelente.</p>
+<p>Pero los procesos terminan.</p>
+<p>Imaginemos que <strong>Proceso B finaliza</strong>:</p>
+<pre class="text"><code>┌──────────────────┐
+│ Proceso A   4 MB │
+├──────────────────┤
+│ LIBRE       6 MB │
+├──────────────────┤
+│ Proceso C   2 MB │
+├──────────────────┤
+│ LIBRE       4 MB │
+└──────────────────┘</code></pre>
+<p>Ahora tenemos <strong>10 MB libres</strong>, pero están separados en dos huecos.</p>
+<p>Esto introduce otro problema.</p>
+<hr>
+</section>
+<section id="fragmentación-interna-y-externa" class="level1" data-number="22">
+<h1 data-number="22"><span class="header-section-number">22</span> 6. Fragmentación interna y externa</h1>
+<p>Estos conceptos suelen confundirse.</p>
+<section id="fragmentación-interna" class="level2" data-number="22.1">
+<h2 data-number="22.1" class="anchored" data-anchor-id="fragmentación-interna"><span class="header-section-number">22.1</span> Fragmentación interna</h2>
+<p>El desperdicio se encuentra <strong>dentro del espacio asignado</strong>.</p>
+<pre class="text"><code>Partición de 4 KB
+┌────────────────────┐
+│ Proceso: 3 KB      │
+│                    │
+│ Desperdicio: 1 KB  │ ← dentro
+└────────────────────┘</code></pre>
+</section>
+<section id="fragmentación-externa" class="level2" data-number="22.2">
+<h2 data-number="22.2" class="anchored" data-anchor-id="fragmentación-externa"><span class="header-section-number">22.2</span> Fragmentación externa</h2>
+<p>Existe suficiente memoria libre en total, pero se encuentra <strong>dispersa entre espacios ocupados</strong>.</p>
+<pre class="text"><code>┌──────────────┐
+│ Proceso A    │
+├──────────────┤
+│ Libre 2 MB   │
+├──────────────┤
+│ Proceso B    │
+├──────────────┤
+│ Libre 3 MB   │
+├──────────────┤
+│ Proceso C    │
+├──────────────┤
+│ Libre 1 MB   │
+└──────────────┘</code></pre>
+<p>Tenemos:</p>
+<pre class="text"><code>2 + 3 + 1 = 6 MB libres</code></pre>
+<p>pero <strong>no existe necesariamente un bloque contiguo de 6 MB</strong>.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Tipo</th>
+<th>¿Dónde está el desperdicio?</th>
+<th>Ejemplo típico</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Interna</strong></td>
+<td>Dentro del bloque asignado</td>
+<td>Particiones fijas / último marco de una página</td>
+</tr>
+<tr class="even">
+<td><strong>Externa</strong></td>
+<td>Entre bloques ocupados</td>
+<td>Particiones dinámicas</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-tip callout-titled" title="Truco para recordarlo">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Truco para recordarlo
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Interna → adentro del bloque.</strong><br>
+<strong>Externa → afuera, entre los bloques.</strong></p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="qué-hueco-debemos-utilizar" class="level1" data-number="23">
+<h1 data-number="23"><span class="header-section-number">23</span> 7. ¿Qué hueco debemos utilizar?</h1>
+<p>Con particiones dinámicas aparece otra pregunta:</p>
+<blockquote class="blockquote">
+<p>Si existen varios espacios libres, ¿en cuál colocamos el nuevo proceso?</p>
+</blockquote>
+<p>Tres estrategias clásicas son:</p>
+<ul>
+<li><strong>First Fit</strong></li>
+<li><strong>Best Fit</strong></li>
+<li><strong>Worst Fit</strong></li>
+</ul>
+<p>Supongamos que tenemos estos huecos:</p>
+<pre class="text"><code>10 KB   4 KB   20 KB   7 KB</code></pre>
+<p>y llega un proceso de:</p>
+<pre class="text"><code>6 KB</code></pre>
+<hr>
+</section>
+<section id="first-fit-el-primer-espacio-suficiente" class="level1" data-number="24">
+<h1 data-number="24"><span class="header-section-number">24</span> 8. First Fit: el primer espacio suficiente</h1>
+<p><strong>First Fit</strong> recorre la memoria y selecciona el <strong>primer hueco que sea suficientemente grande</strong>.</p>
+<p>Para nuestro proceso de 6 KB:</p>
+<pre class="text"><code>Huecos: 10 KB | 4 KB | 20 KB | 7 KB
+          ↑
+       elegido</code></pre>
+<p>El primer hueco de 10 KB puede alojarlo.</p>
+<p>Quedan:</p>
+<pre class="text"><code>10 - 6 = 4 KB</code></pre>
+<div class="callout callout-style-default callout-note callout-titled" title="Idea de First Fit">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Idea de First Fit
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>No busca el hueco perfecto. Busca <strong>el primero que funcione</strong>.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="best-fit-el-espacio-más-ajustado" class="level1" data-number="25">
+<h1 data-number="25"><span class="header-section-number">25</span> 9. Best Fit: el espacio más ajustado</h1>
+<p><strong>Best Fit</strong> busca el hueco disponible más pequeño que todavía pueda alojar el proceso.</p>
+<pre class="text"><code>Huecos: 10 KB | 4 KB | 20 KB | 7 KB
+                                  ↑
+                               elegido</code></pre>
+<p>Para un proceso de 6 KB, el hueco de 7 KB es el más ajustado.</p>
+<p>Queda:</p>
+<pre class="text"><code>7 - 6 = 1 KB</code></pre>
+<p>La idea parece eficiente porque deja poco sobrante en esa asignación, aunque puede producir huecos pequeños difíciles de reutilizar.</p>
+<hr>
+</section>
+<section id="worst-fit-el-espacio-más-grande" class="level1" data-number="26">
+<h1 data-number="26"><span class="header-section-number">26</span> 10. Worst Fit: el espacio más grande</h1>
+<p><strong>Worst Fit</strong> hace lo contrario: selecciona el hueco más grande.</p>
+<pre class="text"><code>Huecos: 10 KB | 4 KB | 20 KB | 7 KB
+                         ↑
+                      elegido</code></pre>
+<p>El proceso de 6 KB entra en el hueco de 20 KB.</p>
+<p>Quedan:</p>
+<pre class="text"><code>20 - 6 = 14 KB</code></pre>
+<p>La intención es conservar un espacio sobrante suficientemente grande para ser útil posteriormente.</p>
+<hr>
+</section>
+<section id="comparando-los-tres-métodos" class="level1" data-number="27">
+<h1 data-number="27"><span class="header-section-number">27</span> 11. Comparando los tres métodos</h1>
+<p>Para:</p>
+<pre class="text"><code>Huecos = 10, 4, 20, 7 KB
+Proceso = 6 KB</code></pre>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Método</th>
+<th style="text-align: right;">Hueco elegido</th>
+<th style="text-align: right;">Espacio restante</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>First Fit</td>
+<td style="text-align: right;">10 KB</td>
+<td style="text-align: right;">4 KB</td>
+</tr>
+<tr class="even">
+<td>Best Fit</td>
+<td style="text-align: right;">7 KB</td>
+<td style="text-align: right;">1 KB</td>
+</tr>
+<tr class="odd">
+<td>Worst Fit</td>
+<td style="text-align: right;">20 KB</td>
+<td style="text-align: right;">14 KB</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-important callout-titled" title="No existe magia">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Importante</span>No existe magia
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Estos algoritmos toman decisiones distintas sobre el mismo estado de memoria. La elección puede influir en cómo quedan distribuidos los huecos para futuras solicitudes.</p>
+</div>
+</div>
+<section id="actividad-rápida" class="level2" data-number="27.1">
+<h2 data-number="27.1" class="anchored" data-anchor-id="actividad-rápida"><span class="header-section-number">27.1</span> Actividad rápida</h2>
+<p>Tenemos:</p>
+<pre class="text"><code>Huecos libres: 5 KB, 12 KB, 8 KB, 20 KB
+Proceso nuevo: 7 KB</code></pre>
+<p>Determina qué hueco seleccionaría:</p>
+<ol type="1">
+<li>First Fit.</li>
+<li>Best Fit.</li>
+<li>Worst Fit.</li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled" title="✅ Solución propuesta">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>✅ Solución propuesta
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>First Fit:</strong> 12 KB, porque es el primer hueco suficientemente grande.</li>
+<li><strong>Best Fit:</strong> 8 KB, porque es el hueco válido más pequeño.</li>
+<li><strong>Worst Fit:</strong> 20 KB, porque es el hueco más grande.</li>
+</ul>
+<p>Después de colocar un proceso de 7 KB quedarían, respectivamente:</p>
+<ul>
+<li>First Fit → 5 KB libres en ese hueco.</li>
+<li>Best Fit → 1 KB libre.</li>
+<li>Worst Fit → 13 KB libres.</li>
+</ul>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="el-problema-de-exigir-memoria-contigua" class="level1" data-number="28">
+<h1 data-number="28"><span class="header-section-number">28</span> 12. El problema de exigir memoria contigua</h1>
+<p>Las particiones tienen una limitación importante: un proceso necesita tradicionalmente un bloque continuo de memoria.</p>
+<p>Supongamos:</p>
+<pre class="text"><code>Libre total = 12 KB</code></pre>
+<p>pero distribuido así:</p>
+<pre class="text"><code>4 KB + 3 KB + 5 KB</code></pre>
+<p>Un proceso de <strong>10 KB</strong> no cabe en ninguno de los huecos individualmente.</p>
+<p>Entonces surge una idea poderosa:</p>
+<blockquote class="blockquote">
+<p><strong>¿Y si dividimos el proceso en pequeñas partes y permitimos colocarlas en distintos lugares de la RAM?</strong></p>
+</blockquote>
+<p>Esa idea nos lleva a la <strong>paginación</strong>.</p>
+<hr>
+</section>
+<section id="introducción-a-la-paginación" class="level1" data-number="29">
+<h1 data-number="29"><span class="header-section-number">29</span> 13. Introducción a la paginación</h1>
+<p>La paginación divide:</p>
+<ul>
+<li>el espacio lógico del proceso en <strong>páginas</strong>;</li>
+<li>la memoria física en <strong>marcos</strong>.</li>
+</ul>
+<p>Y ambos tienen el <strong>mismo tamaño</strong>.</p>
+<pre class="text"><code>PROCESO                     RAM
+┌──────────┐               ┌──────────┐
+│ Página 0 │               │ Marco 0  │
+├──────────┤               ├──────────┤
+│ Página 1 │               │ Marco 1  │
+├──────────┤               ├──────────┤
+│ Página 2 │               │ Marco 2  │
+├──────────┤               ├──────────┤
+│ Página 3 │               │ Marco 3  │
+└──────────┘               ├──────────┤
+                           │ Marco 4  │
+                           └──────────┘</code></pre>
+<div class="callout callout-style-default callout-tip callout-titled" title="Dos palabras fundamentales">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Dos palabras fundamentales
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Página = unidad lógica del proceso.</strong><br>
+<strong>Marco = unidad física de la RAM.</strong></p>
+</div>
+</div>
+<hr>
+</section>
+<section id="la-gran-ventaja-memoria-no-contigua" class="level1" data-number="30">
+<h1 data-number="30"><span class="header-section-number">30</span> 14. La gran ventaja: memoria no contigua</h1>
+<p>Supongamos un proceso de <strong>4 páginas</strong>.</p>
+<p>No es necesario colocarlas juntas.</p>
+<p>Podrían distribuirse así:</p>
+<pre class="text"><code>Página 0 → Marco 5
+Página 1 → Marco 2
+Página 2 → Marco 8
+Página 3 → Marco 1</code></pre>
+<p>Visualmente:</p>
+<pre class="text"><code>PROCESO                    MEMORIA FÍSICA
+P0 ─────────────────────→ M5
+P1 ───────────────→       M2
+P2 ─────────────────────→ M8
+P3 ───────→               M1</code></pre>
+<p>Para el proceso, sus páginas forman parte de un mismo espacio lógico.</p>
+<p>En la RAM, pueden encontrarse en lugares separados.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="Aquí está el cambio de paradigma">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Importante</span>Aquí está el cambio de paradigma
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Con paginación, <strong>un proceso ya no necesita ocupar un único bloque físico contiguo de memoria</strong>.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="ejemplo-numérico-de-paginación" class="level1" data-number="31">
+<h1 data-number="31"><span class="header-section-number">31</span> 15. Ejemplo numérico de paginación</h1>
+<p>Tenemos un proceso de:</p>
+<pre class="text"><code>10 KB</code></pre>
+<p>y utilizamos páginas de:</p>
+<pre class="text"><code>1 KB</code></pre>
+<p>Entonces:</p>
+<pre class="text"><code>10 KB ÷ 1 KB = 10 páginas</code></pre>
+<p>El proceso tendrá:</p>
+<pre class="text"><code>P0, P1, P2, P3, P4, P5, P6, P7, P8, P9</code></pre>
+<p>La RAM también se divide en marcos de <strong>1 KB</strong>.</p>
+<p>Cada página puede colocarse en cualquier marco disponible.</p>
+<div class="cell" data-fig-width="7.2" data-fig-height="5.1" data-layout-align="center">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+    P0["P0"] --&gt; M5["Marco 5"]
+    P1["P1"] --&gt; M2["Marco 2"]
+    P2["P2"] --&gt; M8["Marco 8"]
+    P3["P3"] --&gt; M1["Marco 1"]
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>El diagrama muestra solo algunas páginas para concentrarnos en el mecanismo.</p>
+<hr>
+</section>
+<section id="cómo-sabe-el-sistema-operativo-dónde-está-cada-página" class="level1" data-number="32">
+<h1 data-number="32"><span class="header-section-number">32</span> 16. ¿Cómo sabe el Sistema Operativo dónde está cada página?</h1>
+<p>Necesitamos una estructura que mantenga la relación entre:</p>
+<pre class="text"><code>Página lógica ↔ Marco físico</code></pre>
+<p>Esa estructura es la <strong>tabla de páginas</strong>.</p>
+<p>Ejemplo:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">Página</th>
+<th style="text-align: right;">Marco</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+<p>Si el proceso solicita información de la <strong>Página 2</strong>, la tabla indica:</p>
+<pre class="text"><code>Página 2 → Marco 8</code></pre>
+<div class="callout callout-style-default callout-note callout-titled" title="La tabla funciona como un mapa">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>La tabla funciona como un mapa
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>El proceso trabaja con páginas. La tabla de páginas permite encontrar el <strong>marco físico</strong> donde se encuentra cada una.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="dirección-lógica-página-desplazamiento" class="level1" data-number="33">
+<h1 data-number="33"><span class="header-section-number">33</span> 17. Dirección lógica = página + desplazamiento</h1>
+<p>Una dirección lógica paginada puede pensarse como dos componentes:</p>
+<pre class="text"><code>┌────────────┬─────────────────┐
+│   Página   │ Desplazamiento  │
+└────────────┴─────────────────┘</code></pre>
+<p>La <strong>página</strong> indica qué página necesitamos.</p>
+<p>El <strong>desplazamiento</strong> indica la posición dentro de esa página.</p>
+<p>Supongamos:</p>
+<pre class="text"><code>Dirección lógica:
+Página = 2
+Desplazamiento = 100</code></pre>
+<p>La tabla contiene:</p>
+<pre class="text"><code>Página 2 → Marco 5</code></pre>
+<p>Entonces la dirección física será conceptualmente:</p>
+<pre class="text"><code>Marco = 5
+Desplazamiento = 100</code></pre>
+<p>Observe algo importante:</p>
+<blockquote class="blockquote">
+<p><strong>El desplazamiento no cambia.</strong></p>
+</blockquote>
+<p>Lo que cambia mediante la tabla es la página lógica por su marco físico correspondiente.</p>
+<div class="cell" data-fig-width="7.4" data-fig-height="3.6" data-layout-align="center">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+    L["Dirección lógica&lt;br/&gt;Página 2 · Desp. 100"]
+    T["Tabla de páginas&lt;br/&gt;P2 → M5"]
+    F["Dirección física&lt;br/&gt;Marco 5 · Desp. 100"]
+    L --&gt; T --&gt; F
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="calculando-una-dirección-física" class="level1" data-number="34">
+<h1 data-number="34"><span class="header-section-number">34</span> 18. Calculando una dirección física</h1>
+<p>Podemos llevar el concepto un paso más adelante.</p>
+<p>Si cada página y marco mide <strong>1 KB</strong>, entonces:</p>
+<pre class="text"><code>1 KB = 1024 bytes</code></pre>
+<p>Tenemos:</p>
+<pre class="text"><code>Página lógica = 2
+Desplazamiento = 100
+Página 2 → Marco 5</code></pre>
+<p>La dirección física numérica puede calcularse como:</p>
+<pre class="text"><code>Dirección física = (marco × tamaño del marco) + desplazamiento</code></pre>
+<p>Entonces:</p>
+<pre class="text"><code>Dirección física = (5 × 1024) + 100
+                  = 5120 + 100
+                  = 5220</code></pre>
+<p>Por lo tanto:</p>
+<blockquote class="blockquote">
+<p>La dirección lógica <strong>(Página 2, desplazamiento 100)</strong> corresponde a la dirección física <strong>5220</strong>.</p>
+</blockquote>
+<div class="callout callout-style-default callout-warning callout-titled" title="No memorices sin comprender">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Advertencia</span>No memorices sin comprender
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La fórmula tiene sentido porque primero llegamos al inicio del <strong>Marco 5</strong> y luego avanzamos <strong>100 bytes</strong> dentro de él.</p>
+</div>
+</div>
+<section id="practiquemos" class="level2" data-number="34.1">
+<h2 data-number="34.1" class="anchored" data-anchor-id="practiquemos"><span class="header-section-number">34.1</span> Practiquemos</h2>
+<p>Página de <strong>1 KB</strong>. La tabla indica:</p>
+<pre class="text"><code>Página 3 → Marco 7</code></pre>
+<p>La dirección lógica es:</p>
+<pre class="text"><code>Página = 3
+Desplazamiento = 200</code></pre>
+<p>¿Cuál es la dirección física?</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="✅ Solución propuesta">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>✅ Solución propuesta
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Como:</p>
+<pre class="text"><code>1 KB = 1024 bytes</code></pre>
+<p>y:</p>
+<pre class="text"><code>Página 3 → Marco 7</code></pre>
+<p>calculamos:</p>
+<pre class="text"><code>Dirección física = (7 × 1024) + 200
+                  = 7168 + 200
+                  = 7368</code></pre>
+<p>La dirección física es <strong>7368</strong>.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="la-paginación-elimina-toda-fragmentación" class="level1" data-number="35">
+<h1 data-number="35"><span class="header-section-number">35</span> 19. ¿La paginación elimina toda fragmentación?</h1>
+<p>No.</p>
+<p>La paginación evita el problema clásico de <strong>fragmentación externa</strong>, porque las páginas pueden colocarse en marcos separados.</p>
+<p>Sin embargo, todavía puede existir <strong>fragmentación interna</strong>, especialmente en el último marco utilizado por un proceso.</p>
+<p>Ejemplo:</p>
+<pre class="text"><code>Proceso = 10 KB
+Página  = 4 KB</code></pre>
+<p>Necesitamos:</p>
+<pre class="text"><code>Página 0 = 4 KB
+Página 1 = 4 KB
+Página 2 = 2 KB utilizados</code></pre>
+<p>Pero el último marco mide 4 KB.</p>
+<pre class="text"><code>Último marco:
+┌──────────────────┐
+│ 2 KB utilizados  │
+├──────────────────┤
+│ 2 KB sin utilizar│ ← fragmentación interna
+└──────────────────┘</code></pre>
+<p>Por tanto:</p>
+<pre class="text"><code>Fragmentación interna = 2 KB</code></pre>
+<div class="callout callout-style-default callout-important callout-titled" title="Una precisión importante">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Importante</span>Una precisión importante
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La paginación <strong>resuelve la necesidad de encontrar un gran bloque contiguo</strong>, pero no significa que todo byte de cada marco asignado será aprovechado.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="ventajas-y-costos-de-la-paginación" class="level1" data-number="36">
+<h1 data-number="36"><span class="header-section-number">36</span> 20. Ventajas y costos de la paginación</h1>
+<section id="ventajas" class="level2" data-number="36.1">
+<h2 data-number="36.1" class="anchored" data-anchor-id="ventajas"><span class="header-section-number">36.1</span> Ventajas</h2>
+<ul>
+<li>Evita la fragmentación externa clásica.</li>
+<li>Permite memoria física <strong>no contigua</strong>.</li>
+<li>Facilita una utilización más flexible de los marcos disponibles.</li>
+<li>Es una base importante para implementar <strong>memoria virtual</strong>.</li>
+</ul>
+</section>
+<section id="costos-o-desventajas" class="level2" data-number="36.2">
+<h2 data-number="36.2" class="anchored" data-anchor-id="costos-o-desventajas"><span class="header-section-number">36.2</span> Costos o desventajas</h2>
+<ul>
+<li>Puede existir fragmentación interna.</li>
+<li>Cada proceso necesita información de traducción.</li>
+<li>Las tablas de páginas consumen memoria.</li>
+<li>La traducción de direcciones agrega trabajo al sistema.</li>
+</ul>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Particiones</th>
+<th>Paginación</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Conceptualmente simples</td>
+<td>Más flexible</td>
+</tr>
+<tr class="even">
+<td>Pueden requerir bloques contiguos</td>
+<td>Permite marcos no contiguos</td>
+</tr>
+<tr class="odd">
+<td>Dinámicas: fragmentación externa</td>
+<td>Evita fragmentación externa clásica</td>
+</tr>
+<tr class="even">
+<td>Fijas: fragmentación interna</td>
+<td>Puede presentar fragmentación interna</td>
+</tr>
+<tr class="odd">
+<td>Menor complejidad conceptual</td>
+<td>Requiere tabla de páginas</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+</section>
+<section id="de-la-paginación-a-la-memoria-virtual" class="level1" data-number="37">
+<h1 data-number="37"><span class="header-section-number">37</span> 21. De la paginación a la memoria virtual</h1>
+<p>Hasta ahora hemos supuesto que las páginas del proceso están en RAM.</p>
+<p>Pero aparece una posibilidad aún más interesante:</p>
+<blockquote class="blockquote">
+<p><strong>¿Qué ocurre si un programa necesita más memoria de la que podemos mantener físicamente en RAM en ese momento?</strong></p>
+</blockquote>
+<p>La <strong>memoria virtual</strong> permite extender el espacio disponible utilizando almacenamiento secundario y mecanismos administrados por el Sistema Operativo.</p>
+<p>En un sistema paginado, algunas páginas pueden estar en RAM mientras otras no se encuentran cargadas en ese instante.</p>
+<div class="cell" data-fig-width="7.4" data-fig-height="4.3" data-layout-align="center">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+    P["Proceso&lt;br/&gt;muchas páginas"]
+    RAM["RAM&lt;br/&gt;páginas necesarias"]
+    DISK["Almacenamiento&lt;br/&gt;otras páginas"]
+    P --&gt; RAM
+    P --&gt; DISK
+    DISK &lt;--&gt;|"intercambio según necesidad"| RAM
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="La idea que debemos conservar">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>La idea que debemos conservar
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La memoria virtual permite que el espacio que observa un proceso no tenga que corresponder completamente, en todo momento, con la cantidad de RAM física que ocupa.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="caso-práctico-integrador" class="level1" data-number="38">
+<h1 data-number="38"><span class="header-section-number">38</span> 22. Caso práctico integrador</h1>
+<p>Tenemos una RAM disponible de <strong>16 KB</strong>.</p>
+<p>Llegan tres procesos:</p>
+<pre class="text"><code>Proceso X = 4 KB
+Proceso Y = 6 KB
+Proceso Z = 2 KB</code></pre>
+<section id="escenario-a-particiones-dinámicas" class="level2" data-number="38.1">
+<h2 data-number="38.1" class="anchored" data-anchor-id="escenario-a-particiones-dinámicas"><span class="header-section-number">38.1</span> Escenario A: particiones dinámicas</h2>
+<p>Inicialmente podrían almacenarse de forma contigua:</p>
+<pre class="text"><code>┌──────────────────┐
+│ Proceso X   4 KB │
+├──────────────────┤
+│ Proceso Y   6 KB │
+├──────────────────┤
+│ Proceso Z   2 KB │
+├──────────────────┤
+│ Libre       4 KB │
+└──────────────────┘</code></pre>
+<p>Si posteriormente termina el Proceso Y:</p>
+<pre class="text"><code>┌──────────────────┐
+│ Proceso X   4 KB │
+├──────────────────┤
+│ Libre       6 KB │
+├──────────────────┤
+│ Proceso Z   2 KB │
+├──────────────────┤
+│ Libre       4 KB │
+└──────────────────┘</code></pre>
+<p>Tenemos dos huecos separados.</p>
+</section>
+<section id="escenario-b-paginación-de-2-kb" class="level2" data-number="38.2">
+<h2 data-number="38.2" class="anchored" data-anchor-id="escenario-b-paginación-de-2-kb"><span class="header-section-number">38.2</span> Escenario B: paginación de 2 KB</h2>
+<p>La RAM de 16 KB contiene:</p>
+<pre class="text"><code>16 ÷ 2 = 8 marcos</code></pre>
+<p>Los procesos requieren:</p>
+<pre class="text"><code>X = 4 KB → 2 páginas
+Y = 6 KB → 3 páginas
+Z = 2 KB → 1 página</code></pre>
+<p>En total:</p>
+<pre class="text"><code>2 + 3 + 1 = 6 marcos utilizados</code></pre>
+<p>Las páginas podrían distribuirse, por ejemplo:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Página</th>
+<th style="text-align: right;">Marco</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>X0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td>Y0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td>Z0</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td>X1</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="odd">
+<td>Y1</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="even">
+<td>Y2</td>
+<td style="text-align: right;">7</td>
+</tr>
+</tbody>
+</table>
+<p>No necesitan estar juntas.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Pregunta para discutir">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Pregunta para discutir
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Si quedan libres los marcos 3 y 5, ¿representa eso el mismo problema que dos huecos separados en particiones dinámicas?</p>
+<p><strong>No necesariamente.</strong> En paginación, un nuevo proceso puede utilizar marcos libres separados porque sus páginas tampoco necesitan quedar contiguas.</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="laboratorio-en-clase-tú-administras-la-ram" class="level1" data-number="39">
+<h1 data-number="39"><span class="header-section-number">39</span> 23. Laboratorio en clase: tú administras la RAM</h1>
+<p>Supongamos una memoria de <strong>32 KB</strong>.</p>
+<p>Existen estos huecos libres:</p>
+<pre class="text"><code>H1 = 8 KB
+H2 = 5 KB
+H3 = 12 KB
+H4 = 7 KB</code></pre>
+<p>Llegan, en este orden:</p>
+<pre class="text"><code>Proceso A = 6 KB
+Proceso B = 4 KB
+Proceso C = 7 KB</code></pre>
+<section id="parte-a-particiones-dinámicas" class="level2" data-number="39.1">
+<h2 data-number="39.1" class="anchored" data-anchor-id="parte-a-particiones-dinámicas"><span class="header-section-number">39.1</span> Parte A — Particiones dinámicas</h2>
+<p>Realiza la asignación utilizando por separado:</p>
+<ol type="1">
+<li>First Fit.</li>
+<li>Best Fit.</li>
+<li>Worst Fit.</li>
+</ol>
+<p>Después de cada proceso, anota cómo quedan los huecos.</p>
+</section>
+<section id="parte-b-paginación" class="level2" data-number="39.2">
+<h2 data-number="39.2" class="anchored" data-anchor-id="parte-b-paginación"><span class="header-section-number">39.2</span> Parte B — Paginación</h2>
+<p>Ahora supongamos páginas y marcos de <strong>2 KB</strong>.</p>
+<p>Determina:</p>
+<ol type="1">
+<li>cuántas páginas necesita cada proceso;</li>
+<li>cuántos marcos necesita cada proceso;</li>
+<li>si las páginas necesitan estar contiguas;</li>
+<li>qué sucede con el Proceso B de 4 KB;</li>
+<li>qué tipo de fragmentación puede existir.</li>
+</ol>
+</section>
+<section id="parte-c-reflexión" class="level2" data-number="39.3">
+<h2 data-number="39.3" class="anchored" data-anchor-id="parte-c-reflexión"><span class="header-section-number">39.3</span> Parte C — Reflexión</h2>
+<p>Responde:</p>
+<blockquote class="blockquote">
+<p>¿Qué problema de las particiones dinámicas deja de ser crítico cuando utilizamos paginación?</p>
+</blockquote>
+<div class="callout callout-style-default callout-tip callout-titled" title="✅ Solución propuesta">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>✅ Solución propuesta
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-17" class="callout-17-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<section id="first-fit" class="level3" data-number="39.3.1">
+<h3 data-number="39.3.1" class="anchored" data-anchor-id="first-fit"><span class="header-section-number">39.3.1</span> First Fit</h3>
+<p>Huecos iniciales:</p>
+<pre class="text"><code>8, 5, 12, 7</code></pre>
+<p>Proceso A = 6 KB:</p>
+<pre class="text"><code>2, 5, 12, 7</code></pre>
+<p>Proceso B = 4 KB: el primer hueco suficiente es 5 KB.</p>
+<pre class="text"><code>2, 1, 12, 7</code></pre>
+<p>Proceso C = 7 KB: el primer hueco suficiente es 12 KB.</p>
+<pre class="text"><code>2, 1, 5, 7</code></pre>
+</section>
+<section id="best-fit" class="level3" data-number="39.3.2">
+<h3 data-number="39.3.2" class="anchored" data-anchor-id="best-fit"><span class="header-section-number">39.3.2</span> Best Fit</h3>
+<p>Proceso A = 6 KB → utiliza 7 KB:</p>
+<pre class="text"><code>8, 5, 12, 1</code></pre>
+<p>Proceso B = 4 KB → utiliza 5 KB:</p>
+<pre class="text"><code>8, 1, 12, 1</code></pre>
+<p>Proceso C = 7 KB → utiliza 8 KB:</p>
+<pre class="text"><code>1, 1, 12, 1</code></pre>
+</section>
+<section id="worst-fit" class="level3" data-number="39.3.3">
+<h3 data-number="39.3.3" class="anchored" data-anchor-id="worst-fit"><span class="header-section-number">39.3.3</span> Worst Fit</h3>
+<p>Proceso A = 6 KB → utiliza 12 KB:</p>
+<pre class="text"><code>8, 5, 6, 7</code></pre>
+<p>Proceso B = 4 KB → utiliza 8 KB:</p>
+<pre class="text"><code>4, 5, 6, 7</code></pre>
+<p>Proceso C = 7 KB → utiliza 7 KB:</p>
+<pre class="text"><code>4, 5, 6, 0</code></pre>
+</section>
+<section id="paginación-de-2-kb" class="level3" data-number="39.3.4">
+<h3 data-number="39.3.4" class="anchored" data-anchor-id="paginación-de-2-kb"><span class="header-section-number">39.3.4</span> Paginación de 2 KB</h3>
+<ul>
+<li>Proceso A = 6 KB → <strong>3 páginas / 3 marcos</strong>.</li>
+<li>Proceso B = 4 KB → <strong>2 páginas / 2 marcos</strong>.</li>
+<li>Proceso C = 7 KB → necesita <strong>4 páginas / 4 marcos</strong>; la última página utiliza solo 1 KB.</li>
+</ul>
+<p>Las páginas <strong>no necesitan estar en marcos contiguos</strong>.</p>
+<p>En el Proceso C aparece hasta <strong>1 KB de fragmentación interna</strong> en su último marco.</p>
+<p>La paginación evita que los <strong>huecos libres dispersos</strong> impidan por sí solos cargar un proceso, siempre que existan suficientes marcos libres.</p>
+</section>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="errores-comunes" class="level1" data-number="40">
+<h1 data-number="40"><span class="header-section-number">40</span> 24. Errores comunes</h1>
+<section id="fragmentación-interna-y-externa-son-lo-mismo" class="level2" data-number="40.1">
+<h2 data-number="40.1" class="anchored" data-anchor-id="fragmentación-interna-y-externa-son-lo-mismo"><span class="header-section-number">40.1</span> “Fragmentación interna y externa son lo mismo”</h2>
+<p>No.</p>
+<ul>
+<li>Interna → espacio desperdiciado <strong>dentro</strong> de una unidad asignada.</li>
+<li>Externa → memoria libre <strong>dispersa entre</strong> unidades ocupadas.</li>
+</ul>
+</section>
+<section id="best-fit-siempre-es-la-mejor-estrategia" class="level2" data-number="40.2">
+<h2 data-number="40.2" class="anchored" data-anchor-id="best-fit-siempre-es-la-mejor-estrategia"><span class="header-section-number">40.2</span> “Best Fit siempre es la mejor estrategia”</h2>
+<p>El nombre puede engañar. Significa que selecciona el hueco más ajustado, no que produzca necesariamente el mejor comportamiento en todas las situaciones.</p>
+</section>
+<section id="las-páginas-deben-quedar-juntas-en-ram" class="level2" data-number="40.3">
+<h2 data-number="40.3" class="anchored" data-anchor-id="las-páginas-deben-quedar-juntas-en-ram"><span class="header-section-number">40.3</span> “Las páginas deben quedar juntas en RAM”</h2>
+<p>No.&nbsp;Precisamente una de las ventajas fundamentales de la paginación es permitir distribución <strong>no contigua</strong>.</p>
+</section>
+<section id="página-y-marco-son-sinónimos" class="level2" data-number="40.4">
+<h2 data-number="40.4" class="anchored" data-anchor-id="página-y-marco-son-sinónimos"><span class="header-section-number">40.4</span> “Página y marco son sinónimos”</h2>
+<p>Tienen el mismo tamaño dentro de un esquema paginado, pero representan cosas distintas:</p>
+<pre class="text"><code>Página → espacio lógico
+Marco  → memoria física</code></pre>
+</section>
+<section id="la-paginación-elimina-toda-fragmentación-1" class="level2" data-number="40.5">
+<h2 data-number="40.5" class="anchored" data-anchor-id="la-paginación-elimina-toda-fragmentación-1"><span class="header-section-number">40.5</span> “La paginación elimina toda fragmentación”</h2>
+<p>No.&nbsp;Evita la fragmentación externa clásica, pero puede existir <strong>fragmentación interna</strong>.</p>
+<hr>
+</section>
+</section>
+<section id="autoevaluación" class="level1" data-number="41">
+<h1 data-number="41"><span class="header-section-number">41</span> 25. Autoevaluación</h1>
+<ol type="1">
+<li>¿Por qué la memoria es un recurso crítico?</li>
+<li>¿Qué funciones realiza el Sistema Operativo sobre la memoria?</li>
+<li>¿Qué diferencia existe entre dirección lógica y dirección física?</li>
+<li>¿Qué es una partición fija?</li>
+<li>¿Qué es una partición dinámica?</li>
+<li>Explica con tus palabras la fragmentación interna.</li>
+<li>Explica con tus palabras la fragmentación externa.</li>
+<li>¿Cómo funciona First Fit?</li>
+<li>¿Cómo funciona Best Fit?</li>
+<li>¿Cómo funciona Worst Fit?</li>
+<li>¿Qué problema aparece cuando existe suficiente memoria libre total, pero está dispersa?</li>
+<li>¿Qué es una página?</li>
+<li>¿Qué es un marco?</li>
+<li>¿Por qué página y marco deben tener el mismo tamaño?</li>
+<li>¿Qué función cumple la tabla de páginas?</li>
+<li>¿Qué elementos forman una dirección lógica paginada?</li>
+<li>¿Qué ocurre con el desplazamiento durante la traducción?</li>
+<li>¿Por qué la paginación permite memoria no contigua?</li>
+<li>¿Qué tipo de fragmentación puede aparecer en paginación?</li>
+<li>¿Cómo se relacionan paginación y memoria virtual?</li>
+</ol>
+<hr>
+</section>
+<section id="reto-final" class="level1" data-number="42">
+<h1 data-number="42"><span class="header-section-number">42</span> 26. Reto final</h1>
+<p>Un sistema utiliza páginas de <strong>4 KB</strong>.</p>
+<p>Un proceso necesita <strong>18 KB</strong>.</p>
+<p>Responde:</p>
+<ol type="1">
+<li>¿Cuántas páginas necesita?</li>
+<li>¿Cuántos marcos debe recibir?</li>
+<li>¿Cuánta memoria física se asignará en total?</li>
+<li>¿Cuánta fragmentación interna tendrá el último marco?</li>
+<li>Si la Página 3 está en el Marco 9 y el desplazamiento es 500 bytes, ¿cuál es la dirección física?</li>
+<li>¿Las cinco páginas deben quedar en marcos consecutivos?</li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled" title="✅ Solución propuesta">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>✅ Solución propuesta
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-18" class="callout-18-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<section id="número-de-páginas" class="level3" data-number="42.0.1">
+<h3 data-number="42.0.1" class="anchored" data-anchor-id="número-de-páginas"><span class="header-section-number">42.0.1</span> 1. Número de páginas</h3>
+<pre class="text"><code>18 KB ÷ 4 KB = 4.5</code></pre>
+<p>Necesitamos <strong>5 páginas</strong>.</p>
+</section>
+<section id="número-de-marcos" class="level3" data-number="42.0.2">
+<h3 data-number="42.0.2" class="anchored" data-anchor-id="número-de-marcos"><span class="header-section-number">42.0.2</span> 2. Número de marcos</h3>
+<p>Cada página necesita un marco, por lo que necesitamos <strong>5 marcos</strong>.</p>
+</section>
+<section id="memoria-física-asignada" class="level3" data-number="42.0.3">
+<h3 data-number="42.0.3" class="anchored" data-anchor-id="memoria-física-asignada"><span class="header-section-number">42.0.3</span> 3. Memoria física asignada</h3>
+<pre class="text"><code>5 × 4 KB = 20 KB</code></pre>
+</section>
+<section id="fragmentación-interna-1" class="level3" data-number="42.0.4">
+<h3 data-number="42.0.4" class="anchored" data-anchor-id="fragmentación-interna-1"><span class="header-section-number">42.0.4</span> 4. Fragmentación interna</h3>
+<pre class="text"><code>20 KB - 18 KB = 2 KB</code></pre>
+<p>La fragmentación interna es <strong>2 KB</strong>.</p>
+</section>
+<section id="dirección-física" class="level3" data-number="42.0.5">
+<h3 data-number="42.0.5" class="anchored" data-anchor-id="dirección-física"><span class="header-section-number">42.0.5</span> 5. Dirección física</h3>
+<p>Como:</p>
+<pre class="text"><code>4 KB = 4096 bytes
+Marco = 9
+Desplazamiento = 500</code></pre>
+<p>entonces:</p>
+<pre class="text"><code>Dirección física = (9 × 4096) + 500
+                  = 36864 + 500
+                  = 37364</code></pre>
+<p>La dirección física es <strong>37364</strong>.</p>
+</section>
+<section id="deben-ser-consecutivas" class="level3" data-number="42.0.6">
+<h3 data-number="42.0.6" class="anchored" data-anchor-id="deben-ser-consecutivas"><span class="header-section-number">42.0.6</span> 6. ¿Deben ser consecutivas?</h3>
+<p><strong>No.</strong> Las páginas pueden almacenarse en marcos físicos no contiguos.</p>
+</section>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="para-recordar" class="level1" data-number="43">
+<h1 data-number="43"><span class="header-section-number">43</span> 27. Para recordar</h1>
+<p>Podemos reconstruir el capítulo mediante esta secuencia:</p>
+<pre class="text"><code>RAM ES LIMITADA
+      ↓
+EL S.O. DEBE ADMINISTRARLA
+      ↓
+PARTICIONES
+  ↓            ↓
+FIJAS       DINÁMICAS
+  ↓            ↓
+Frag.       Frag.
+interna     externa
+      ↓
+FIRST · BEST · WORST FIT
+      ↓
+¿Y SI NO EXIGIMOS CONTIGÜIDAD?
+      ↓
+PAGINACIÓN
+      ↓
+PÁGINAS ↔ TABLA ↔ MARCOS
+      ↓
+MEMORIA NO CONTIGUA
+      ↓
+MEMORIA VIRTUAL</code></pre>
+<div class="callout callout-style-default callout-note callout-titled" title="Síntesis en una frase">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Síntesis en una frase
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>La paginación permite dividir un proceso en páginas y ubicarlas en marcos físicos no contiguos, utilizando una tabla de páginas para traducir direcciones lógicas en direcciones físicas.</strong></p>
+</div>
+</div>
+<hr>
+</section>
+<section id="conexión-con-la-siguiente-clase" class="level1" data-number="44">
+<h1 data-number="44"><span class="header-section-number">44</span> Conexión con la siguiente clase</h1>
+<p>Ya comprendemos cómo el Sistema Operativo puede distribuir procesos en memoria y cómo la paginación rompe la necesidad de mantener un proceso completo en un bloque físico contiguo.</p>
+<p>A partir de aquí podemos profundizar en mecanismos relacionados con <strong>memoria virtual</strong>, carga de páginas bajo demanda y decisiones sobre qué páginas deben permanecer en RAM.</p>
+<hr>
+</section>
+<section id="referencias" class="level1" data-number="45">
+<h1 data-number="45"><span class="header-section-number">45</span> Referencias</h1>
+<p>Material base de clase:</p>
+<ul>
+<li>Presentación <strong>Manejo de memoria: Paginación y particiones</strong>, Sistemas Operativos I.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled" title="Criterio editorial">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Criterio editorial
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Este capítulo transforma el material de clase en una secuencia de razonamiento: <strong>problema → estrategia → limitación → nueva estrategia</strong>. El objetivo no es memorizar términos, sino comprender por qué surgieron las distintas técnicas de administración de memoria.</p>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiado");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiado");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../capitulos/12_virtualizacion_sistemas_operativos.html" class="pagination-link" aria-label="Capítulo 12. Virtualización de Sistemas Operativos">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Capítulo 12. Virtualización de Sistemas Operativos</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../capitulos/99_cierre.html" class="pagination-link" aria-label="Cierre de la clase">
+        <span class="nav-page-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Cierre de la clase</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Editorial Académica de Ingeniería en Sistemas</p>
+</div>   
+    <div class="nav-footer-center">
+<p>Diseñar una vez. Enseñar toda la vida.</p>
+</div>
+    <div class="nav-footer-right">
+<p>Ing. Jorge Luis García Chacón</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
