@@ -55,5 +55,8 @@
   },
   "capitulos/13_manejo_memoria_paginacion_particiones.qmd": {
     "13_manejo_memoria_paginacion_particiones.html": "f63a6f14"
+  },
+  "capitulos/14_administracion_memoria_en_ejecucion.qmd": {
+    "14_administracion_memoria_en_ejecucion.html": "c18f2939"
   }
 }

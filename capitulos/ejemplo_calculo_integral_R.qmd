@@ -1,0 +1,252 @@
+---
+title: "Ejemplo de Cálculo II con R"
+subtitle: "Integral definida y visualización del área bajo la curva"
+format:
+  html:
+    code-fold: true
+    code-tools: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+# Objetivo
+
+Calcularemos paso a paso:
+
+$$
+\int_0^2 x^2\,dx
+$$
+
+y utilizaremos **R** dentro del mismo QMD para visualizar el área.
+
+::: {.callout-tip}
+## Idea central
+
+**expresión matemática → solución paso a paso → representación gráfica**
+:::
+
+# 1. La función
+
+Trabajaremos con:
+
+$$
+f(x)=x^2
+$$
+
+Geométricamente, la integral
+
+$$
+\int_0^2 x^2\,dx
+$$
+
+representa el área entre la curva, el eje $x$, $x=0$ y $x=2$.
+
+# 2. Resolución paso a paso
+
+Partimos de:
+
+$$
+\int_0^2 x^2\,dx
+$$
+
+Aplicamos la regla:
+
+$$
+\int x^n\,dx=\frac{x^{n+1}}{n+1}+C
+$$
+
+Entonces:
+
+$$
+\int x^2\,dx=\frac{x^3}{3}
+$$
+
+Evaluamos:
+
+$$
+\left[\frac{x^3}{3}\right]_{0}^{2}
+=
+\frac{2^3}{3}-\frac{0^3}{3}
+=
+\frac{8}{3}
+$$
+
+Por tanto:
+
+$$
+\boxed{\int_0^2 x^2\,dx=\frac{8}{3}\approx2.6667}
+$$
+
+# 3. Definimos la función en R
+
+```{r}
+#| label: definir-funcion
+
+f <- function(x) {
+  x^2
+}
+
+f(2)
+```
+
+# 4. Generamos puntos
+
+```{r}
+#| label: generar-datos
+
+x <- seq(-0.5, 3, length.out = 300)
+y <- f(x)
+
+head(data.frame(x, y))
+```
+
+Estos puntos se utilizarán para construir la gráfica.
+
+# 5. Graficamos la función y el área
+
+```{r}
+#| label: grafica-area
+#| fig-cap: "Área bajo la curva de f(x) = x² entre x = 0 y x = 2."
+#| fig-width: 8
+#| fig-height: 5
+
+x <- seq(-0.5, 3, length.out = 400)
+y <- f(x)
+
+plot(
+  x, y,
+  type = "l",
+  lwd = 2,
+  xlab = "x",
+  ylab = "f(x)",
+  main = "Integral definida de f(x) = x²"
+)
+
+abline(h = 0)
+abline(v = 0)
+
+x_area <- seq(0, 2, length.out = 200)
+y_area <- f(x_area)
+
+polygon(
+  c(0, x_area, 2),
+  c(0, y_area, 0),
+  density = 18,
+  angle = 45
+)
+
+abline(v = 2, lty = 2)
+
+text(
+  1.05, 1.8,
+  expression(integral(x^2*dx, 0, 2) == 8/3)
+)
+```
+
+# 6. Interpretamos la gráfica
+
+La región marcada corresponde a:
+
+$$
+0\leq x\leq2
+$$
+
+y su área es:
+
+$$
+A=\int_0^2x^2\,dx=\frac{8}{3}
+$$
+
+::: {.callout-note}
+## Dos formas de comprender
+
+La resolución algebraica explica **por qué** obtenemos $\frac{8}{3}$.
+
+R nos permite **visualizar** la región que representa ese resultado.
+
+La gráfica complementa el razonamiento matemático; no lo sustituye.
+:::
+
+# 7. Comprobamos numéricamente
+
+R también puede calcular una integral numéricamente:
+
+```{r}
+#| label: comprobacion-integral
+
+resultado <- integrate(f, lower = 0, upper = 2)
+resultado
+```
+
+Comparamos:
+
+```{r}
+#| label: comparar-resultados
+
+valor_exacto <- 8 / 3
+valor_numerico <- resultado$value
+
+valor_exacto
+valor_numerico
+```
+
+Ambos serán aproximadamente:
+
+```text
+2.666667
+```
+
+# 8. Experimentemos
+
+Ahora cambia el problema a:
+
+$$
+\int_0^3x^2\,dx
+$$
+
+Antes de ejecutar R:
+
+1. resuelve la integral manualmente;
+2. predice cómo cambiará el área;
+3. cambia el límite superior en el código;
+4. renderiza nuevamente;
+5. compara la solución matemática con la gráfica.
+
+::: {.callout-warning}
+## Orden de trabajo
+
+**comprender → plantear → resolver → visualizar → comprobar**
+
+R debe ayudarnos a comprender la matemática, no reemplazarla.
+:::
+
+# 9. Mini reto
+
+Analiza:
+
+$$
+f(x)=x^2-4x+3
+$$
+
+Determina sus raíces y su vértice. Después construye la gráfica en R e identifica visualmente esos elementos.
+
+# 10. Cierre
+
+::: {.callout-success}
+## Un capítulo, varios niveles de aprendizaje
+
+En este QMD combinamos:
+
+- notación matemática con LaTeX;
+- resolución paso a paso;
+- código R ejecutable;
+- generación automática de la gráfica;
+- comprobación numérica;
+- interpretación matemática.
+
+Al renderizar el QMD, **Quarto ejecuta R y genera la gráfica dentro del documento**.
+
+Este será uno de los recursos que podremos aprovechar en nuestro libro de Cálculo.
+:::

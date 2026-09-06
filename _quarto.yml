@@ -23,6 +23,7 @@ book:
     - capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.qmd
     - capitulos/12_virtualizacion_sistemas_operativos.qmd
     - capitulos/13_manejo_memoria_paginacion_particiones.qmd
+    - capitulos/14_administracion_memoria_en_ejecucion.qmd
     - capitulos/99_cierre.qmd
   page-footer:
     left: "Editorial Académica de Ingeniería en Sistemas"

@@ -2810,13 +2810,73 @@
     ]
   },
   {
+    "objectID": "capitulos/14_administracion_memoria_en_ejecucion.html",
+    "href": "capitulos/14_administracion_memoria_en_ejecucion.html",
+    "title": "15  Capítulo 14. Administración de memoria en ejecución",
+    "section": "",
+    "text": "16 Capítulo 14. Administración de memoria en ejecución",
+    "crumbs": [
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Capítulo 14. Administración de memoria en ejecución</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/14_administracion_memoria_en_ejecucion.html#del-mapa-de-memoria-a-las-decisiones-del-sistema-operativo",
+    "href": "capitulos/14_administracion_memoria_en_ejecucion.html#del-mapa-de-memoria-a-las-decisiones-del-sistema-operativo",
+    "title": "15  Capítulo 14. Administración de memoria en ejecución",
+    "section": "16.1 Del mapa de memoria a las decisiones del Sistema Operativo",
+    "text": "16.1 Del mapa de memoria a las decisiones del Sistema Operativo\nEn el capítulo anterior estudiamos particiones, fragmentación, algoritmos de ajuste y paginación. Comprendimos cómo puede organizarse la memoria y cómo una dirección lógica puede terminar asociada con una ubicación física.\nAhora cambiaremos ligeramente la pregunta:\n\nMientras los procesos están ejecutándose, ¿qué decisiones debe tomar continuamente el Sistema Operativo para administrar la memoria?\n\nLa respuesta involucra asignación, protección, liberación, traducción de direcciones, intercambio con disco, jerarquía de memoria y políticas de reemplazo.\n\n\n\n\n\n\nTipIdea central\n\n\n\nLa administración de memoria no ocurre una sola vez cuando se inicia un programa. Es un proceso continuo durante toda la vida de los procesos.",
+    "crumbs": [
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Capítulo 14. Administración de memoria en ejecución</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/14_administracion_memoria_en_ejecucion.html#una-analogía-sencilla",
+    "href": "capitulos/14_administracion_memoria_en_ejecucion.html#una-analogía-sencilla",
+    "title": "15  Capítulo 14. Administración de memoria en ejecución",
+    "section": "19.1 Una analogía sencilla",
+    "text": "19.1 Una analogía sencilla\nPensemos en un estudiante resolviendo un ejercicio:\nDato que tiene en la mente       → Registro\nDato escrito en una hoja cercana → Caché\nLibro abierto sobre el escritorio→ RAM\nLibro guardado en la biblioteca  → Almacenamiento\nMientras más lejos esté la información, más tiempo necesitamos para obtenerla.",
+    "crumbs": [
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Capítulo 14. Administración de memoria en ejecución</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/14_administracion_memoria_en_ejecucion.html#y-si-solicita-2300",
+    "href": "capitulos/14_administracion_memoria_en_ejecucion.html#y-si-solicita-2300",
+    "title": "15  Capítulo 14. Administración de memoria en ejecución",
+    "section": "23.1 ¿Y si solicita 2300?",
+    "text": "23.1 ¿Y si solicita 2300?\n2300 &lt; 2000 → FALSO\nEl acceso debe rechazarse.\n\n\n\n\n\nflowchart LR\n    D[Dirección lógica] --&gt; C{¿dirección &lt; límite?}\n    C --&gt;|Sí| S[Base + dirección]\n    S --&gt; F[Dirección física]\n    C --&gt;|No| E[Excepción&lt;br/&gt;acceso inválido]\n\n\n\n\n\n\n\n\n\n\n\n\nTipPregunta para el grupo\n\n\n\nSi Base = 4000, Límite = 1500 y el proceso solicita la dirección lógica 1200, ¿cuál sería la dirección física? ¿El acceso es válido?",
+    "crumbs": [
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Capítulo 14. Administración de memoria en ejecución</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/14_administracion_memoria_en_ejecucion.html#paso-1.-memoria-utilizada",
+    "href": "capitulos/14_administracion_memoria_en_ejecucion.html#paso-1.-memoria-utilizada",
+    "title": "15  Capítulo 14. Administración de memoria en ejecución",
+    "section": "32.1 Paso 1. Memoria utilizada",
+    "text": "32.1 Paso 1. Memoria utilizada\n200 + 250 + 300 = 750 KB",
+    "crumbs": [
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Capítulo 14. Administración de memoria en ejecución</span>"
+    ]
+  },
+  {
+    "objectID": "capitulos/14_administracion_memoria_en_ejecucion.html#paso-2.-memoria-libre",
+    "href": "capitulos/14_administracion_memoria_en_ejecucion.html#paso-2.-memoria-libre",
+    "title": "15  Capítulo 14. Administración de memoria en ejecución",
+    "section": "32.2 Paso 2. Memoria libre",
+    "text": "32.2 Paso 2. Memoria libre\n1024 - 750 = 274 KB\nAhora llega:\nP4 = 300 KB\nPreguntas:\n\n¿Cabe P4 directamente en los 274 KB libres?\n¿Qué alternativas podría considerar el Sistema Operativo?\n¿Cambiaría el análisis si utilizamos memoria virtual y paginación?\n\n\n\n\n\n\n\nTip✅ Analicemos\n\n\n\n\n\nP4 necesita 300 KB, pero solamente existen 274 KB disponibles en RAM.\nPor tanto, no cabe completamente en la memoria libre disponible bajo un modelo simple de asignación contigua.\nDependiendo del mecanismo utilizado, el sistema podría necesitar liberar memoria, intercambiar información con almacenamiento o, en un esquema de memoria virtual, administrar las páginas necesarias sin exigir que todo el proceso se encuentre simultáneamente en RAM.\n\n\n\n\n\n\n\n\n\nAdvertenciaAjuste didáctico respecto al PPT\n\n\n\nEn el caso original de la presentación aparecen P1 = 200 KB, P2 = 350 KB y P3 = 500 KB dentro de una RAM de 1024 KB. Esos tres procesos suman 1050 KB, por lo que ya exceden la RAM antes de que llegue P4. Para este capítulo ajustamos los valores y conservamos la intención del ejercicio: analizar qué ocurre cuando llega un proceso que ya no cabe en la memoria disponible.",
+    "crumbs": [
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Capítulo 14. Administración de memoria en ejecución</span>"
+    ]
+  },
+  {
     "objectID": "capitulos/99_cierre.html",
     "href": "capitulos/99_cierre.html",
-    "title": "15  Cierre de la clase",
+    "title": "16  Cierre de la clase",
     "section": "",
-    "text": "15.1 Próximo paso\nEn la siguiente clase profundizaremos en la estructura y los componentes de un sistema operativo, relacionando kernel, procesos, memoria, dispositivos y servicios.",
+    "text": "16.1 Próximo paso\nEn la siguiente clase profundizaremos en la estructura y los componentes de un sistema operativo, relacionando kernel, procesos, memoria, dispositivos y servicios.",
     "crumbs": [
-      "<span class='chapter-number'>15</span>  <span class='chapter-title'>Cierre de la clase</span>"
+      "<span class='chapter-number'>16</span>  <span class='chapter-title'>Cierre de la clase</span>"
     ]
   }
 ]
