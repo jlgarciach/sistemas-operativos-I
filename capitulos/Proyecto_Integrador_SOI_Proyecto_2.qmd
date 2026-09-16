@@ -1,0 +1,986 @@
+---
+title: "Sistemas Operativos I"
+subtitle: "Proyecto Integrador del Curso — Proyecto No. 2"
+author: "Universidad Mariano Gálvez de Guatemala"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+  pdf:
+    toc: true
+    number-sections: true
+---
+
+# Proyecto No. 2 — Evolución del Simulador: Administración de Procesos, Memoria y Recursos
+
+## Objetivo
+
+Ampliar el simulador desarrollado en el **Proyecto No. 1** para integrar, de forma coherente, los conceptos estudiados durante la segunda parte del curso, especialmente la **administración de memoria**, la **asignación y liberación de recursos**, la **fragmentación**, los **métodos de ajuste** y los **interbloqueos**.
+
+El propósito principal no es evaluar la complejidad del código fuente, sino la capacidad del equipo para **analizar, diseñar y representar mediante una simulación el comportamiento interno de un sistema operativo**.
+
+::: {.callout-important title="Continuidad del Proyecto Integrador"}
+Este proyecto **no consiste en desarrollar un simulador nuevo**.
+
+Cada equipo deberá tomar como punto de partida el simulador construido en el Proyecto No. 1 y hacerlo evolucionar.
+
+El objetivo es observar cómo los componentes estudiados durante el curso comienzan a relacionarse dentro de un mismo sistema.
+:::
+
+# Filosofía del Proyecto
+
+Durante el semestre construiremos un único simulador que evolucionará conforme avancemos en los contenidos del curso.
+
+En el Proyecto No. 1 se construyó la base relacionada con:
+
+- procesos;
+- PCB;
+- estados;
+- transiciones;
+- cola Ready;
+- proceso Running;
+- procesos Waiting/Bloqueados;
+- finalización.
+
+En el Proyecto No. 2 los procesos dejarán de ser elementos aislados.
+
+Ahora deberán interactuar con dos componentes fundamentales del sistema operativo:
+
+1. **la memoria**;
+2. **los recursos del sistema**.
+
+La evolución conceptual será:
+
+```text
+PROYECTO No. 1
+
+Proceso
+   ↓
+PCB
+   ↓
+Estados y transiciones
+   ↓
+Colas de procesos
+
+        │
+        │ EVOLUCIÓN
+        ▼
+
+PROYECTO No. 2
+
+Proceso
+   ↓
+PCB
+   ↓
+Solicita memoria
+   ↓
+Utiliza recursos
+   ↓
+Puede quedar bloqueado
+   ↓
+Puede generar interbloqueos
+   ↓
+Finaliza
+   ↓
+Libera memoria y recursos
+```
+
+# El problema que deberá resolver el simulador
+
+En un sistema operativo real, crear un proceso no significa únicamente asignarle un identificador y cambiar su estado.
+
+Un proceso necesita recursos para poder ejecutarse.
+
+En esta etapa deberán plantearse preguntas como:
+
+> ¿Cuánta memoria necesita el proceso?
+
+> ¿Existe memoria suficiente?
+
+> ¿Dónde será colocado?
+
+> ¿Qué sucede si existe memoria libre, pero está fragmentada?
+
+> ¿Qué ocurre cuando un proceso termina?
+
+> ¿Qué recursos está utilizando?
+
+> ¿Qué sucede cuando solicita un recurso que está ocupado?
+
+> ¿Puede producirse un interbloqueo?
+
+El simulador deberá permitir observar estas situaciones de una forma comprensible.
+
+# Requerimiento 1. Mantener el Proyecto No. 1
+
+El simulador deberá conservar las funcionalidades desarrolladas anteriormente.
+
+Como mínimo deberá continuar permitiendo:
+
+- crear procesos;
+- identificar cada proceso mediante su PCB;
+- mostrar información del PCB;
+- representar estados;
+- realizar transiciones;
+- visualizar las colas;
+- identificar el proceso en ejecución;
+- representar procesos bloqueados;
+- finalizar procesos.
+
+::: {.callout-warning title="No eliminar para volver a construir"}
+Las nuevas funcionalidades deberán **integrarse con el diseño existente**.
+
+No se considerará evolución del proyecto si el equipo elimina la solución anterior y presenta módulos independientes sin relación entre ellos.
+:::
+
+# Requerimiento 2. Evolución del PCB
+
+El PCB utilizado en el Proyecto No. 1 deberá evolucionar para almacenar información necesaria para la nueva simulación.
+
+Cada equipo determinará qué campos necesita incorporar.
+
+Como mínimo deberá poder identificarse:
+
+```text
+PID
+Nombre del proceso
+Estado
+Memoria requerida
+Memoria asignada
+Recursos asignados
+Recursos solicitados
+```
+
+Podrán conservarse otros campos definidos en el Proyecto No. 1.
+
+Ejemplo conceptual:
+
+```text
+=================================
+PCB DEL PROCESO
+=================================
+PID:                105
+Nombre:             Navegador
+Estado:             READY
+Memoria requerida:  180 MB
+Memoria asignada:   Sí
+Recursos asignados: Disco
+Recurso solicitado: Ninguno
+=================================
+```
+
+El equipo deberá justificar por qué cada nuevo dato forma parte de su representación del PCB.
+
+# Requerimiento 3. Administración de memoria
+
+El simulador deberá incorporar un modelo simplificado de memoria principal.
+
+El equipo deberá definir:
+
+- memoria total disponible;
+- memoria reservada para el sistema operativo, si su diseño la contempla;
+- memoria disponible para procesos;
+- bloques o huecos libres;
+- memoria ocupada por cada proceso.
+
+Por ejemplo:
+
+```text
+MEMORIA TOTAL: 1024 MB
+
+┌───────────────────────────────┐
+│ Sistema Operativo     200 MB  │
+├───────────────────────────────┤
+│ P1                    150 MB  │
+├───────────────────────────────┤
+│ Libre                   90 MB  │
+├───────────────────────────────┤
+│ P3                    220 MB  │
+├───────────────────────────────┤
+│ Libre                  164 MB  │
+├───────────────────────────────┤
+│ P5                    200 MB  │
+└───────────────────────────────┘
+```
+
+No es obligatorio utilizar esta representación exacta.
+
+Cada equipo puede diseñar una alternativa, siempre que permita comprender claramente el estado de la memoria.
+
+# Requerimiento 4. Solicitud y asignación de memoria
+
+Cuando se cree un proceso, el simulador deberá considerar la cantidad de memoria requerida.
+
+Conceptualmente:
+
+```text
+Crear proceso
+      ↓
+Generar / actualizar PCB
+      ↓
+Solicitar memoria
+      ↓
+¿Existe un bloque adecuado?
+     /              \
+   Sí                No
+   ↓                  ↓
+Asignar             No asignar
+memoria             memoria
+   ↓                  ↓
+Continuar           Informar situación
+```
+
+El equipo deberá definir y explicar qué sucede con el proceso cuando no puede obtener la memoria solicitada.
+
+La decisión deberá ser coherente con el modelo de estados implementado.
+
+::: {.callout-note title="Aquí se evalúa diseño"}
+No se proporcionará una única respuesta obligatoria para todas las decisiones del simulador.
+
+El equipo deberá plantear una solución, justificarla y demostrar que mantiene coherencia con los conceptos estudiados.
+:::
+
+# Requerimiento 5. Métodos de ajuste de memoria
+
+El simulador deberá implementar y permitir comparar:
+
+- **First Fit**;
+- **Best Fit**;
+- **Worst Fit**.
+
+El usuario deberá poder seleccionar la política de asignación.
+
+Ejemplo:
+
+```text
+MÉTODO DE ASIGNACIÓN DE MEMORIA
+
+1. First Fit
+2. Best Fit
+3. Worst Fit
+
+Seleccione:
+```
+
+Al realizar una asignación deberá ser posible observar:
+
+- proceso que solicita memoria;
+- cantidad solicitada;
+- huecos disponibles;
+- bloque seleccionado;
+- espacio restante;
+- estado de la memoria después de la asignación.
+
+El equipo deberá poder ejecutar una misma secuencia de procesos utilizando diferentes políticas y explicar por qué el mapa final puede ser distinto.
+
+# Requerimiento 6. Liberación de memoria
+
+Cuando un proceso finalice, la memoria utilizada deberá ser liberada.
+
+La simulación deberá reflejar esta modificación.
+
+```text
+P4
+RUNNING
+   ↓
+TERMINATED
+   ↓
+Liberar memoria
+   ↓
+Actualizar mapa
+   ↓
+Nuevo hueco disponible
+```
+
+El equipo deberá demostrar al menos un escenario donde la finalización de procesos produzca nuevos espacios libres.
+
+# Requerimiento 7. Fragmentación
+
+El simulador deberá permitir observar el efecto de la fragmentación externa dentro del modelo de asignación contigua utilizado.
+
+Deberá ser posible identificar una situación como:
+
+```text
+Memoria libre total: 600 MB
+
+Huecos:
+100 MB
+150 MB
+200 MB
+150 MB
+```
+
+y posteriormente intentar asignar:
+
+```text
+Proceso nuevo: 300 MB
+```
+
+Aunque existen `600 MB` libres en total, ningún hueco individual puede almacenar el proceso.
+
+El equipo deberá explicar:
+
+- por qué existe memoria suficiente en total;
+- por qué el proceso no puede asignarse;
+- qué relación tiene esta situación con la fragmentación externa.
+
+# Requerimiento 8. Compactación
+
+El simulador deberá incorporar una representación de **compactación de memoria** o, como mínimo, una simulación claramente demostrable de su efecto.
+
+Ejemplo conceptual:
+
+```text
+ANTES
+
+[P1][Libre][P2][Libre][P3][Libre]
+
+              ↓
+
+          COMPACTAR
+
+              ↓
+
+DESPUÉS
+
+[P1][P2][P3][-------- Libre --------]
+```
+
+El equipo deberá explicar:
+
+- qué problema intenta resolver la compactación;
+- qué cambia en el mapa;
+- por qué compactar memoria tiene un costo;
+- por qué no debe considerarse una operación gratuita.
+
+# Requerimiento 9. Administración de recursos
+
+El simulador deberá incorporar recursos que puedan ser utilizados por los procesos.
+
+Cada equipo podrá seleccionar recursos apropiados para su simulación.
+
+Por ejemplo:
+
+```text
+R1 = Impresora
+R2 = Disco
+R3 = Escáner
+R4 = Dispositivo de comunicación
+```
+
+El sistema deberá poder identificar:
+
+- recursos disponibles;
+- recursos ocupados;
+- proceso que posee un recurso;
+- procesos que esperan un recurso.
+
+Ejemplo:
+
+```text
+==================================
+RECURSOS DEL SISTEMA
+==================================
+Impresora  → P3
+Disco      → P1
+Escáner    → Disponible
+==================================
+```
+
+# Requerimiento 10. Solicitud y liberación de recursos
+
+Un proceso deberá poder solicitar un recurso.
+
+Si el recurso está disponible, podrá ser asignado.
+
+Si está ocupado, el equipo deberá definir cómo se refleja esta situación en el estado del proceso.
+
+Ejemplo conceptual:
+
+```text
+P3 solicita Impresora
+        ↓
+¿Disponible?
+   /          \
+ Sí            No
+ ↓              ↓
+Asignar       Esperar
+recurso       recurso
+```
+
+Cuando un proceso finalice o deje de utilizar el recurso, éste deberá volver a estar disponible.
+
+# Requerimiento 11. Interbloqueos
+
+El simulador deberá poder representar al menos un escenario donde varios procesos y recursos puedan generar un **interbloqueo**.
+
+Ejemplo:
+
+```text
+P1 posee R1
+P1 solicita R2
+
+P2 posee R2
+P2 solicita R1
+```
+
+Conceptualmente:
+
+```text
+P1 ── espera ──> R2
+↑                │
+│                ↓
+R1 <── espera ── P2
+```
+
+El simulador deberá permitir:
+
+- identificar los procesos involucrados;
+- identificar los recursos involucrados;
+- mostrar la espera existente;
+- detectar o advertir la situación de interbloqueo;
+- explicar por qué se produjo.
+
+El equipo deberá relacionar el escenario con las condiciones estudiadas en clase.
+
+# Requerimiento 12. Tratamiento del interbloqueo
+
+Además de detectar o representar el interbloqueo, el equipo deberá explicar qué estrategia propone su simulador para tratarlo.
+
+La solución podrá basarse en los conceptos estudiados, por ejemplo:
+
+- prevención;
+- evitación conceptual;
+- detección;
+- recuperación.
+
+No se espera necesariamente implementar un algoritmo complejo de un sistema operativo real.
+
+Se evaluará que el equipo comprenda el problema y plantee una solución técnicamente coherente.
+
+# Requerimiento 13. Paginación — Extensión conceptual
+
+La paginación deberá incorporarse como una **extensión conceptual del simulador**.
+
+El objetivo es demostrar que el equipo comprende cómo cambia el problema cuando dejamos de exigir que todo un proceso se encuentre en un único bloque contiguo.
+
+El equipo deberá representar al menos:
+
+- tamaño de página;
+- tamaño de marco;
+- cantidad de páginas requeridas;
+- asignación de páginas a marcos;
+- tabla de páginas simplificada.
+
+Ejemplo:
+
+```text
+Proceso P6 = 14 KB
+Tamaño de página = 4 KB
+
+Páginas necesarias = 4
+```
+
+Tabla conceptual:
+
+| Página | Marco |
+|---:|---:|
+| 0 | 7 |
+| 1 | 2 |
+| 2 | 11 |
+| 3 | 5 |
+
+El equipo deberá explicar por qué estos marcos **no necesitan ser contiguos**.
+
+::: {.callout-tip title="Profundidad esperada"}
+No se pretende construir un administrador completo de memoria virtual.
+
+Se busca demostrar comprensión del concepto y relacionarlo con el problema de asignación contigua estudiado anteriormente.
+:::
+
+# Requerimiento 14. Estado general del sistema
+
+El simulador deberá incorporar una vista que permita observar el estado general del sistema.
+
+Esta pantalla deberá integrar información de diferentes componentes.
+
+Ejemplo:
+
+```text
+========================================
+          ESTADO DEL SISTEMA
+========================================
+
+PROCESOS
+----------------------------------------
+Ready:       P2, P5
+Running:     P1
+Waiting:     P3
+Terminated:  P4
+
+MEMORIA
+----------------------------------------
+Total:       1024 MB
+Ocupada:      720 MB
+Libre:        304 MB
+Método:      Best Fit
+Huecos:      [100, 54, 150]
+
+RECURSOS
+----------------------------------------
+Impresora:   P3
+Disco:       P1
+Escáner:     Disponible
+
+INTERBLOQUEO
+----------------------------------------
+No detectado
+
+========================================
+```
+
+Esta representación será especialmente importante durante la demostración del proyecto.
+
+# Menú general sugerido
+
+El diseño del menú queda a criterio del equipo.
+
+Como referencia, el simulador podría organizarse de la siguiente manera:
+
+```text
+========================================
+      SIMULADOR DE SISTEMA OPERATIVO
+========================================
+
+GESTIÓN DE PROCESOS
+1. Crear proceso
+2. Mostrar procesos
+3. Mostrar PCB
+4. Cambiar estado
+5. Mostrar colas
+6. Finalizar proceso
+
+ADMINISTRACIÓN DE MEMORIA
+7. Mostrar mapa de memoria
+8. Asignar memoria
+9. Liberar memoria
+10. Mostrar fragmentación
+11. Compactar memoria
+12. Cambiar método de ajuste
+
+ADMINISTRACIÓN DE RECURSOS
+13. Mostrar recursos
+14. Asignar recurso
+15. Liberar recurso
+16. Detectar interbloqueo
+
+SISTEMA
+17. Mostrar estado general
+
+0. Salir
+```
+
+::: {.callout-warning title="No copiar mecánicamente"}
+Este menú representa una posible organización.
+
+Los equipos pueden proponer una arquitectura diferente si ésta resulta más adecuada para su solución.
+
+Durante la evaluación deberán justificar sus decisiones de diseño.
+:::
+
+# Integración esperada
+
+El principal criterio del Proyecto No. 2 será la **integración**.
+
+No queremos observar tres programas separados:
+
+```text
+Programa de procesos
+Programa de memoria
+Programa de interbloqueos
+```
+
+Queremos observar un único simulador donde los componentes se relacionen.
+
+Por ejemplo:
+
+```text
+CREAR PROCESO
+      ↓
+Crear PCB
+      ↓
+Solicitar memoria
+      ↓
+Asignar memoria
+      ↓
+READY
+      ↓
+RUNNING
+      ↓
+Solicitar recurso
+      ↓
+¿Disponible?
+ /           \
+Sí            No
+↓              ↓
+Continúa     WAITING
+               ↓
+        ¿Existe interbloqueo?
+               ↓
+            Detectar
+```
+
+Y al finalizar:
+
+```text
+TERMINATED
+     ↓
+Liberar memoria
+     ↓
+Liberar recursos
+     ↓
+Actualizar colas
+     ↓
+Actualizar estado general
+```
+
+Esta relación entre componentes deberá poder observarse durante la demostración.
+
+# Escenarios mínimos de prueba
+
+El proyecto deberá incluir pruebas planificadas.
+
+Como mínimo deberán demostrar los siguientes escenarios.
+
+## Escenario 1 — Creación y asignación correcta
+
+Crear un proceso que pueda recibir memoria correctamente.
+
+Demostrar:
+
+- PCB;
+- memoria solicitada;
+- memoria asignada;
+- estado resultante.
+
+## Escenario 2 — Comparación de métodos de ajuste
+
+Ejecutar una misma carga utilizando:
+
+- First Fit;
+- Best Fit;
+- Worst Fit.
+
+Comparar los mapas finales y explicar las diferencias.
+
+## Escenario 3 — Memoria insuficiente por fragmentación
+
+Construir una situación donde exista suficiente memoria libre total, pero ningún hueco sea suficientemente grande.
+
+Explicar el resultado.
+
+## Escenario 4 — Liberación y compactación
+
+Finalizar uno o varios procesos.
+
+Demostrar:
+
+1. memoria antes;
+2. liberación;
+3. huecos generados;
+4. compactación;
+5. memoria después.
+
+## Escenario 5 — Proceso esperando recurso
+
+Un proceso deberá solicitar un recurso ocupado.
+
+Demostrar la relación entre:
+
+```text
+solicitud de recurso
+        ↓
+recurso ocupado
+        ↓
+proceso esperando
+        ↓
+estado WAITING
+```
+
+## Escenario 6 — Interbloqueo
+
+Crear intencionalmente un escenario de interbloqueo.
+
+El equipo deberá identificar:
+
+- procesos;
+- recursos;
+- dependencias;
+- causa;
+- estrategia propuesta.
+
+## Escenario 7 — Finalización completa
+
+Finalizar un proceso que posea memoria y recursos.
+
+Demostrar que:
+
+- cambia a `TERMINATED`;
+- libera memoria;
+- libera recursos;
+- actualiza las estructuras correspondientes.
+
+## Escenario 8 — Estado general
+
+Mostrar una situación donde existan simultáneamente:
+
+- procesos Ready;
+- un proceso Running;
+- al menos un proceso Waiting;
+- memoria ocupada y libre;
+- recursos ocupados y disponibles.
+
+Mostrar el estado general y explicar qué está ocurriendo.
+
+# Evidencias de prueba
+
+Cada escenario deberá documentarse.
+
+Se recomienda utilizar una tabla como:
+
+| No. | Escenario | Estado inicial | Acción | Resultado esperado | Resultado obtenido |
+|---:|---|---|---|---|---|
+| 1 | Asignación | Memoria disponible | Crear P1 | P1 recibe memoria | ... |
+| 2 | Fragmentación | Huecos dispersos | Crear proceso grande | No puede asignarse | ... |
+| 3 | Interbloqueo | P1 y P2 poseen recursos | Solicitar recurso contrario | Detectar bloqueo | ... |
+
+Las capturas de pantalla deberán servir como **evidencia**, no sustituir la explicación.
+
+# Documento a entregar
+
+El informe deberá presentarse en PDF.
+
+La estructura mínima será:
+
+1. Carátula.
+2. Introducción.
+3. Objetivos.
+4. Descripción del simulador desarrollado en el Proyecto No. 1.
+5. **Descripción de la evolución realizada para el Proyecto No. 2.**
+6. Arquitectura o diseño general de la solución.
+7. Evolución del PCB.
+8. Diseño del administrador de memoria.
+9. Métodos de ajuste implementados.
+10. Fragmentación y compactación.
+11. Diseño de administración de recursos.
+12. Diseño y tratamiento de interbloqueos.
+13. Representación conceptual de paginación.
+14. Diagrama general actualizado.
+15. Descripción de los principales componentes de la solución.
+16. Escenarios de prueba.
+17. Evidencias de ejecución.
+18. Resultados obtenidos.
+19. Conclusiones.
+
+# Introducción del informe
+
+La introducción deberá dejar claro que este proyecto es una continuación.
+
+Deberá explicar:
+
+- qué se construyó en el Proyecto No. 1;
+- qué conocimientos nuevos se incorporan;
+- por qué fue necesario modificar el simulador;
+- cuál es el alcance de esta segunda versión.
+
+No debe presentarse el Proyecto No. 2 como si el Proyecto No. 1 nunca hubiera existido.
+
+# Diagrama general actualizado
+
+El equipo deberá actualizar el diseño general del simulador.
+
+No se busca un diagrama extremadamente detallado de cada línea del programa.
+
+Se espera una representación de componentes y relaciones.
+
+Por ejemplo:
+
+```text
+┌──────────────────────────────┐
+│       SIMULADOR DEL SO       │
+└──────────────┬───────────────┘
+               │
+       ┌───────┼────────┐
+       │       │        │
+       ▼       ▼        ▼
+  PROCESOS   MEMORIA  RECURSOS
+       │       │        │
+       │       │        ▼
+       │       │   INTERBLOQUEOS
+       │       │        │
+       └───────┼────────┘
+               ▼
+        ESTADO GENERAL
+```
+
+El equipo puede utilizar otra representación si comunica mejor su arquitectura.
+
+# Código fuente
+
+El código deberá estar:
+
+- organizado;
+- comentado;
+- legible;
+- dividido lógicamente;
+- relacionado con el diseño presentado.
+
+Sin embargo, en esta etapa **no se calificará principalmente la sintaxis o sofisticación de programación**.
+
+Se evaluará que el código sea un medio adecuado para representar la solución propuesta.
+
+::: {.callout-important title="Quinto semestre"}
+El objetivo no es demostrar quién escribe más líneas de código.
+
+El objetivo es demostrar quién comprende mejor el problema, propone una solución coherente y puede defender técnicamente las decisiones tomadas.
+:::
+
+# Conclusiones
+
+Las conclusiones deberán analizar lo aprendido durante la evolución del simulador.
+
+Como mínimo deberán abordar:
+
+- cómo cambió el simulador respecto al Proyecto No. 1;
+- cómo se relacionan procesos y memoria;
+- qué efecto producen las políticas de asignación;
+- qué consecuencias tiene la fragmentación;
+- cómo afectan los recursos al estado de los procesos;
+- qué aprendieron al provocar y analizar un interbloqueo;
+- qué limitaciones mantiene el simulador frente a un sistema operativo real.
+
+No se aceptarán como conclusiones únicamente frases generales como:
+
+> “El proyecto fue interesante.”
+
+> “Aprendimos sobre Sistemas Operativos.”
+
+Las conclusiones deberán derivarse de las pruebas y resultados obtenidos.
+
+# Criterios de evaluación
+
+| Criterio | Puntos |
+|---|---:|
+| Continuidad e integración con el Proyecto No. 1 | 10 |
+| Diseño y evolución del PCB | 5 |
+| Administración y representación de memoria | 15 |
+| First Fit, Best Fit y Worst Fit | 10 |
+| Fragmentación, liberación y compactación | 10 |
+| Administración de recursos | 10 |
+| Interbloqueos: representación, análisis y tratamiento | 15 |
+| Paginación y relación con memoria contigua | 5 |
+| Escenarios de prueba y análisis de resultados | 10 |
+| Presentación, documentación y defensa | 10 |
+| **TOTAL** | **100** |
+
+# Defensa del proyecto
+
+Durante la presentación, el docente podrá solicitar al equipo:
+
+- ejecutar un escenario diferente al presentado;
+- crear un nuevo proceso;
+- modificar el tamaño de memoria solicitado;
+- cambiar First Fit por Best Fit o Worst Fit;
+- finalizar un proceso y observar qué ocurre con la memoria;
+- explicar un hueco específico;
+- provocar una situación de fragmentación;
+- explicar por qué un proceso está en Waiting;
+- liberar un recurso;
+- provocar o romper un interbloqueo;
+- interpretar el estado general del sistema;
+- explicar cualquier decisión tomada en el diseño.
+
+Cualquier integrante deberá poder explicar el funcionamiento general del simulador.
+
+::: {.callout-tip title="La defensa no consiste en memorizar el código"}
+Las preguntas estarán orientadas principalmente a comprobar que el equipo comprende **qué está simulando, por qué ocurre y qué decisión tomó para resolverlo**.
+:::
+
+# Uso de Inteligencia Artificial
+
+Las herramientas de Inteligencia Artificial pueden utilizarse como apoyo para el aprendizaje.
+
+Se permite utilizarlas para:
+
+- comprender conceptos;
+- revisar redacción;
+- analizar mensajes de error;
+- consultar documentación;
+- contrastar alternativas de solución;
+- solicitar explicaciones sobre conceptos estudiados.
+
+Sin embargo, la solución presentada será responsabilidad del equipo.
+
+Durante la defensa, los estudiantes deberán demostrar que comprenden:
+
+- la arquitectura propuesta;
+- las decisiones tomadas;
+- el comportamiento de los procesos;
+- la administración de memoria;
+- los métodos de ajuste;
+- la fragmentación;
+- los recursos;
+- los interbloqueos;
+- las pruebas realizadas.
+
+La utilización de IA **no sustituye la comprensión ni la capacidad de defender técnicamente la solución**.
+
+# Visión del Proyecto Integrador
+
+El proyecto continuará evolucionando.
+
+```text
+PROYECTO No. 1
+Procesos
+PCB
+Estados
+Colas
+        │
+        ▼
+PROYECTO No. 2
+Todo lo anterior
++
+Administración de memoria
+Métodos de ajuste
+Fragmentación
+Compactación
+Recursos
+Interbloqueos
+Paginación conceptual
+        │
+        ▼
+PROYECTO No. 3
+Todo lo anterior
++
+Sistema de archivos
+Persistencia
+Integración final
+        │
+        ▼
+SIMULADOR INTEGRADO
+DE UN SISTEMA OPERATIVO
+```
+
+::: {.callout-success title="La meta"}
+Al finalizar el semestre no tendremos tres proyectos aislados.
+
+Tendremos **un simulador que habrá evolucionado junto con los conocimientos adquiridos durante el curso**.
+
+Cada nueva versión deberá permitir comprender mejor cómo los distintos componentes de un sistema operativo se relacionan entre sí.
+:::
+
+# Pregunta guía del Proyecto No. 2
+
+> **¿Qué ocurre con nuestros procesos cuando el sistema operativo también debe administrar la memoria y los recursos que necesitan para ejecutarse?**
+
+Esta pregunta deberá acompañar el análisis, las pruebas y la defensa del proyecto.

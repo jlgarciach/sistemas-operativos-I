@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ing. Jorge L. García">
+
+<title>18&nbsp; Actividad en clase: Reto de Administración de Memoria – Sistemas Operativos I</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../capitulos/17_gestion_memoria_sistemas_monoprogramados.html" rel="next">
+<link href="../capitulos/15_metodos_ajuste_memoria.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-00cb48ef4f8381ff23467c959274e61b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-663c59e08f2ec96d6b2ddc79a12e8e5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No se han encontrado resultados",
+    "search-matching-documents-text": "documentos encontrados",
+    "search-copy-link-title": "Copiar el enlace en la búsqueda",
+    "search-hide-matches-text": "Ocultar resultados adicionales",
+    "search-more-match-text": "resultado adicional en este documento",
+    "search-more-matches-text": "resultados adicionales en este documento",
+    "search-clear-button-title": "Borrar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Buscar"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../capitulos/16_actividad_reto_administracion_memoria.html"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Actividad en clase: Reto de Administración de Memoria</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Buscar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Sistemas Operativos I</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Buscar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">index.html</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/01_introduccion_sistemas_operativos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Presentación de la clase</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/02_administracion_sistema_archivos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Administración del sistema de archivos desde la línea de comandos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/03_sistemas_operativos_red.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Clase 3. Sistemas Operativos de Red</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/04_administracion_procesos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Clase 4. Administración de Procesos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/05_control_procesos_concurrencia.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Clase 5. Control de Procesos y Concurrencia</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/06_algoritmos_de_planificacion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Capítulo 6. ¿Cómo decide el Sistema Operativo quién utiliza el procesador?</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/07_capas_del_sistema_operativo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/08_interbloqueos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/09_prevencion_deteccion_interbloqueos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Capítulo 9. Prevención, detección y recuperación de interbloqueos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/10_actividad_diagnostico_sistema_operativo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Actividad - Diagnóstico de un Sistema Operativo</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Actividad - Diagnóstico de un Sistema Operativo</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/12_virtualizacion_sistemas_operativos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Capítulo 12. Virtualización de Sistemas Operativos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/13_manejo_memoria_paginacion_particiones.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Capítulo 13. Manejo de memoria: particiones y paginación</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/14_administracion_memoria_en_ejecucion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Capítulo 14. Administración de memoria en ejecución</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/15_metodos_ajuste_memoria_con_solucion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Capítulo 15. Métodos de ajuste de memoria</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/15_metodos_ajuste_memoria.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Capítulo 15. Métodos de ajuste de memoria</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/16_actividad_reto_administracion_memoria.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Actividad en clase: Reto de Administración de Memoria</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/17_gestion_memoria_sistemas_monoprogramados.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Gestión de Memoria en Sistemas Monoprogramados</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/18_gestion_memoria_sistemas_multiprogramados.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Gestión de Memoria en Sistemas Multiprogramados</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/99_cierre.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Cierre de la clase</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Tabla de contenidos</h2>
+   
+  <ul>
+  <li><a href="#actividad-en-clase" id="toc-actividad-en-clase" class="nav-link active" data-scroll-target="#actividad-en-clase"><span class="header-section-number">19</span> Actividad en clase</a>
+  <ul class="collapse">
+  <li><a href="#misión-memoria-al-límite" id="toc-misión-memoria-al-límite" class="nav-link" data-scroll-target="#misión-memoria-al-límite"><span class="header-section-number">19.1</span> Misión: Memoria al límite</a></li>
+  </ul></li>
+  <li><a href="#problema-central" id="toc-problema-central" class="nav-link" data-scroll-target="#problema-central"><span class="header-section-number">20</span> Problema central</a></li>
+  <li><a href="#condiciones-de-trabajo" id="toc-condiciones-de-trabajo" class="nav-link" data-scroll-target="#condiciones-de-trabajo"><span class="header-section-number">21</span> Condiciones de trabajo</a></li>
+  <li><a href="#las-seis-misiones" id="toc-las-seis-misiones" class="nav-link" data-scroll-target="#las-seis-misiones"><span class="header-section-number">22</span> Las seis misiones</a>
+  <ul class="collapse">
+  <li><a href="#equipo-1-first-fit" id="toc-equipo-1-first-fit" class="nav-link" data-scroll-target="#equipo-1-first-fit"><span class="header-section-number">22.1</span> Equipo 1 — First Fit</a></li>
+  <li><a href="#equipo-2-best-fit" id="toc-equipo-2-best-fit" class="nav-link" data-scroll-target="#equipo-2-best-fit"><span class="header-section-number">22.2</span> Equipo 2 — Best Fit</a></li>
+  <li><a href="#equipo-3-worst-fit" id="toc-equipo-3-worst-fit" class="nav-link" data-scroll-target="#equipo-3-worst-fit"><span class="header-section-number">22.3</span> Equipo 3 — Worst Fit</a></li>
+  <li><a href="#equipo-4-fragmentación-y-compactación" id="toc-equipo-4-fragmentación-y-compactación" class="nav-link" data-scroll-target="#equipo-4-fragmentación-y-compactación"><span class="header-section-number">22.4</span> Equipo 4 — Fragmentación y compactación</a></li>
+  <li><a href="#equipo-5-arquitectos-del-sistema-operativo" id="toc-equipo-5-arquitectos-del-sistema-operativo" class="nav-link" data-scroll-target="#equipo-5-arquitectos-del-sistema-operativo"><span class="header-section-number">22.5</span> Equipo 5 — Arquitectos del Sistema Operativo</a></li>
+  <li><a href="#equipo-6-auditores-y-comparadores-de-estrategias" id="toc-equipo-6-auditores-y-comparadores-de-estrategias" class="nav-link" data-scroll-target="#equipo-6-auditores-y-comparadores-de-estrategias"><span class="header-section-number">22.6</span> Equipo 6 — Auditores y comparadores de estrategias</a></li>
+  </ul></li>
+  <li><a href="#producto-mínimo-de-cada-exposición" id="toc-producto-mínimo-de-cada-exposición" class="nav-link" data-scroll-target="#producto-mínimo-de-cada-exposición"><span class="header-section-number">23</span> Producto mínimo de cada exposición</a></li>
+  <li><a href="#cadena-de-validación-técnica" id="toc-cadena-de-validación-técnica" class="nav-link" data-scroll-target="#cadena-de-validación-técnica"><span class="header-section-number">24</span> Cadena de Validación Técnica</a></li>
+  <li><a href="#tabla-colectiva-de-resultados" id="toc-tabla-colectiva-de-resultados" class="nav-link" data-scroll-target="#tabla-colectiva-de-resultados"><span class="header-section-number">25</span> Tabla colectiva de resultados</a></li>
+  <li><a href="#evaluación-10-puntos" id="toc-evaluación-10-puntos" class="nav-link" data-scroll-target="#evaluación-10-puntos"><span class="header-section-number">26</span> Evaluación — 10 puntos</a></li>
+  <li><a href="#cierre-colectivo" id="toc-cierre-colectivo" class="nav-link" data-scroll-target="#cierre-colectivo"><span class="header-section-number">27</span> Cierre colectivo</a></li>
+  <li><a href="#sección-para-el-docente" id="toc-sección-para-el-docente" class="nav-link" data-scroll-target="#sección-para-el-docente"><span class="header-section-number">28</span> Sección para el docente</a>
+  <ul class="collapse">
+  <li><a href="#equipo-1-first-fit-1" id="toc-equipo-1-first-fit-1" class="nav-link" data-scroll-target="#equipo-1-first-fit-1"><span class="header-section-number">28.1</span> Equipo 1 — First Fit</a>
+  <ul class="collapse">
+  <li><a href="#pregunta-docente-1" id="toc-pregunta-docente-1" class="nav-link" data-scroll-target="#pregunta-docente-1"><span class="header-section-number">28.1.1</span> Pregunta docente 1</a></li>
+  <li><a href="#pregunta-docente-2" id="toc-pregunta-docente-2" class="nav-link" data-scroll-target="#pregunta-docente-2"><span class="header-section-number">28.1.2</span> Pregunta docente 2</a></li>
+  </ul></li>
+  <li><a href="#equipo-2-best-fit-1" id="toc-equipo-2-best-fit-1" class="nav-link" data-scroll-target="#equipo-2-best-fit-1"><span class="header-section-number">28.2</span> Equipo 2 — Best Fit</a>
+  <ul class="collapse">
+  <li><a href="#pregunta-docente-1-1" id="toc-pregunta-docente-1-1" class="nav-link" data-scroll-target="#pregunta-docente-1-1"><span class="header-section-number">28.2.1</span> Pregunta docente 1</a></li>
+  <li><a href="#pregunta-docente-2-1" id="toc-pregunta-docente-2-1" class="nav-link" data-scroll-target="#pregunta-docente-2-1"><span class="header-section-number">28.2.2</span> Pregunta docente 2</a></li>
+  </ul></li>
+  <li><a href="#equipo-3-worst-fit-1" id="toc-equipo-3-worst-fit-1" class="nav-link" data-scroll-target="#equipo-3-worst-fit-1"><span class="header-section-number">28.3</span> Equipo 3 — Worst Fit</a>
+  <ul class="collapse">
+  <li><a href="#pregunta-docente-1-2" id="toc-pregunta-docente-1-2" class="nav-link" data-scroll-target="#pregunta-docente-1-2"><span class="header-section-number">28.3.1</span> Pregunta docente 1</a></li>
+  <li><a href="#pregunta-docente-2-2" id="toc-pregunta-docente-2-2" class="nav-link" data-scroll-target="#pregunta-docente-2-2"><span class="header-section-number">28.3.2</span> Pregunta docente 2</a></li>
+  </ul></li>
+  <li><a href="#equipo-4-fragmentación-y-compactación-1" id="toc-equipo-4-fragmentación-y-compactación-1" class="nav-link" data-scroll-target="#equipo-4-fragmentación-y-compactación-1"><span class="header-section-number">28.4</span> Equipo 4 — Fragmentación y compactación</a>
+  <ul class="collapse">
+  <li><a href="#pregunta-docente-1-3" id="toc-pregunta-docente-1-3" class="nav-link" data-scroll-target="#pregunta-docente-1-3"><span class="header-section-number">28.4.1</span> Pregunta docente 1</a></li>
+  <li><a href="#pregunta-docente-2-3" id="toc-pregunta-docente-2-3" class="nav-link" data-scroll-target="#pregunta-docente-2-3"><span class="header-section-number">28.4.2</span> Pregunta docente 2</a></li>
+  </ul></li>
+  <li><a href="#equipo-5-arquitectos-del-sistema-operativo-1" id="toc-equipo-5-arquitectos-del-sistema-operativo-1" class="nav-link" data-scroll-target="#equipo-5-arquitectos-del-sistema-operativo-1"><span class="header-section-number">28.5</span> Equipo 5 — Arquitectos del Sistema Operativo</a>
+  <ul class="collapse">
+  <li><a href="#pregunta-docente-1-4" id="toc-pregunta-docente-1-4" class="nav-link" data-scroll-target="#pregunta-docente-1-4"><span class="header-section-number">28.5.1</span> Pregunta docente 1</a></li>
+  <li><a href="#pregunta-docente-2-4" id="toc-pregunta-docente-2-4" class="nav-link" data-scroll-target="#pregunta-docente-2-4"><span class="header-section-number">28.5.2</span> Pregunta docente 2</a></li>
+  </ul></li>
+  <li><a href="#equipo-6-auditores-y-comparadores-de-estrategias-1" id="toc-equipo-6-auditores-y-comparadores-de-estrategias-1" class="nav-link" data-scroll-target="#equipo-6-auditores-y-comparadores-de-estrategias-1"><span class="header-section-number">28.6</span> Equipo 6 — Auditores y comparadores de estrategias</a>
+  <ul class="collapse">
+  <li><a href="#pregunta-docente-1-5" id="toc-pregunta-docente-1-5" class="nav-link" data-scroll-target="#pregunta-docente-1-5"><span class="header-section-number">28.6.1</span> Pregunta docente 1</a></li>
+  <li><a href="#pregunta-docente-2-5" id="toc-pregunta-docente-2-5" class="nav-link" data-scroll-target="#pregunta-docente-2-5"><span class="header-section-number">28.6.2</span> Pregunta docente 2</a></li>
+  <li><a href="#criterio-especial-de-validación-para-p6" id="toc-criterio-especial-de-validación-para-p6" class="nav-link" data-scroll-target="#criterio-especial-de-validación-para-p6"><span class="header-section-number">28.6.3</span> Criterio especial de validación para P6</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#dos-preguntas-finales-para-toda-la-clase" id="toc-dos-preguntas-finales-para-toda-la-clase" class="nav-link" data-scroll-target="#dos-preguntas-finales-para-toda-la-clase"><span class="header-section-number">29</span> Dos preguntas finales para toda la clase</a>
+  <ul class="collapse">
+  <li><a href="#pregunta-final-1" id="toc-pregunta-final-1" class="nav-link" data-scroll-target="#pregunta-final-1"><span class="header-section-number">29.1</span> Pregunta final 1</a></li>
+  <li><a href="#pregunta-final-2" id="toc-pregunta-final-2" class="nav-link" data-scroll-target="#pregunta-final-2"><span class="header-section-number">29.2</span> Pregunta final 2</a></li>
+  </ul></li>
+  <li><a href="#mensaje-de-cierre" id="toc-mensaje-de-cierre" class="nav-link" data-scroll-target="#mensaje-de-cierre"><span class="header-section-number">30</span> Mensaje de cierre</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Actividad en clase: Reto de Administración de Memoria</span></h1>
+<p class="subtitle lead">Análisis colaborativo, defensa técnica y cadena de validación</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Autor/a</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ing. Jorge L. García </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Fecha de publicación</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">9 de septiembre de 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="actividad-en-clase" class="level1" data-number="19">
+<h1 data-number="19"><span class="header-section-number">19</span> Actividad en clase</h1>
+<section id="misión-memoria-al-límite" class="level2" data-number="19.1">
+<h2 data-number="19.1" class="anchored" data-anchor-id="misión-memoria-al-límite"><span class="header-section-number">19.1</span> Misión: Memoria al límite</h2>
+<p>Esta actividad integra los conceptos estudiados sobre <strong>administración de memoria, métodos de ajuste, fragmentación, compactación y memoria virtual</strong>.</p>
+<p>No se trata únicamente de presentar un tema.</p>
+<p>Cada equipo deberá:</p>
+<ol type="1">
+<li>investigar;</li>
+<li>analizar;</li>
+<li>aplicar;</li>
+<li>representar;</li>
+<li>explicar;</li>
+<li>cuestionar;</li>
+<li>defender técnicamente sus conclusiones.</li>
+</ol>
+<div class="callout callout-style-default callout-important callout-titled" title="Regla fundamental">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Importante</span>Regla fundamental
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Todos los equipos son responsables de comprender el problema completo</strong>, aunque cada uno tenga una misión principal diferente.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="problema-central" class="level1" data-number="20">
+<h1 data-number="20"><span class="header-section-number">20</span> Problema central</h1>
+<p>Una empresa administra un servidor que ejecuta múltiples procesos simultáneamente.</p>
+<p>Después de varias horas de funcionamiento, el administrador observa que existe memoria disponible, pero algunos procesos nuevos podrían tener dificultades para encontrar un espacio adecuado.</p>
+<p>El mapa simplificado de huecos libres es:</p>
+<pre class="text"><code>Bloques libres:
+[120 KB, 400 KB, 250 KB, 600 KB, 180 KB]</code></pre>
+<p>En ese instante llegan, exactamente en este orden:</p>
+<pre class="text"><code>P1 = 175 KB
+P2 = 230 KB
+P3 = 390 KB
+P4 = 110 KB
+P5 = 280 KB</code></pre>
+<p>La empresa solicita a seis equipos de especialistas analizar el problema.</p>
+</section>
+<section id="condiciones-de-trabajo" class="level1" data-number="21">
+<h1 data-number="21"><span class="header-section-number">21</span> Condiciones de trabajo</h1>
+<ul>
+<li><strong>Tiempo de investigación y preparación:</strong> 30 minutos.</li>
+<li><strong>Tiempo máximo de exposición:</strong> 10 minutos por equipo.</li>
+<li>Se permite utilizar apuntes, libro del curso, Internet, documentación técnica y herramientas de <strong>Inteligencia Artificial</strong>.</li>
+<li>La información obtenida debe ser comprendida y verificada por el equipo.</li>
+<li>Todos los integrantes deben estar preparados para responder.</li>
+<li>El docente puede seleccionar a cualquier integrante para explicar una decisión.</li>
+<li>La solución debe incluir una representación visual del estado de la memoria.</li>
+<li>No se calificará principalmente el diseño de las diapositivas, sino la <strong>comprensión y defensa técnica</strong>.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled" title="IA permitida">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>IA permitida
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La IA puede ayudar a construir una respuesta.</p>
+<p><strong>No puede comprenderla ni defenderla por ustedes.</strong></p>
+</div>
+</div>
+</section>
+<section id="las-seis-misiones" class="level1" data-number="22">
+<h1 data-number="22"><span class="header-section-number">22</span> Las seis misiones</h1>
+<section id="equipo-1-first-fit" class="level2" data-number="22.1">
+<h2 data-number="22.1" class="anchored" data-anchor-id="equipo-1-first-fit"><span class="header-section-number">22.1</span> Equipo 1 — First Fit</h2>
+<p>Simule la asignación de los procesos <code>P1</code> a <code>P5</code> utilizando <strong>First Fit</strong>.</p>
+<p>Debe presentar:</p>
+<ul>
+<li>criterio utilizado;</li>
+<li>bloque seleccionado para cada proceso;</li>
+<li>espacio restante después de cada asignación;</li>
+<li>actualización del mapa de huecos;</li>
+<li>procesos que lograron o no asignarse;</li>
+<li>memoria libre total al finalizar;</li>
+<li>mayor hueco libre final;</li>
+<li>ventajas y limitaciones observadas;</li>
+<li>recomendación del equipo.</li>
+</ul>
+<p>No basta con mostrar el resultado final. Debe explicarse <strong>cómo se tomó cada decisión</strong>.</p>
+</section>
+<section id="equipo-2-best-fit" class="level2" data-number="22.2">
+<h2 data-number="22.2" class="anchored" data-anchor-id="equipo-2-best-fit"><span class="header-section-number">22.2</span> Equipo 2 — Best Fit</h2>
+<p>Resuelva exactamente el mismo escenario utilizando <strong>Best Fit</strong>.</p>
+<p>Debe presentar:</p>
+<ul>
+<li>criterio de selección;</li>
+<li>candidatos considerados;</li>
+<li>bloque seleccionado;</li>
+<li>espacio sobrante;</li>
+<li>estado de los huecos después de cada proceso;</li>
+<li>procesos asignados y rechazados;</li>
+<li>memoria libre total;</li>
+<li>mayor hueco libre;</li>
+<li>ventajas y limitaciones;</li>
+<li>recomendación.</li>
+</ul>
+<p>Debe justificar por qué el bloque seleccionado era el <strong>menor bloque suficientemente grande</strong> en ese momento.</p>
+</section>
+<section id="equipo-3-worst-fit" class="level2" data-number="22.3">
+<h2 data-number="22.3" class="anchored" data-anchor-id="equipo-3-worst-fit"><span class="header-section-number">22.3</span> Equipo 3 — Worst Fit</h2>
+<p>Aplique <strong>Worst Fit</strong> a la misma secuencia.</p>
+<p>Debe mostrar:</p>
+<ul>
+<li>criterio;</li>
+<li>mayor bloque disponible en cada decisión;</li>
+<li>asignaciones realizadas;</li>
+<li>sobrantes;</li>
+<li>mapa de memoria actualizado;</li>
+<li>procesos asignados y rechazados;</li>
+<li>memoria libre total;</li>
+<li>mayor hueco libre;</li>
+<li>ventajas y limitaciones;</li>
+<li>recomendación.</li>
+</ul>
+<p>Además, debe responder:</p>
+<blockquote class="blockquote">
+<p>¿Conservar huecos relativamente grandes produjo una ventaja en este escenario?</p>
+</blockquote>
+</section>
+<section id="equipo-4-fragmentación-y-compactación" class="level2" data-number="22.4">
+<h2 data-number="22.4" class="anchored" data-anchor-id="equipo-4-fragmentación-y-compactación"><span class="header-section-number">22.4</span> Equipo 4 — Fragmentación y compactación</h2>
+<p>Analice el problema desde la perspectiva de la <strong>fragmentación externa</strong>.</p>
+<p>Debe:</p>
+<ul>
+<li>explicar qué es;</li>
+<li>demostrar con un ejemplo cómo puede existir memoria libre suficiente en total y aun así no poder colocar un proceso contiguamente;</li>
+<li>utilizar, cuando corresponda, resultados de First Fit, Best Fit o Worst Fit;</li>
+<li>representar visualmente memoria fragmentada;</li>
+<li>demostrar qué cambiaría después de una compactación;</li>
+<li>explicar el costo de compactar;</li>
+<li>indicar cuándo la compactación puede ayudar y por qué no es una operación gratuita.</li>
+</ul>
+<p>Su exposición debe conectar las decisiones de los equipos anteriores con el problema de fragmentación.</p>
+</section>
+<section id="equipo-5-arquitectos-del-sistema-operativo" class="level2" data-number="22.5">
+<h2 data-number="22.5" class="anchored" data-anchor-id="equipo-5-arquitectos-del-sistema-operativo"><span class="header-section-number">22.5</span> Equipo 5 — Arquitectos del Sistema Operativo</h2>
+<p>Investigue cómo cambia este problema en un <strong>Sistema Operativo moderno</strong>.</p>
+<p>Debe conectar nuestro modelo académico con:</p>
+<ul>
+<li>memoria virtual;</li>
+<li>paginación;</li>
+<li>páginas;</li>
+<li>marcos de página;</li>
+<li>traducción de direcciones;</li>
+<li>asignación de memoria física;</li>
+<li>concepto general del <strong>Buddy System</strong>.</li>
+</ul>
+<p>Debe explicar por qué no sería correcto resumir:</p>
+<pre class="text"><code>Windows = Best Fit
+Linux   = Worst Fit</code></pre>
+<p>Finalmente debe responder:</p>
+<blockquote class="blockquote">
+<p>Si los sistemas modernos utilizan mecanismos más sofisticados, ¿por qué sigue siendo útil estudiar First Fit, Best Fit y Worst Fit?</p>
+</blockquote>
+</section>
+<section id="equipo-6-auditores-y-comparadores-de-estrategias" class="level2" data-number="22.6">
+<h2 data-number="22.6" class="anchored" data-anchor-id="equipo-6-auditores-y-comparadores-de-estrategias"><span class="header-section-number">22.6</span> Equipo 6 — Auditores y comparadores de estrategias</h2>
+<p>Su misión es <strong>auditar, comparar y poner a prueba</strong> los resultados obtenidos por los equipos 1, 2 y 3.</p>
+<p>No debe limitarse a repetir sus exposiciones.</p>
+<p>Debe:</p>
+<ul>
+<li>verificar los resultados finales de <strong>First Fit, Best Fit y Worst Fit</strong>;</li>
+<li>comparar procesos asignados y rechazados;</li>
+<li>comparar memoria libre total y mayor hueco disponible;</li>
+<li>identificar qué estrategia dejó huecos pequeños que podrían dificultar asignaciones posteriores;</li>
+<li>determinar si existe evidencia de fragmentación externa;</li>
+<li>proponer un <strong>nuevo proceso P6</strong>, con un tamaño elegido y técnicamente justificado, que permita evidenciar una diferencia importante entre los estados finales de las tres estrategias;</li>
+<li>predecir qué ocurriría con <code>P6</code> utilizando First Fit, Best Fit y Worst Fit a partir de los estados finales obtenidos;</li>
+<li>elaborar una recomendación final para <strong>este escenario concreto</strong>.</li>
+</ul>
+<p>Su exposición debe cerrar con:</p>
+<blockquote class="blockquote">
+<p><strong>Para este escenario concreto recomendamos __________ porque __________.</strong></p>
+</blockquote>
+<div class="callout callout-style-default callout-tip callout-titled" title="El reto del Equipo 6">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>El reto del Equipo 6
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>El tamaño de <code>P6</code> <strong>no está dado</strong>.</p>
+<p>El equipo debe elegirlo después de analizar los resultados de las tres estrategias. El valor propuesto debe permitir demostrar que comprendieron cómo las decisiones anteriores afectan las posibilidades futuras del sistema.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="producto-mínimo-de-cada-exposición" class="level1" data-number="23">
+<h1 data-number="23"><span class="header-section-number">23</span> Producto mínimo de cada exposición</h1>
+<p>Cada equipo debe presentar como mínimo:</p>
+<ol type="1">
+<li><strong>Concepto</strong> asignado.</li>
+<li><strong>Aplicación</strong> al problema central.</li>
+<li><strong>Representación visual</strong>.</li>
+<li><strong>Resultado</strong>.</li>
+<li><strong>Conclusión</strong>.</li>
+<li><strong>Recomendación técnica</strong>.</li>
+</ol>
+</section>
+<section id="cadena-de-validación-técnica" class="level1" data-number="24">
+<h1 data-number="24"><span class="header-section-number">24</span> Cadena de Validación Técnica</h1>
+<p>La actividad funciona como una sola cadena.</p>
+<pre class="text"><code>Equipo 1 expone
+      ↓
+Equipo 2 formula 2 preguntas
+      ↓
+Equipo 2 expone
+      ↓
+Equipo 3 formula 2 preguntas
+      ↓
+Equipo 3 expone
+      ↓
+Equipo 4 formula 2 preguntas
+      ↓
+Equipo 4 expone
+      ↓
+Equipo 5 formula 2 preguntas
+      ↓
+Equipo 5 expone
+      ↓
+Equipo 6 formula 2 preguntas
+      ↓
+Equipo 6 expone
+      ↓
+Equipo 1 formula 2 preguntas
+      ↓
+CIERRE</code></pre>
+<p>Las preguntas deben ser:</p>
+<ul>
+<li>técnicas;</li>
+<li>claras;</li>
+<li>diferentes entre sí;</li>
+<li>relacionadas con lo presentado;</li>
+<li>orientadas a comprobar, comparar, cuestionar o profundizar.</li>
+</ul>
+<p>No se consideran suficientes preguntas cuya respuesta sea únicamente una definición visible en la presentación.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="La cadena debe completarse al 100 %">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Advertencia</span>La cadena debe completarse al 100 %
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Si un equipo no realiza sus <strong>dos preguntas</strong>, formula preguntas que no evidencien comprensión o rompe la secuencia de participación, <strong>la nota máxima de la actividad para ese equipo será de 5/10 puntos</strong>.</p>
+</div>
+</div>
+</section>
+<section id="tabla-colectiva-de-resultados" class="level1" data-number="25">
+<h1 data-number="25"><span class="header-section-number">25</span> Tabla colectiva de resultados</h1>
+<p>Durante las exposiciones se completará una tabla común:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Indicador</th>
+<th style="text-align: right;">First Fit</th>
+<th style="text-align: right;">Best Fit</th>
+<th style="text-align: right;">Worst Fit</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Procesos asignados</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td>Procesos rechazados</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
+<td>Huecos finales</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="even">
+<td>Mayor hueco libre</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr class="odd">
+<td>Memoria libre total</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+</tbody>
+</table>
+<p>El objetivo no es únicamente decidir quién obtuvo un mejor resultado.</p>
+<p>Debemos explicar:</p>
+<blockquote class="blockquote">
+<p><strong>¿Por qué diferentes políticas producen estados de memoria diferentes si todas comenzaron exactamente con los mismos datos?</strong></p>
+</blockquote>
+</section>
+<section id="evaluación-10-puntos" class="level1" data-number="26">
+<h1 data-number="26"><span class="header-section-number">26</span> Evaluación — 10 puntos</h1>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Criterio</th>
+<th style="text-align: right;">Puntos</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Exactitud técnica y solución</td>
+<td style="text-align: right;">3.0</td>
+</tr>
+<tr class="even">
+<td>Explicación y defensa de la solución</td>
+<td style="text-align: right;">2.0</td>
+</tr>
+<tr class="odd">
+<td>Representación visual y claridad</td>
+<td style="text-align: right;">1.0</td>
+</tr>
+<tr class="even">
+<td>Conclusión y recomendación técnica</td>
+<td style="text-align: right;">1.0</td>
+</tr>
+<tr class="odd">
+<td>Dos preguntas al equipo correspondiente</td>
+<td style="text-align: right;">1.0</td>
+</tr>
+<tr class="even">
+<td>Respuestas a preguntas recibidas</td>
+<td style="text-align: right;">1.0</td>
+</tr>
+<tr class="odd">
+<td>Participación equilibrada del equipo</td>
+<td style="text-align: right;">1.0</td>
+</tr>
+<tr class="even">
+<td><strong>Total</strong></td>
+<td style="text-align: right;"><strong>10.0</strong></td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled" title="Regla de transparencia">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Regla de transparencia
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La calificación será registrada durante la actividad y podrá mostrarse después de cada exposición.</p>
+<p>Todos los equipos conocerán los criterios desde el inicio.</p>
+</div>
+</div>
+</section>
+<section id="cierre-colectivo" class="level1" data-number="27">
+<h1 data-number="27"><span class="header-section-number">27</span> Cierre colectivo</h1>
+<p>Después de escuchar a los seis equipos responderemos:</p>
+<blockquote class="blockquote">
+<p><strong>¿Cuál es el mejor método de administración de memoria?</strong></p>
+</blockquote>
+<p>La respuesta esperada no es simplemente:</p>
+<pre class="text"><code>First Fit
+Best Fit
+Worst Fit</code></pre>
+<p>La conclusión debe considerar:</p>
+<ul>
+<li>carga;</li>
+<li>secuencia de procesos;</li>
+<li>tamaño y distribución de huecos;</li>
+<li>costo de búsqueda;</li>
+<li>fragmentación;</li>
+<li>modelo de administración utilizado.</li>
+</ul>
+<hr>
+</section>
+<section id="sección-para-el-docente" class="level1" data-number="28">
+<h1 data-number="28"><span class="header-section-number">28</span> Sección para el docente</h1>
+<div class="callout callout-style-default callout-warning callout-titled" title="NO PUBLICAR ANTES DE LA ACTIVIDAD">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Advertencia</span>NO PUBLICAR ANTES DE LA ACTIVIDAD
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Esta sección contiene preguntas de cierre y respuestas esperadas. Se recomienda publicar esta versión completa <strong>después de la clase</strong>.</p>
+</div>
+</div>
+<section id="equipo-1-first-fit-1" class="level2" data-number="28.1">
+<h2 data-number="28.1" class="anchored" data-anchor-id="equipo-1-first-fit-1"><span class="header-section-number">28.1</span> Equipo 1 — First Fit</h2>
+<section id="pregunta-docente-1" class="level3" data-number="28.1.1">
+<h3 data-number="28.1.1" class="anchored" data-anchor-id="pregunta-docente-1"><span class="header-section-number">28.1.1</span> Pregunta docente 1</h3>
+<blockquote class="blockquote">
+<p>Si cambiamos únicamente el orden de los bloques libres, pero conservamos exactamente sus tamaños y los mismos procesos, ¿First Fit necesariamente produciría el mismo resultado?</p>
+</blockquote>
+<p><strong>Respuesta esperada:</strong> No.&nbsp;First Fit selecciona el primer hueco suficientemente grande según el orden de búsqueda. Cambiar el orden puede modificar qué bloque se selecciona y, por tanto, los huecos residuales y las posibilidades de asignar procesos posteriores.</p>
+</section>
+<section id="pregunta-docente-2" class="level3" data-number="28.1.2">
+<h3 data-number="28.1.2" class="anchored" data-anchor-id="pregunta-docente-2"><span class="header-section-number">28.1.2</span> Pregunta docente 2</h3>
+<blockquote class="blockquote">
+<p>¿Por qué First Fit puede ser más rápido sin que eso signifique que siempre aprovecha mejor la memoria?</p>
+</blockquote>
+<p><strong>Respuesta esperada:</strong> Porque puede detener la búsqueda al encontrar el primer hueco válido. Esa rapidez no implica que haya seleccionado el bloque que deje el sobrante más conveniente para solicitudes futuras.</p>
+</section>
+</section>
+<section id="equipo-2-best-fit-1" class="level2" data-number="28.2">
+<h2 data-number="28.2" class="anchored" data-anchor-id="equipo-2-best-fit-1"><span class="header-section-number">28.2</span> Equipo 2 — Best Fit</h2>
+<section id="pregunta-docente-1-1" class="level3" data-number="28.2.1">
+<h3 data-number="28.2.1" class="anchored" data-anchor-id="pregunta-docente-1-1"><span class="header-section-number">28.2.1</span> Pregunta docente 1</h3>
+<blockquote class="blockquote">
+<p>¿Que Best Fit deje el menor sobrante en una asignación significa que siempre producirá menos fragmentación al finalizar?</p>
+</blockquote>
+<p><strong>Respuesta esperada:</strong> No.&nbsp;Minimiza el sobrante inmediato de la asignación actual, pero puede crear muchos huecos pequeños. El resultado final depende de toda la secuencia de solicitudes y liberaciones.</p>
+</section>
+<section id="pregunta-docente-2-1" class="level3" data-number="28.2.2">
+<h3 data-number="28.2.2" class="anchored" data-anchor-id="pregunta-docente-2-1"><span class="header-section-number">28.2.2</span> Pregunta docente 2</h3>
+<blockquote class="blockquote">
+<p>¿Por qué Best Fit necesita conocer otros candidatos antes de decidir?</p>
+</blockquote>
+<p><strong>Respuesta esperada:</strong> Porque debe identificar el menor hueco que sea suficientemente grande. En una implementación sencilla debe comparar los huecos válidos antes de saber cuál es el mejor candidato.</p>
+</section>
+</section>
+<section id="equipo-3-worst-fit-1" class="level2" data-number="28.3">
+<h2 data-number="28.3" class="anchored" data-anchor-id="equipo-3-worst-fit-1"><span class="header-section-number">28.3</span> Equipo 3 — Worst Fit</h2>
+<section id="pregunta-docente-1-2" class="level3" data-number="28.3.1">
+<h3 data-number="28.3.1" class="anchored" data-anchor-id="pregunta-docente-1-2"><span class="header-section-number">28.3.1</span> Pregunta docente 1</h3>
+<blockquote class="blockquote">
+<p>¿Qué riesgo existe al utilizar repetidamente los bloques libres más grandes?</p>
+</blockquote>
+<p><strong>Respuesta esperada:</strong> Los huecos grandes pueden ir reduciéndose y dejar de estar disponibles para procesos grandes que lleguen posteriormente. Worst Fit no garantiza que conservará siempre un bloque grande útil.</p>
+</section>
+<section id="pregunta-docente-2-2" class="level3" data-number="28.3.2">
+<h3 data-number="28.3.2" class="anchored" data-anchor-id="pregunta-docente-2-2"><span class="header-section-number">28.3.2</span> Pregunta docente 2</h3>
+<blockquote class="blockquote">
+<p>¿Podemos afirmar que Worst Fit reduce siempre la fragmentación externa?</p>
+</blockquote>
+<p><strong>Respuesta esperada:</strong> No.&nbsp;Puede dejar sobrantes relativamente grandes en algunas asignaciones, pero el comportamiento global depende de la secuencia de procesos y liberaciones. No existe garantía de que produzca menos fragmentación.</p>
+</section>
+</section>
+<section id="equipo-4-fragmentación-y-compactación-1" class="level2" data-number="28.4">
+<h2 data-number="28.4" class="anchored" data-anchor-id="equipo-4-fragmentación-y-compactación-1"><span class="header-section-number">28.4</span> Equipo 4 — Fragmentación y compactación</h2>
+<section id="pregunta-docente-1-3" class="level3" data-number="28.4.1">
+<h3 data-number="28.4.1" class="anchored" data-anchor-id="pregunta-docente-1-3"><span class="header-section-number">28.4.1</span> Pregunta docente 1</h3>
+<blockquote class="blockquote">
+<p>Tenemos 900 KB libres en total y llega un proceso de 500 KB. ¿Cómo puede ser posible que el Sistema Operativo no pueda asignarlo en un modelo contiguo?</p>
+</blockquote>
+<p><strong>Respuesta esperada:</strong> Porque los 900 KB pueden estar distribuidos en varios huecos y ninguno alcanzar 500 KB de forma contigua. Existe memoria libre total suficiente, pero está fragmentada externamente.</p>
+</section>
+<section id="pregunta-docente-2-3" class="level3" data-number="28.4.2">
+<h3 data-number="28.4.2" class="anchored" data-anchor-id="pregunta-docente-2-3"><span class="header-section-number">28.4.2</span> Pregunta docente 2</h3>
+<blockquote class="blockquote">
+<p>Si compactar puede crear un gran espacio libre, ¿por qué no compactamos la memoria cada vez que aparece un hueco?</p>
+</blockquote>
+<p><strong>Respuesta esperada:</strong> Porque mover procesos y datos tiene costo: requiere copiar memoria, reubicar regiones y actualizar información relacionada con direcciones. Compactar frecuentemente consumiría recursos y afectaría el rendimiento.</p>
+</section>
+</section>
+<section id="equipo-5-arquitectos-del-sistema-operativo-1" class="level2" data-number="28.5">
+<h2 data-number="28.5" class="anchored" data-anchor-id="equipo-5-arquitectos-del-sistema-operativo-1"><span class="header-section-number">28.5</span> Equipo 5 — Arquitectos del Sistema Operativo</h2>
+<section id="pregunta-docente-1-4" class="level3" data-number="28.5.1">
+<h3 data-number="28.5.1" class="anchored" data-anchor-id="pregunta-docente-1-4"><span class="header-section-number">28.5.1</span> Pregunta docente 1</h3>
+<blockquote class="blockquote">
+<p>Si la paginación permite que un proceso utilice marcos físicos no contiguos, ¿qué problema de nuestro modelo contiguo disminuye considerablemente?</p>
+</blockquote>
+<p><strong>Respuesta esperada:</strong> La necesidad de encontrar un único hueco físico contiguo del tamaño completo del proceso y, con ello, el problema clásico de fragmentación externa asociado a esa forma de asignación.</p>
+</section>
+<section id="pregunta-docente-2-4" class="level3" data-number="28.5.2">
+<h3 data-number="28.5.2" class="anchored" data-anchor-id="pregunta-docente-2-4"><span class="header-section-number">28.5.2</span> Pregunta docente 2</h3>
+<blockquote class="blockquote">
+<p>Si Windows y Linux modernos no administran toda la memoria simplemente con First Fit, Best Fit o Worst Fit, ¿para qué nos sirvió estudiar estos algoritmos?</p>
+</blockquote>
+<p><strong>Respuesta esperada:</strong> Permiten comprender políticas de selección de recursos, asignación contigua, fragmentación y cómo una decisión local modifica el estado futuro de la memoria. Son modelos didácticos que preparan para entender mecanismos más complejos.</p>
+</section>
+</section>
+<section id="equipo-6-auditores-y-comparadores-de-estrategias-1" class="level2" data-number="28.6">
+<h2 data-number="28.6" class="anchored" data-anchor-id="equipo-6-auditores-y-comparadores-de-estrategias-1"><span class="header-section-number">28.6</span> Equipo 6 — Auditores y comparadores de estrategias</h2>
+<section id="pregunta-docente-1-5" class="level3" data-number="28.6.1">
+<h3 data-number="28.6.1" class="anchored" data-anchor-id="pregunta-docente-1-5"><span class="header-section-number">28.6.1</span> Pregunta docente 1</h3>
+<blockquote class="blockquote">
+<p>Si dos estrategias lograron asignar la misma cantidad de procesos, ¿podemos afirmar que dejaron la memoria en condiciones equivalentes?</p>
+</blockquote>
+<p><strong>Respuesta esperada:</strong> No.&nbsp;Deben compararse también la distribución de los huecos, el tamaño del mayor hueco libre y las posibilidades que quedan para solicitudes futuras. Dos estrategias pueden aceptar la misma cantidad de procesos y dejar estados finales muy diferentes.</p>
+</section>
+<section id="pregunta-docente-2-5" class="level3" data-number="28.6.2">
+<h3 data-number="28.6.2" class="anchored" data-anchor-id="pregunta-docente-2-5"><span class="header-section-number">28.6.2</span> Pregunta docente 2</h3>
+<blockquote class="blockquote">
+<p>¿Qué característica debe tener el proceso <code>P6</code> que ustedes propongan para que realmente sirva como prueba comparativa?</p>
+</blockquote>
+<p><strong>Respuesta esperada:</strong> Su tamaño debe elegirse a partir de los estados finales obtenidos y permitir evidenciar una diferencia relevante entre las estrategias; por ejemplo, que pueda asignarse en uno de los estados finales y no en otro, o que obligue a seleccionar huecos distintos. El valor debe estar justificado y no escogerse arbitrariamente.</p>
+</section>
+<section id="criterio-especial-de-validación-para-p6" class="level3" data-number="28.6.3">
+<h3 data-number="28.6.3" class="anchored" data-anchor-id="criterio-especial-de-validación-para-p6"><span class="header-section-number">28.6.3</span> Criterio especial de validación para P6</h3>
+<p>No existe un único tamaño correcto para <code>P6</code>.</p>
+<p>Se considera válida la propuesta cuando el equipo:</p>
+<ol type="1">
+<li>utiliza correctamente los estados finales de First Fit, Best Fit y Worst Fit;</li>
+<li>explica por qué eligió ese tamaño;</li>
+<li>predice correctamente qué ocurriría en cada estrategia;</li>
+<li>demuestra con el nuevo proceso una diferencia significativa o una conclusión técnica relevante.</li>
+</ol>
+</section>
+</section>
+</section>
+<section id="dos-preguntas-finales-para-toda-la-clase" class="level1" data-number="29">
+<h1 data-number="29"><span class="header-section-number">29</span> Dos preguntas finales para toda la clase</h1>
+<section id="pregunta-final-1" class="level2" data-number="29.1">
+<h2 data-number="29.1" class="anchored" data-anchor-id="pregunta-final-1"><span class="header-section-number">29.1</span> Pregunta final 1</h2>
+<blockquote class="blockquote">
+<p>Si todos comenzaron con la misma memoria y los mismos procesos, ¿por qué terminaron con resultados diferentes?</p>
+</blockquote>
+<p><strong>Respuesta esperada:</strong> Porque cada política utiliza un criterio distinto para seleccionar el hueco. Cada decisión modifica el estado que recibirá el siguiente proceso; por eso una secuencia de decisiones diferentes produce mapas finales diferentes.</p>
+</section>
+<section id="pregunta-final-2" class="level2" data-number="29.2">
+<h2 data-number="29.2" class="anchored" data-anchor-id="pregunta-final-2"><span class="header-section-number">29.2</span> Pregunta final 2</h2>
+<blockquote class="blockquote">
+<p>Entonces, ¿cuál es el mejor método?</p>
+</blockquote>
+<p><strong>Respuesta esperada:</strong> No existe un ganador universal. Depende de la carga, el orden y tamaño de las solicitudes, la organización de los huecos, el costo de búsqueda y el modelo de memoria utilizado.</p>
+</section>
+</section>
+<section id="mensaje-de-cierre" class="level1" data-number="30">
+<h1 data-number="30"><span class="header-section-number">30</span> Mensaje de cierre</h1>
+<div class="callout-success" title="De aquí en adelante">
+<p>Investigar y utilizar IA está permitido.</p>
+<p>Pero en Sistemas Operativos aprenderemos a:</p>
+<p><strong>investigar → verificar → aplicar → explicar → cuestionar → defender.</strong></p>
+<p>La exposición no termina cuando el equipo deja de hablar.</p>
+<p>Termina cuando demuestra que <strong>comprende las decisiones que tomó</strong>.</p>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiado");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiado");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../capitulos/15_metodos_ajuste_memoria.html" class="pagination-link" aria-label="Capítulo 15. Métodos de ajuste de memoria">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Capítulo 15. Métodos de ajuste de memoria</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../capitulos/17_gestion_memoria_sistemas_monoprogramados.html" class="pagination-link" aria-label="Gestión de Memoria en Sistemas Monoprogramados">
+        <span class="nav-page-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Gestión de Memoria en Sistemas Monoprogramados</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Editorial Académica de Ingeniería en Sistemas</p>
+</div>   
+    <div class="nav-footer-center">
+<p>Diseñar una vez. Enseñar toda la vida.</p>
+</div>
+    <div class="nav-footer-right">
+<p>Ing. Jorge Luis García Chacón</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

@@ -24,6 +24,11 @@ book:
     - capitulos/12_virtualizacion_sistemas_operativos.qmd
     - capitulos/13_manejo_memoria_paginacion_particiones.qmd
     - capitulos/14_administracion_memoria_en_ejecucion.qmd
+    - capitulos/15_metodos_ajuste_memoria_con_solucion.qmd
+    - capitulos/15_metodos_ajuste_memoria.qmd
+    - capitulos/16_actividad_reto_administracion_memoria.qmd
+    - capitulos/17_gestion_memoria_sistemas_monoprogramados.qmd
+    - capitulos/18_gestion_memoria_sistemas_multiprogramados.qmd
     - capitulos/99_cierre.qmd
   page-footer:
     left: "Editorial Académica de Ingeniería en Sistemas"

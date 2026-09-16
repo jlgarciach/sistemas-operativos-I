@@ -1,0 +1,448 @@
+---
+title: "Actividad en clase: Reto de Administración de Memoria"
+subtitle: "Análisis colaborativo, defensa técnica y cadena de validación"
+author: "Ing. Jorge L. García"
+date: "2026-09-09"
+---
+
+# Actividad en clase
+
+## Misión: Memoria al límite
+
+Esta actividad integra los conceptos estudiados sobre **administración de memoria, métodos de ajuste, fragmentación, compactación y memoria virtual**.
+
+No se trata únicamente de presentar un tema.
+
+Cada equipo deberá:
+
+1. investigar;
+2. analizar;
+3. aplicar;
+4. representar;
+5. explicar;
+6. cuestionar;
+7. defender técnicamente sus conclusiones.
+
+::: {.callout-important title="Regla fundamental"}
+**Todos los equipos son responsables de comprender el problema completo**, aunque cada uno tenga una misión principal diferente.
+:::
+
+# Problema central
+
+Una empresa administra un servidor que ejecuta múltiples procesos simultáneamente.
+
+Después de varias horas de funcionamiento, el administrador observa que existe memoria disponible, pero algunos procesos nuevos podrían tener dificultades para encontrar un espacio adecuado.
+
+El mapa simplificado de huecos libres es:
+
+```text
+Bloques libres:
+[120 KB, 400 KB, 250 KB, 600 KB, 180 KB]
+```
+
+En ese instante llegan, exactamente en este orden:
+
+```text
+P1 = 175 KB
+P2 = 230 KB
+P3 = 390 KB
+P4 = 110 KB
+P5 = 280 KB
+```
+
+La empresa solicita a seis equipos de especialistas analizar el problema.
+
+# Condiciones de trabajo
+
+- **Tiempo de investigación y preparación:** 30 minutos.
+- **Tiempo máximo de exposición:** 10 minutos por equipo.
+- Se permite utilizar apuntes, libro del curso, Internet, documentación técnica y herramientas de **Inteligencia Artificial**.
+- La información obtenida debe ser comprendida y verificada por el equipo.
+- Todos los integrantes deben estar preparados para responder.
+- El docente puede seleccionar a cualquier integrante para explicar una decisión.
+- La solución debe incluir una representación visual del estado de la memoria.
+- No se calificará principalmente el diseño de las diapositivas, sino la **comprensión y defensa técnica**.
+
+::: {.callout-tip title="IA permitida"}
+La IA puede ayudar a construir una respuesta.
+
+**No puede comprenderla ni defenderla por ustedes.**
+:::
+
+# Las seis misiones
+
+## Equipo 1 — First Fit
+
+Simule la asignación de los procesos `P1` a `P5` utilizando **First Fit**.
+
+Debe presentar:
+
+- criterio utilizado;
+- bloque seleccionado para cada proceso;
+- espacio restante después de cada asignación;
+- actualización del mapa de huecos;
+- procesos que lograron o no asignarse;
+- memoria libre total al finalizar;
+- mayor hueco libre final;
+- ventajas y limitaciones observadas;
+- recomendación del equipo.
+
+No basta con mostrar el resultado final. Debe explicarse **cómo se tomó cada decisión**.
+
+## Equipo 2 — Best Fit
+
+Resuelva exactamente el mismo escenario utilizando **Best Fit**.
+
+Debe presentar:
+
+- criterio de selección;
+- candidatos considerados;
+- bloque seleccionado;
+- espacio sobrante;
+- estado de los huecos después de cada proceso;
+- procesos asignados y rechazados;
+- memoria libre total;
+- mayor hueco libre;
+- ventajas y limitaciones;
+- recomendación.
+
+Debe justificar por qué el bloque seleccionado era el **menor bloque suficientemente grande** en ese momento.
+
+## Equipo 3 — Worst Fit
+
+Aplique **Worst Fit** a la misma secuencia.
+
+Debe mostrar:
+
+- criterio;
+- mayor bloque disponible en cada decisión;
+- asignaciones realizadas;
+- sobrantes;
+- mapa de memoria actualizado;
+- procesos asignados y rechazados;
+- memoria libre total;
+- mayor hueco libre;
+- ventajas y limitaciones;
+- recomendación.
+
+Además, debe responder:
+
+> ¿Conservar huecos relativamente grandes produjo una ventaja en este escenario?
+
+## Equipo 4 — Fragmentación y compactación
+
+Analice el problema desde la perspectiva de la **fragmentación externa**.
+
+Debe:
+
+- explicar qué es;
+- demostrar con un ejemplo cómo puede existir memoria libre suficiente en total y aun así no poder colocar un proceso contiguamente;
+- utilizar, cuando corresponda, resultados de First Fit, Best Fit o Worst Fit;
+- representar visualmente memoria fragmentada;
+- demostrar qué cambiaría después de una compactación;
+- explicar el costo de compactar;
+- indicar cuándo la compactación puede ayudar y por qué no es una operación gratuita.
+
+Su exposición debe conectar las decisiones de los equipos anteriores con el problema de fragmentación.
+
+## Equipo 5 — Arquitectos del Sistema Operativo
+
+Investigue cómo cambia este problema en un **Sistema Operativo moderno**.
+
+Debe conectar nuestro modelo académico con:
+
+- memoria virtual;
+- paginación;
+- páginas;
+- marcos de página;
+- traducción de direcciones;
+- asignación de memoria física;
+- concepto general del **Buddy System**.
+
+Debe explicar por qué no sería correcto resumir:
+
+```text
+Windows = Best Fit
+Linux   = Worst Fit
+```
+
+Finalmente debe responder:
+
+> Si los sistemas modernos utilizan mecanismos más sofisticados, ¿por qué sigue siendo útil estudiar First Fit, Best Fit y Worst Fit?
+
+
+## Equipo 6 — Auditores y comparadores de estrategias
+
+Su misión es **auditar, comparar y poner a prueba** los resultados obtenidos por los equipos 1, 2 y 3.
+
+No debe limitarse a repetir sus exposiciones.
+
+Debe:
+
+- verificar los resultados finales de **First Fit, Best Fit y Worst Fit**;
+- comparar procesos asignados y rechazados;
+- comparar memoria libre total y mayor hueco disponible;
+- identificar qué estrategia dejó huecos pequeños que podrían dificultar asignaciones posteriores;
+- determinar si existe evidencia de fragmentación externa;
+- proponer un **nuevo proceso P6**, con un tamaño elegido y técnicamente justificado, que permita evidenciar una diferencia importante entre los estados finales de las tres estrategias;
+- predecir qué ocurriría con `P6` utilizando First Fit, Best Fit y Worst Fit a partir de los estados finales obtenidos;
+- elaborar una recomendación final para **este escenario concreto**.
+
+Su exposición debe cerrar con:
+
+> **Para este escenario concreto recomendamos __________ porque __________.**
+
+::: {.callout-tip title="El reto del Equipo 6"}
+El tamaño de `P6` **no está dado**.
+
+El equipo debe elegirlo después de analizar los resultados de las tres estrategias. El valor propuesto debe permitir demostrar que comprendieron cómo las decisiones anteriores afectan las posibilidades futuras del sistema.
+:::
+
+# Producto mínimo de cada exposición
+
+Cada equipo debe presentar como mínimo:
+
+1. **Concepto** asignado.
+2. **Aplicación** al problema central.
+3. **Representación visual**.
+4. **Resultado**.
+5. **Conclusión**.
+6. **Recomendación técnica**.
+
+# Cadena de Validación Técnica
+
+La actividad funciona como una sola cadena.
+
+```text
+Equipo 1 expone
+      ↓
+Equipo 2 formula 2 preguntas
+      ↓
+Equipo 2 expone
+      ↓
+Equipo 3 formula 2 preguntas
+      ↓
+Equipo 3 expone
+      ↓
+Equipo 4 formula 2 preguntas
+      ↓
+Equipo 4 expone
+      ↓
+Equipo 5 formula 2 preguntas
+      ↓
+Equipo 5 expone
+      ↓
+Equipo 6 formula 2 preguntas
+      ↓
+Equipo 6 expone
+      ↓
+Equipo 1 formula 2 preguntas
+      ↓
+CIERRE
+```
+
+Las preguntas deben ser:
+
+- técnicas;
+- claras;
+- diferentes entre sí;
+- relacionadas con lo presentado;
+- orientadas a comprobar, comparar, cuestionar o profundizar.
+
+No se consideran suficientes preguntas cuya respuesta sea únicamente una definición visible en la presentación.
+
+::: {.callout-warning title="La cadena debe completarse al 100 %"}
+Si un equipo no realiza sus **dos preguntas**, formula preguntas que no evidencien comprensión o rompe la secuencia de participación, **la nota máxima de la actividad para ese equipo será de 5/10 puntos**.
+:::
+
+# Tabla colectiva de resultados
+
+Durante las exposiciones se completará una tabla común:
+
+| Indicador | First Fit | Best Fit | Worst Fit |
+|---|---:|---:|---:|
+| Procesos asignados |  |  |  |
+| Procesos rechazados |  |  |  |
+| Huecos finales |  |  |  |
+| Mayor hueco libre |  |  |  |
+| Memoria libre total |  |  |  |
+
+El objetivo no es únicamente decidir quién obtuvo un mejor resultado.
+
+Debemos explicar:
+
+> **¿Por qué diferentes políticas producen estados de memoria diferentes si todas comenzaron exactamente con los mismos datos?**
+
+# Evaluación — 10 puntos
+
+| Criterio | Puntos |
+|---|---:|
+| Exactitud técnica y solución | 3.0 |
+| Explicación y defensa de la solución | 2.0 |
+| Representación visual y claridad | 1.0 |
+| Conclusión y recomendación técnica | 1.0 |
+| Dos preguntas al equipo correspondiente | 1.0 |
+| Respuestas a preguntas recibidas | 1.0 |
+| Participación equilibrada del equipo | 1.0 |
+| **Total** | **10.0** |
+
+::: {.callout-note title="Regla de transparencia"}
+La calificación será registrada durante la actividad y podrá mostrarse después de cada exposición.
+
+Todos los equipos conocerán los criterios desde el inicio.
+:::
+
+# Cierre colectivo
+
+Después de escuchar a los seis equipos responderemos:
+
+> **¿Cuál es el mejor método de administración de memoria?**
+
+La respuesta esperada no es simplemente:
+
+```text
+First Fit
+Best Fit
+Worst Fit
+```
+
+La conclusión debe considerar:
+
+- carga;
+- secuencia de procesos;
+- tamaño y distribución de huecos;
+- costo de búsqueda;
+- fragmentación;
+- modelo de administración utilizado.
+
+---
+
+# Sección para el docente
+
+::: {.callout-warning title="NO PUBLICAR ANTES DE LA ACTIVIDAD"}
+Esta sección contiene preguntas de cierre y respuestas esperadas. Se recomienda publicar esta versión completa **después de la clase**.
+:::
+
+## Equipo 1 — First Fit
+
+### Pregunta docente 1
+
+> Si cambiamos únicamente el orden de los bloques libres, pero conservamos exactamente sus tamaños y los mismos procesos, ¿First Fit necesariamente produciría el mismo resultado?
+
+**Respuesta esperada:** No. First Fit selecciona el primer hueco suficientemente grande según el orden de búsqueda. Cambiar el orden puede modificar qué bloque se selecciona y, por tanto, los huecos residuales y las posibilidades de asignar procesos posteriores.
+
+### Pregunta docente 2
+
+> ¿Por qué First Fit puede ser más rápido sin que eso signifique que siempre aprovecha mejor la memoria?
+
+**Respuesta esperada:** Porque puede detener la búsqueda al encontrar el primer hueco válido. Esa rapidez no implica que haya seleccionado el bloque que deje el sobrante más conveniente para solicitudes futuras.
+
+## Equipo 2 — Best Fit
+
+### Pregunta docente 1
+
+> ¿Que Best Fit deje el menor sobrante en una asignación significa que siempre producirá menos fragmentación al finalizar?
+
+**Respuesta esperada:** No. Minimiza el sobrante inmediato de la asignación actual, pero puede crear muchos huecos pequeños. El resultado final depende de toda la secuencia de solicitudes y liberaciones.
+
+### Pregunta docente 2
+
+> ¿Por qué Best Fit necesita conocer otros candidatos antes de decidir?
+
+**Respuesta esperada:** Porque debe identificar el menor hueco que sea suficientemente grande. En una implementación sencilla debe comparar los huecos válidos antes de saber cuál es el mejor candidato.
+
+## Equipo 3 — Worst Fit
+
+### Pregunta docente 1
+
+> ¿Qué riesgo existe al utilizar repetidamente los bloques libres más grandes?
+
+**Respuesta esperada:** Los huecos grandes pueden ir reduciéndose y dejar de estar disponibles para procesos grandes que lleguen posteriormente. Worst Fit no garantiza que conservará siempre un bloque grande útil.
+
+### Pregunta docente 2
+
+> ¿Podemos afirmar que Worst Fit reduce siempre la fragmentación externa?
+
+**Respuesta esperada:** No. Puede dejar sobrantes relativamente grandes en algunas asignaciones, pero el comportamiento global depende de la secuencia de procesos y liberaciones. No existe garantía de que produzca menos fragmentación.
+
+## Equipo 4 — Fragmentación y compactación
+
+### Pregunta docente 1
+
+> Tenemos 900 KB libres en total y llega un proceso de 500 KB. ¿Cómo puede ser posible que el Sistema Operativo no pueda asignarlo en un modelo contiguo?
+
+**Respuesta esperada:** Porque los 900 KB pueden estar distribuidos en varios huecos y ninguno alcanzar 500 KB de forma contigua. Existe memoria libre total suficiente, pero está fragmentada externamente.
+
+### Pregunta docente 2
+
+> Si compactar puede crear un gran espacio libre, ¿por qué no compactamos la memoria cada vez que aparece un hueco?
+
+**Respuesta esperada:** Porque mover procesos y datos tiene costo: requiere copiar memoria, reubicar regiones y actualizar información relacionada con direcciones. Compactar frecuentemente consumiría recursos y afectaría el rendimiento.
+
+## Equipo 5 — Arquitectos del Sistema Operativo
+
+### Pregunta docente 1
+
+> Si la paginación permite que un proceso utilice marcos físicos no contiguos, ¿qué problema de nuestro modelo contiguo disminuye considerablemente?
+
+**Respuesta esperada:** La necesidad de encontrar un único hueco físico contiguo del tamaño completo del proceso y, con ello, el problema clásico de fragmentación externa asociado a esa forma de asignación.
+
+### Pregunta docente 2
+
+> Si Windows y Linux modernos no administran toda la memoria simplemente con First Fit, Best Fit o Worst Fit, ¿para qué nos sirvió estudiar estos algoritmos?
+
+**Respuesta esperada:** Permiten comprender políticas de selección de recursos, asignación contigua, fragmentación y cómo una decisión local modifica el estado futuro de la memoria. Son modelos didácticos que preparan para entender mecanismos más complejos.
+
+
+## Equipo 6 — Auditores y comparadores de estrategias
+
+### Pregunta docente 1
+
+> Si dos estrategias lograron asignar la misma cantidad de procesos, ¿podemos afirmar que dejaron la memoria en condiciones equivalentes?
+
+**Respuesta esperada:** No. Deben compararse también la distribución de los huecos, el tamaño del mayor hueco libre y las posibilidades que quedan para solicitudes futuras. Dos estrategias pueden aceptar la misma cantidad de procesos y dejar estados finales muy diferentes.
+
+### Pregunta docente 2
+
+> ¿Qué característica debe tener el proceso `P6` que ustedes propongan para que realmente sirva como prueba comparativa?
+
+**Respuesta esperada:** Su tamaño debe elegirse a partir de los estados finales obtenidos y permitir evidenciar una diferencia relevante entre las estrategias; por ejemplo, que pueda asignarse en uno de los estados finales y no en otro, o que obligue a seleccionar huecos distintos. El valor debe estar justificado y no escogerse arbitrariamente.
+
+### Criterio especial de validación para P6
+
+No existe un único tamaño correcto para `P6`.
+
+Se considera válida la propuesta cuando el equipo:
+
+1. utiliza correctamente los estados finales de First Fit, Best Fit y Worst Fit;
+2. explica por qué eligió ese tamaño;
+3. predice correctamente qué ocurriría en cada estrategia;
+4. demuestra con el nuevo proceso una diferencia significativa o una conclusión técnica relevante.
+
+# Dos preguntas finales para toda la clase
+
+## Pregunta final 1
+
+> Si todos comenzaron con la misma memoria y los mismos procesos, ¿por qué terminaron con resultados diferentes?
+
+**Respuesta esperada:** Porque cada política utiliza un criterio distinto para seleccionar el hueco. Cada decisión modifica el estado que recibirá el siguiente proceso; por eso una secuencia de decisiones diferentes produce mapas finales diferentes.
+
+## Pregunta final 2
+
+> Entonces, ¿cuál es el mejor método?
+
+**Respuesta esperada:** No existe un ganador universal. Depende de la carga, el orden y tamaño de las solicitudes, la organización de los huecos, el costo de búsqueda y el modelo de memoria utilizado.
+
+# Mensaje de cierre
+
+::: {.callout-success title="De aquí en adelante"}
+Investigar y utilizar IA está permitido.
+
+Pero en Sistemas Operativos aprenderemos a:
+
+**investigar → verificar → aplicar → explicar → cuestionar → defender.**
+
+La exposición no termina cuando el equipo deja de hablar.
+
+Termina cuando demuestra que **comprende las decisiones que tomó**.
+:::

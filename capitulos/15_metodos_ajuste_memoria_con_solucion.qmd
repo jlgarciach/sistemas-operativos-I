@@ -1,0 +1,1803 @@
+---
+title: "Capítulo 15. Métodos de ajuste de memoria"
+subtitle: "¿Dónde debe colocar el Sistema Operativo un nuevo proceso?"
+author: "Ing. Jorge L. García"
+date: "2026-09-09"
+---
+
+# Capítulo 15. Métodos de ajuste de memoria
+
+## De conocer el mapa de memoria a tomar una decisión
+
+En el capítulo anterior estudiamos la **administración de memoria durante la ejecución**. Vimos que el Sistema Operativo debe saber qué regiones están ocupadas, cuáles están libres, proteger los espacios de cada proceso y recuperar memoria cuando deja de utilizarse.
+
+Ahora aparece una pregunta muy concreta:
+
+> **Si existen varios espacios libres, ¿en cuál debemos colocar un nuevo proceso?**
+
+No siempre existe una única respuesta.
+
+La decisión dependerá de la estrategia de asignación utilizada.
+
+::: {.callout-tip title="Idea central"}
+Los métodos **First Fit, Best Fit y Worst Fit** responden a la misma pregunta, pero utilizan criterios diferentes para seleccionar un hueco libre.
+:::
+
+---
+
+# Objetivos de aprendizaje
+
+Al finalizar este capítulo, el estudiante será capaz de:
+
+- Explicar qué problema resuelven los métodos de ajuste de memoria.
+- Aplicar manualmente **First Fit**, **Best Fit** y **Worst Fit**.
+- Diferenciar el criterio de selección utilizado por cada estrategia.
+- Calcular el espacio restante después de una asignación.
+- Relacionar las decisiones de ajuste con la **fragmentación externa**.
+- Explicar qué hace la compactación y por qué tiene un costo.
+- Comparar las estrategias utilizando una misma secuencia de procesos.
+- Distinguir estos algoritmos didácticos de los mecanismos de memoria usados por sistemas modernos.
+
+---
+
+# 1. Partamos de una situación real
+
+Imaginemos que el Sistema Operativo observa este mapa:
+
+```text
+Memoria
+┌──────────┬──────────┬──────────┐
+│ Libre    │ Libre    │ Libre    │
+│ 100 KB   │ 200 KB   │ 300 KB   │
+└──────────┴──────────┴──────────┘
+```
+
+Llega un proceso:
+
+```text
+P1 = 120 KB
+```
+
+Preguntemos primero:
+
+> **¿En cuáles bloques cabe P1?**
+
+- `100 KB` → no cabe.
+- `200 KB` → sí cabe.
+- `300 KB` → sí cabe.
+
+Tenemos **dos candidatos válidos**.
+
+El problema ya no es simplemente saber si existe memoria.
+
+El Sistema Operativo debe decidir:
+
+> **¿Cuál de los bloques disponibles utilizar?**
+
+---
+
+# 2. ¿Qué es un método de ajuste?
+
+Un método de ajuste es una estrategia para seleccionar un **hueco o bloque libre** donde pueda colocarse una solicitud de memoria bajo un modelo de asignación contigua.
+
+Podemos representar el problema como:
+
+```{mermaid}
+%%| fig-width: 7.2
+%%| fig-height: 4.3
+%%| fig-align: center
+flowchart LR
+    P[Nuevo proceso<br/>120 KB] --> SO[Sistema Operativo]
+    SO --> B1[100 KB]
+    SO --> B2[200 KB]
+    SO --> B3[300 KB]
+    B1 -->|No cabe| X[Descartar]
+    B2 -->|Cabe| C[Candidato]
+    B3 -->|Cabe| C
+```
+
+Una vez identificados los candidatos, necesitamos una **regla de decisión**.
+
+Ahí aparecen:
+
+```text
+First Fit  → el primero que sirva
+Best Fit   → el más pequeño que sirva
+Worst Fit  → el más grande que sirva
+```
+
+::: {.callout-important title="No memoricemos todavía"}
+Antes de aprender los nombres, comprendamos la pregunta que responde cada algoritmo.
+:::
+
+---
+
+# 3. First Fit — Primer ajuste
+
+**First Fit** recorre los huecos desde el inicio y selecciona el **primer bloque suficientemente grande**.
+
+Tenemos:
+
+```text
+Huecos: 100 KB, 200 KB, 300 KB
+Proceso: 120 KB
+```
+
+Recorrido:
+
+```text
+100 KB → ¿120 cabe? NO
+200 KB → ¿120 cabe? SÍ  ← detener búsqueda
+300 KB → ya no necesitamos revisarlo
+```
+
+Por tanto:
+
+```text
+First Fit selecciona 200 KB.
+```
+
+Después de colocar el proceso:
+
+```text
+200 KB - 120 KB = 80 KB
+```
+
+El mapa conceptual queda:
+
+```text
+┌────────┬──────────┬────────┬──────────┐
+│ Libre  │ P1       │ Libre  │ Libre    │
+│100 KB  │120 KB    │ 80 KB  │300 KB   │
+└────────┴──────────┴────────┴──────────┘
+```
+
+## ¿Por qué puede ser rápido?
+
+Porque puede detener la búsqueda tan pronto encuentra un espacio válido.
+
+```text
+Inicio
+  ↓
+¿cabe?
+  ↓ No
+siguiente
+  ↓
+¿cabe?
+  ↓ Sí
+ASIGNAR Y TERMINAR
+```
+
+### Ventajas
+
+- criterio sencillo;
+- normalmente requiere poca búsqueda;
+- fácil de comprender e implementar.
+
+### Limitaciones
+
+- la elección depende del orden de los huecos;
+- puede ir dejando huecos pequeños;
+- no intenta encontrar la opción que deje el menor sobrante.
+
+---
+
+# 4. Best Fit — Mejor ajuste
+
+**Best Fit** busca el **hueco más pequeño que sea suficientemente grande**.
+
+La pregunta cambia:
+
+> Entre todos los bloques donde cabe el proceso, ¿cuál se aproxima más a su tamaño?
+
+Con:
+
+```text
+Huecos: 100 KB, 200 KB, 300 KB
+Proceso: 120 KB
+```
+
+tenemos:
+
+```text
+100 KB → no sirve
+200 KB → sirve → sobran 80 KB
+300 KB → sirve → sobran 180 KB
+```
+
+El menor sobrante es:
+
+```text
+80 KB
+```
+
+Por tanto:
+
+```text
+Best Fit selecciona 200 KB.
+```
+
+::: {.callout-note title="¡Aquí First Fit y Best Fit dieron el mismo resultado!"}
+Eso puede ocurrir. Que dos algoritmos seleccionen el mismo bloque en un caso particular **no significa que sean iguales**. Lo importante es el criterio utilizado para tomar la decisión.
+:::
+
+### Ventaja conceptual
+
+Busca reducir el sobrante de **esa asignación**.
+
+### Limitaciones
+
+- normalmente debe examinar más candidatos para saber cuál es el mejor;
+- puede producir huecos residuales muy pequeños y poco útiles.
+
+---
+
+# 5. Necesitamos un ejemplo mejor para diferenciarlos
+
+Cambiemos el mapa:
+
+```text
+Huecos libres:
+┌────────┬────────┬────────┬────────┐
+│ 300 KB │ 180 KB │ 250 KB │ 500 KB │
+└────────┴────────┴────────┴────────┘
+
+Proceso nuevo:
+P1 = 170 KB
+```
+
+## First Fit
+
+Empieza desde el inicio:
+
+```text
+300 KB → cabe
+```
+
+Se detiene.
+
+```text
+First Fit → 300 KB
+Sobrante  → 130 KB
+```
+
+## Best Fit
+
+Busca el hueco válido más pequeño:
+
+```text
+300 KB → sobra 130
+180 KB → sobra 10   ← mejor candidato
+250 KB → sobra 80
+500 KB → sobra 330
+```
+
+Por tanto:
+
+```text
+Best Fit → 180 KB
+Sobrante → 10 KB
+```
+
+Ahora sí observamos claramente que los algoritmos toman decisiones diferentes.
+
+---
+
+# 6. Worst Fit — Peor ajuste
+
+El nombre puede parecer extraño.
+
+**Worst Fit** selecciona el **hueco libre más grande** donde el proceso pueda colocarse.
+
+Con:
+
+```text
+Huecos: 300, 180, 250, 500 KB
+Proceso: 170 KB
+```
+
+seleccionará:
+
+```text
+500 KB
+```
+
+y quedará:
+
+```text
+500 - 170 = 330 KB
+```
+
+La idea es evitar consumir un hueco pequeño y dejar, después de la asignación, un sobrante relativamente grande que potencialmente pueda ser útil.
+
+```text
+Worst Fit → 500 KB
+Sobrante  → 330 KB
+```
+
+### Ventaja conceptual
+
+- puede conservar huecos residuales grandes.
+
+### Limitaciones
+
+- necesita identificar un hueco máximo adecuado;
+- puede consumir rápidamente los bloques más grandes disponibles;
+- no garantiza una menor fragmentación a lo largo de una carga completa.
+
+::: {.callout-warning title="Evitemos una conclusión apresurada"}
+No debemos afirmar que Worst Fit “elimina” o necesariamente “reduce” la fragmentación externa. El resultado depende de la secuencia de solicitudes y liberaciones.
+:::
+
+---
+
+# 7. Los tres frente al mismo problema
+
+Utilicemos:
+
+```text
+Huecos: 300, 180, 250, 500 KB
+Proceso: 170 KB
+```
+
+| Método | Bloque elegido | Sobrante inmediato | Criterio |
+|---|---:|---:|---|
+| First Fit | 300 KB | 130 KB | Primer bloque suficiente |
+| Best Fit | 180 KB | 10 KB | Menor bloque suficiente |
+| Worst Fit | 500 KB | 330 KB | Mayor bloque suficiente |
+
+Esta tabla resume **una asignación**.
+
+No es suficiente para declarar un ganador universal.
+
+> Para comparar estrategias de verdad necesitamos observar qué ocurre con **varios procesos consecutivos**.
+
+---
+
+# 8. Simulación: ahora llegan varios procesos
+
+Estado inicial:
+
+```text
+Huecos libres = [100, 500, 200, 300, 600] KB
+```
+
+Llegan, en este orden:
+
+```text
+P1 = 212 KB
+P2 = 417 KB
+P3 = 112 KB
+P4 = 426 KB
+```
+
+No cambiemos el orden.
+
+El objetivo es ejecutar mentalmente cada algoritmo y observar cómo cambia el mapa.
+
+::: {.callout-tip title="Método de trabajo"}
+En cada paso:
+
+1. observe los huecos actuales;
+2. aplique **solamente** el criterio del algoritmo;
+3. seleccione el hueco;
+4. reste el tamaño del proceso;
+5. actualice la lista de huecos;
+6. continúe con el siguiente proceso.
+:::
+
+---
+
+# 9. Simulación con First Fit
+
+Estado inicial:
+
+```text
+[100, 500, 200, 300, 600]
+```
+
+## P1 = 212 KB
+
+```text
+100 → no cabe
+500 → cabe
+```
+
+Asignamos allí:
+
+```text
+500 - 212 = 288
+```
+
+Nuevo estado:
+
+```text
+[100, 288, 200, 300, 600]
+```
+
+## P2 = 417 KB
+
+```text
+100 → no
+288 → no
+200 → no
+300 → no
+600 → sí
+```
+
+```text
+600 - 417 = 183
+```
+
+Nuevo estado:
+
+```text
+[100, 288, 200, 300, 183]
+```
+
+## P3 = 112 KB
+
+```text
+100 → no
+288 → sí
+```
+
+```text
+288 - 112 = 176
+```
+
+Nuevo estado:
+
+```text
+[100, 176, 200, 300, 183]
+```
+
+## P4 = 426 KB
+
+Revisamos:
+
+```text
+100, 176, 200, 300, 183
+```
+
+Ningún hueco alcanza `426 KB`.
+
+```text
+P4 → NO PUEDE ASIGNARSE
+```
+
+---
+
+# 10. ¿Falta memoria o está fragmentada?
+
+Después de First Fit tenemos:
+
+```text
+100 + 176 + 200 + 300 + 183 = 959 KB libres
+```
+
+P4 necesita:
+
+```text
+426 KB
+```
+
+Entonces:
+
+```text
+959 KB > 426 KB
+```
+
+¡Existe memoria libre suficiente en total!
+
+Pero:
+
+```text
+hueco mayor = 300 KB
+```
+
+y:
+
+```text
+300 KB < 426 KB
+```
+
+::: {.callout-important title="Este es el punto clave"}
+Tenemos suficiente memoria libre **en total**, pero no existe un hueco **contiguo** suficientemente grande.
+
+Eso ilustra el problema de la **fragmentación externa**.
+:::
+
+---
+
+# 11. Simulación con Best Fit
+
+Reiniciamos el escenario original:
+
+```text
+[100, 500, 200, 300, 600]
+```
+
+No debemos comenzar desde el resultado de First Fit.
+
+## P1 = 212 KB
+
+Candidatos:
+
+```text
+500, 300, 600
+```
+
+El menor suficiente es `300`.
+
+```text
+300 - 212 = 88
+```
+
+Estado:
+
+```text
+[100, 500, 200, 88, 600]
+```
+
+## P2 = 417 KB
+
+Candidatos:
+
+```text
+500, 600
+```
+
+Best Fit selecciona `500`.
+
+```text
+500 - 417 = 83
+```
+
+Estado:
+
+```text
+[100, 83, 200, 88, 600]
+```
+
+## P3 = 112 KB
+
+Candidatos:
+
+```text
+200, 600
+```
+
+Best Fit selecciona `200`.
+
+```text
+200 - 112 = 88
+```
+
+Estado:
+
+```text
+[100, 83, 88, 88, 600]
+```
+
+## P4 = 426 KB
+
+Solo `600 KB` puede contenerlo.
+
+```text
+600 - 426 = 174
+```
+
+Estado final:
+
+```text
+[100, 83, 88, 88, 174]
+```
+
+En esta secuencia, **Best Fit logró asignar los cuatro procesos**.
+
+---
+
+# 12. Simulación con Worst Fit
+
+Volvemos otra vez al estado inicial:
+
+```text
+[100, 500, 200, 300, 600]
+```
+
+## P1 = 212 KB
+
+Mayor hueco:
+
+```text
+600 KB
+```
+
+Sobrante:
+
+```text
+388 KB
+```
+
+Estado:
+
+```text
+[100, 500, 200, 300, 388]
+```
+
+## P2 = 417 KB
+
+El mayor hueco suficiente es:
+
+```text
+500 KB
+```
+
+Sobrante:
+
+```text
+83 KB
+```
+
+Estado:
+
+```text
+[100, 83, 200, 300, 388]
+```
+
+## P3 = 112 KB
+
+El mayor hueco es:
+
+```text
+388 KB
+```
+
+Sobrante:
+
+```text
+276 KB
+```
+
+Estado:
+
+```text
+[100, 83, 200, 300, 276]
+```
+
+## P4 = 426 KB
+
+Ninguno de los huecos restantes alcanza `426 KB`.
+
+```text
+P4 → NO PUEDE ASIGNARSE
+```
+
+---
+
+# 13. Compare antes de memorizar
+
+Para **esta secuencia específica**:
+
+| Método | P1 | P2 | P3 | P4 |
+|---|---|---|---|---|
+| First Fit | ✓ | ✓ | ✓ | ✗ |
+| Best Fit | ✓ | ✓ | ✓ | ✓ |
+| Worst Fit | ✓ | ✓ | ✓ | ✗ |
+
+¿Significa esto que Best Fit siempre es mejor?
+
+**No.**
+
+Significa únicamente que, para esta configuración inicial y este orden de solicitudes, produjo un resultado favorable.
+
+Otra secuencia puede producir un resultado diferente.
+
+::: {.callout-success title="Comprensión antes que memoria"}
+No buscamos que el estudiante diga “Best Fit es mejor”.
+
+Buscamos que pueda explicar:
+
+> **“Best Fit seleccionó el menor hueco suficiente y, en esta secuencia, esa decisión permitió conservar un bloque de 600 KB para P4.”**
+:::
+
+---
+
+# 14. Fragmentación externa
+
+Con asignación contigua, los procesos pueden entrar y salir dejando huecos dispersos.
+
+Ejemplo:
+
+```text
+┌──────┬───────┬──────┬───────┬──────┐
+│ P1   │ Libre │ P2   │ Libre │ P3   │
+│      │100 KB │      │180 KB │      │
+└──────┴───────┴──────┴───────┴──────┘
+```
+
+Memoria libre total:
+
+```text
+100 + 180 = 280 KB
+```
+
+Si llega:
+
+```text
+P4 = 250 KB
+```
+
+tenemos:
+
+```text
+Memoria libre total = 280 KB
+Proceso              = 250 KB
+```
+
+pero:
+
+```text
+Mayor hueco = 180 KB
+```
+
+P4 no puede colocarse como un único bloque contiguo.
+
+Ese espacio libre existe, pero está **fragmentado externamente**.
+
+---
+
+# 15. Compactación
+
+Una solución conceptual es mover los procesos activos para juntar los huecos.
+
+Antes:
+
+```text
+[P1][100 libre][P2][180 libre][P3]
+```
+
+Después:
+
+```text
+[P1][P2][P3][------ 280 KB libres ------]
+```
+
+Ahora P4 de `250 KB` sí tendría un espacio contiguo suficiente.
+
+```{mermaid}
+%%| fig-width: 7.4
+%%| fig-height: 4.2
+%%| fig-align: center
+flowchart LR
+    A["P1 | Libre | P2 | Libre | P3"] --> C[Compactación]
+    C --> D["P1 | P2 | P3 | Gran hueco libre"]
+```
+
+## Pero mover memoria cuesta
+
+La compactación puede implicar:
+
+- copiar datos;
+- reubicar regiones;
+- actualizar información de direcciones;
+- consumir tiempo de CPU y ancho de banda de memoria.
+
+Por ello no debemos pensar:
+
+```text
+fragmentación → compactar siempre
+```
+
+sino:
+
+```text
+compactar puede resolver el problema,
+pero tiene un costo.
+```
+
+---
+
+# 16. First, Best y Worst Fit en pseudocódigo
+
+## First Fit
+
+```text
+para cada hueco desde el inicio:
+    si proceso <= hueco:
+        asignar proceso
+        terminar búsqueda
+```
+
+## Best Fit
+
+```text
+mejor = ninguno
+
+para cada hueco:
+    si proceso <= hueco:
+        si mejor no existe
+           o hueco < mejor:
+            mejor = hueco
+
+si mejor existe:
+    asignar proceso
+```
+
+## Worst Fit
+
+```text
+peor = ninguno
+
+para cada hueco:
+    si proceso <= hueco:
+        si peor no existe
+           o hueco > peor:
+            peor = hueco
+
+si peor existe:
+    asignar proceso
+```
+
+::: {.callout-note title="Observe el costo de búsqueda"}
+First Fit **puede detenerse temprano**. En una implementación sencilla, Best Fit y Worst Fit suelen necesitar examinar todos los huecos candidatos para identificar un mínimo o un máximo. Estructuras de datos más sofisticadas pueden cambiar ese costo.
+:::
+
+---
+
+# 17. No confundamos dos niveles del problema
+
+En este capítulo utilizamos First Fit, Best Fit y Worst Fit para comprender la **selección de huecos en asignación contigua**.
+
+Los sistemas modernos utilizan mecanismos de memoria mucho más complejos.
+
+Por ejemplo:
+
+```text
+MODELO DIDÁCTICO
+Proceso → buscar hueco contiguo → First/Best/Worst Fit
+```
+
+frente a:
+
+```text
+SISTEMA MODERNO
+Direcciones virtuales
+        ↓
+Páginas
+        ↓
+Tablas de páginas
+        ↓
+Marcos físicos que pueden no ser contiguos
+```
+
+Esto no hace inútiles nuestros algoritmos.
+
+Al contrario: permiten estudiar con claridad **cómo una política de selección modifica el estado de un recurso limitado**.
+
+---
+
+# 18. Una precisión sobre Windows y Linux
+
+No es correcto resumir un sistema operativo moderno diciendo simplemente:
+
+```text
+Windows = Best Fit
+Linux   = Worst Fit
+```
+
+La realidad es bastante más rica.
+
+Windows utiliza **memoria virtual paginada** y mantiene espacios de direcciones virtuales por proceso. Una dirección virtual no representa directamente una ubicación física; las tablas de páginas participan en la traducción.
+
+Linux también posee un subsistema completo de memoria virtual y, para la asignación de páginas físicas libres, utiliza mecanismos como el **buddy allocator**, que organiza memoria libre en bloques de tamaños relacionados por potencias de dos.
+
+::: {.callout-important title="Qué debemos conservar"}
+First Fit, Best Fit y Worst Fit son excelentes para aprender **estrategias de selección de huecos**.
+
+No debemos presentarlos como una descripción completa del administrador de memoria de Windows o Linux actuales.
+:::
+
+---
+
+# 19. El Buddy System: una mirada al mundo real
+
+Sin entrar todavía en implementación, la idea básica del **Buddy System** puede visualizarse así:
+
+```text
+Bloque grande
+     1024
+       |
+   ┌───┴───┐
+  512     512
+           |
+       ┌───┴───┐
+      256     256
+```
+
+Si necesitamos un bloque menor, uno mayor puede dividirse.
+
+Cuando dos bloques compañeros quedan libres, pueden volver a combinarse.
+
+```{mermaid}
+%%| fig-width: 7
+%%| fig-height: 4.8
+%%| fig-align: center
+flowchart TD
+    A[1024] --> B[512]
+    A --> C[512]
+    C --> D[256]
+    C --> E[256]
+    D --> F[128]
+    D --> G[128]
+```
+
+Esto nos muestra algo importante:
+
+> Los sistemas reales intentan organizar la memoria de manera que asignar y recuperar espacio pueda hacerse eficientemente.
+
+---
+
+# 20. Actividad de comprensión
+
+Sin programar, resuelva el siguiente caso.
+
+Huecos disponibles:
+
+```text
+[120, 400, 250, 600, 180] KB
+```
+
+Llega:
+
+```text
+P1 = 175 KB
+```
+
+Determine qué bloque seleccionaría:
+
+1. First Fit
+2. Best Fit
+3. Worst Fit
+
+Y calcule el sobrante en cada caso.
+
+::: {.callout-tip collapse="true" title="✅ Solución"}
+**First Fit**
+
+El primer bloque donde cabe es:
+
+```text
+400 KB
+```
+
+Sobrante:
+
+```text
+400 - 175 = 225 KB
+```
+
+**Best Fit**
+
+Los candidatos son:
+
+```text
+400, 250, 600, 180
+```
+
+El menor suficiente es:
+
+```text
+180 KB
+```
+
+Sobrante:
+
+```text
+5 KB
+```
+
+**Worst Fit**
+
+El mayor candidato es:
+
+```text
+600 KB
+```
+
+Sobrante:
+
+```text
+425 KB
+```
+:::
+
+---
+
+# 21. Reto: ahora cambie solamente una cosa
+
+Mantenga:
+
+```text
+Huecos = [120, 400, 250, 600, 180]
+```
+
+pero cambie el proceso a:
+
+```text
+P1 = 260 KB
+```
+
+Antes de calcular, responda:
+
+> ¿Qué bloques dejaron de ser candidatos?
+
+Después aplique los tres métodos.
+
+Esta forma de analizar es más importante que memorizar una tabla.
+
+---
+
+# 22. Laboratorio propuesto
+
+En el laboratorio construiremos un pequeño **simulador de asignación de memoria**.
+
+El sistema recibirá:
+
+```text
+Bloques libres
+[120, 400, 250, 600, 180] KB
+
+Procesos que solicitan memoria
+P1 = 175 KB
+P2 = 230 KB
+P3 = 390 KB
+P4 = 110 KB
+P5 = 280 KB
+
+Método de ajuste
+```
+
+y deberá mostrar:
+
+```text
+Proceso
+Bloque seleccionado
+Espacio restante
+Procesos que no pudieron asignarse
+Estado final de los huecos
+```
+
+Podremos ejecutar la **misma carga** con:
+
+```text
+First Fit
+Best Fit
+Worst Fit
+```
+
+y comparar los resultados.
+
+::: {.callout-tip title="La pregunta del laboratorio"}
+No queremos únicamente saber **qué algoritmo funciona**.
+
+Queremos observar:
+
+> **¿Cómo cambia el mapa de memoria cuando modificamos solamente la política de selección?**
+:::
+
+---
+
+
+---
+
+# 25. Solución del laboratorio
+
+::: {.callout-warning title="Solución para publicar después de la actividad"}
+Esta sección contiene la resolución completa del laboratorio.
+
+Se recomienda intentar primero la simulación de **First Fit, Best Fit y Worst Fit** antes de consultar los resultados.
+:::
+
+## Datos del problema
+
+Todos los métodos parten exactamente del mismo estado inicial:
+
+```text
+Bloques libres:
+[120, 400, 250, 600, 180] KB
+
+Procesos:
+P1 = 175 KB
+P2 = 230 KB
+P3 = 390 KB
+P4 = 110 KB
+P5 = 280 KB
+```
+
+Los procesos deben atenderse **en el orden indicado**.
+
+La diferencia entre las simulaciones será únicamente la política utilizada para seleccionar el hueco.
+
+::: {.callout-important title="Regla de la simulación"}
+Después de asignar un proceso, el hueco seleccionado cambia.
+
+Por ejemplo:
+
+```text
+Hueco = 400 KB
+Proceso = 175 KB
+
+400 - 175 = 225 KB
+```
+
+El siguiente proceso ya no encontrará un hueco de `400 KB`, sino uno de `225 KB`.
+:::
+
+# Solución con First Fit
+
+First Fit selecciona el **primer hueco suficientemente grande** al recorrer la lista desde el inicio.
+
+Estado inicial:
+
+```text
+[120, 400, 250, 600, 180]
+```
+
+## P1 = 175 KB
+
+```text
+120 → no cabe
+400 → cabe
+```
+
+Se selecciona `400 KB`.
+
+```text
+400 - 175 = 225 KB
+```
+
+Nuevo estado:
+
+```text
+[120, 225, 250, 600, 180]
+```
+
+## P2 = 230 KB
+
+```text
+120 → no
+225 → no
+250 → sí
+```
+
+Se selecciona `250 KB`.
+
+```text
+250 - 230 = 20 KB
+```
+
+Nuevo estado:
+
+```text
+[120, 225, 20, 600, 180]
+```
+
+## P3 = 390 KB
+
+```text
+120 → no
+225 → no
+20  → no
+600 → sí
+```
+
+Se selecciona `600 KB`.
+
+```text
+600 - 390 = 210 KB
+```
+
+Nuevo estado:
+
+```text
+[120, 225, 20, 210, 180]
+```
+
+## P4 = 110 KB
+
+El primer hueco es `120 KB` y el proceso cabe.
+
+```text
+120 - 110 = 10 KB
+```
+
+Nuevo estado:
+
+```text
+[10, 225, 20, 210, 180]
+```
+
+## P5 = 280 KB
+
+Revisamos:
+
+```text
+10, 225, 20, 210, 180
+```
+
+Ningún hueco alcanza `280 KB`.
+
+```text
+P5 → NO PUEDE ASIGNARSE
+```
+
+## Resumen de First Fit
+
+| Proceso | Bloque seleccionado | Espacio restante | Estado después de la asignación |
+|---|---:|---:|---|
+| P1 = 175 | 400 KB | 225 KB | `[120, 225, 250, 600, 180]` |
+| P2 = 230 | 250 KB | 20 KB | `[120, 225, 20, 600, 180]` |
+| P3 = 390 | 600 KB | 210 KB | `[120, 225, 20, 210, 180]` |
+| P4 = 110 | 120 KB | 10 KB | `[10, 225, 20, 210, 180]` |
+| P5 = 280 | No disponible | — | `[10, 225, 20, 210, 180]` |
+
+Resultado:
+
+```text
+Procesos asignados: P1, P2, P3, P4
+Proceso rechazado:  P5
+
+Huecos finales:
+[10, 225, 20, 210, 180]
+
+Memoria libre total:
+10 + 225 + 20 + 210 + 180 = 645 KB
+
+Mayor hueco libre:
+225 KB
+```
+
+::: {.callout-note title="¿Por qué P5 no cabe si existen 645 KB libres?"}
+Porque First Fit dejó la memoria libre distribuida en varios huecos.
+
+```text
+Memoria libre total = 645 KB
+P5 necesita         = 280 KB
+Mayor hueco libre   = 225 KB
+```
+
+Existe suficiente memoria **en total**, pero no existe un bloque contiguo suficientemente grande.
+:::
+
+# Solución con Best Fit
+
+Best Fit selecciona el **menor hueco que sea suficientemente grande**.
+
+Debemos reiniciar el escenario:
+
+```text
+[120, 400, 250, 600, 180]
+```
+
+## P1 = 175 KB
+
+Candidatos:
+
+```text
+400, 250, 600, 180
+```
+
+El menor candidato es:
+
+```text
+180 KB
+```
+
+Sobrante:
+
+```text
+180 - 175 = 5 KB
+```
+
+Estado:
+
+```text
+[120, 400, 250, 600, 5]
+```
+
+## P2 = 230 KB
+
+Candidatos:
+
+```text
+400, 250, 600
+```
+
+El menor suficiente es `250 KB`.
+
+```text
+250 - 230 = 20 KB
+```
+
+Estado:
+
+```text
+[120, 400, 20, 600, 5]
+```
+
+## P3 = 390 KB
+
+Candidatos:
+
+```text
+400, 600
+```
+
+Best Fit selecciona `400 KB`.
+
+```text
+400 - 390 = 10 KB
+```
+
+Estado:
+
+```text
+[120, 10, 20, 600, 5]
+```
+
+## P4 = 110 KB
+
+Candidatos:
+
+```text
+120, 600
+```
+
+Seleccionamos `120 KB`.
+
+```text
+120 - 110 = 10 KB
+```
+
+Estado:
+
+```text
+[10, 10, 20, 600, 5]
+```
+
+## P5 = 280 KB
+
+El único hueco suficiente es:
+
+```text
+600 KB
+```
+
+```text
+600 - 280 = 320 KB
+```
+
+Estado final:
+
+```text
+[10, 10, 20, 320, 5]
+```
+
+## Resumen de Best Fit
+
+| Proceso | Bloque seleccionado | Espacio restante | Estado después de la asignación |
+|---|---:|---:|---|
+| P1 = 175 | 180 KB | 5 KB | `[120, 400, 250, 600, 5]` |
+| P2 = 230 | 250 KB | 20 KB | `[120, 400, 20, 600, 5]` |
+| P3 = 390 | 400 KB | 10 KB | `[120, 10, 20, 600, 5]` |
+| P4 = 110 | 120 KB | 10 KB | `[10, 10, 20, 600, 5]` |
+| P5 = 280 | 600 KB | 320 KB | `[10, 10, 20, 320, 5]` |
+
+Resultado:
+
+```text
+Procesos asignados:
+P1, P2, P3, P4, P5
+
+Procesos rechazados:
+Ninguno
+
+Huecos finales:
+[10, 10, 20, 320, 5]
+
+Memoria libre total:
+365 KB
+
+Mayor hueco libre:
+320 KB
+```
+
+::: {.callout-warning title="Una conclusión que debemos evitar"}
+En esta simulación Best Fit consiguió asignar los cinco procesos.
+
+Esto **no demuestra que Best Fit sea siempre el mejor método**.
+
+La conclusión correcta es:
+
+> Para esta distribución inicial de huecos y esta secuencia específica de procesos, Best Fit produjo un resultado favorable.
+:::
+
+# Solución con Worst Fit
+
+Worst Fit selecciona el **mayor hueco disponible** donde pueda colocarse el proceso.
+
+Reiniciamos:
+
+```text
+[120, 400, 250, 600, 180]
+```
+
+## P1 = 175 KB
+
+El mayor hueco es:
+
+```text
+600 KB
+```
+
+```text
+600 - 175 = 425 KB
+```
+
+Estado:
+
+```text
+[120, 400, 250, 425, 180]
+```
+
+## P2 = 230 KB
+
+El mayor hueco es:
+
+```text
+425 KB
+```
+
+```text
+425 - 230 = 195 KB
+```
+
+Estado:
+
+```text
+[120, 400, 250, 195, 180]
+```
+
+## P3 = 390 KB
+
+El mayor hueco suficiente es:
+
+```text
+400 KB
+```
+
+```text
+400 - 390 = 10 KB
+```
+
+Estado:
+
+```text
+[120, 10, 250, 195, 180]
+```
+
+## P4 = 110 KB
+
+El mayor hueco disponible es:
+
+```text
+250 KB
+```
+
+```text
+250 - 110 = 140 KB
+```
+
+Estado:
+
+```text
+[120, 10, 140, 195, 180]
+```
+
+## P5 = 280 KB
+
+Los huecos restantes son:
+
+```text
+120, 10, 140, 195, 180
+```
+
+Ninguno alcanza `280 KB`.
+
+```text
+P5 → NO PUEDE ASIGNARSE
+```
+
+## Resumen de Worst Fit
+
+| Proceso | Bloque seleccionado | Espacio restante | Estado después de la asignación |
+|---|---:|---:|---|
+| P1 = 175 | 600 KB | 425 KB | `[120, 400, 250, 425, 180]` |
+| P2 = 230 | 425 KB | 195 KB | `[120, 400, 250, 195, 180]` |
+| P3 = 390 | 400 KB | 10 KB | `[120, 10, 250, 195, 180]` |
+| P4 = 110 | 250 KB | 140 KB | `[120, 10, 140, 195, 180]` |
+| P5 = 280 | No disponible | — | `[120, 10, 140, 195, 180]` |
+
+Resultado:
+
+```text
+Procesos asignados: P1, P2, P3, P4
+Proceso rechazado:  P5
+
+Huecos finales:
+[120, 10, 140, 195, 180]
+
+Memoria libre total:
+645 KB
+
+Mayor hueco libre:
+195 KB
+```
+
+# Comparación final
+
+Ahora podemos comparar los tres métodos utilizando exactamente la misma carga.
+
+| Indicador | First Fit | Best Fit | Worst Fit |
+|---|---:|---:|---:|
+| Procesos asignados | 4 | **5** | 4 |
+| Procesos rechazados | P5 | Ninguno | P5 |
+| Memoria libre final | 645 KB | 365 KB | 645 KB |
+| Mayor hueco libre | 225 KB | **320 KB** | 195 KB |
+| Huecos finales | `[10,225,20,210,180]` | `[10,10,20,320,5]` | `[120,10,140,195,180]` |
+
+::: {.callout-important title="¿Best Fit dejó menos memoria porque fue más eficiente?"}
+No debemos interpretar así los `365 KB`.
+
+First Fit y Worst Fit terminaron con `645 KB` porque **P5 no pudo entrar**.
+
+Best Fit sí logró asignarlo:
+
+```text
+645 KB - 280 KB = 365 KB
+```
+
+La diferencia de memoria libre final se debe a que Best Fit consiguió alojar un proceso adicional.
+:::
+
+# Fragmentación observada
+
+Tomemos el resultado de First Fit:
+
+```text
+[10, 225, 20, 210, 180]
+```
+
+La memoria libre total es:
+
+```text
+645 KB
+```
+
+pero el mayor hueco es:
+
+```text
+225 KB
+```
+
+P5 necesita:
+
+```text
+280 KB
+```
+
+Podemos visualizar conceptualmente el problema:
+
+```text
+ANTES
+
+[Proceso][10][Proceso][225][20][Proceso][210][180]
+
+Los 645 KB libres están dispersos.
+```
+
+Si el modelo permitiera realizar una compactación:
+
+```text
+DESPUÉS DE COMPACTAR
+
+[Procesos ocupados][------------- 645 KB libres -------------]
+```
+
+Ahora P5 sí podría asignarse:
+
+```text
+645 - 280 = 365 KB
+```
+
+y quedaría un hueco contiguo de:
+
+```text
+365 KB
+```
+
+::: {.callout-note title="Recordatorio"}
+La compactación ayuda conceptualmente a reunir huecos dispersos, pero mover memoria tiene un costo. No debe interpretarse como una operación gratuita que siempre conviene ejecutar.
+:::
+
+# ¿Qué cambia en un Sistema Operativo moderno?
+
+Nuestro laboratorio utiliza un modelo de **asignación contigua**.
+
+La pregunta central fue:
+
+```text
+¿Dónde encuentro un hueco suficientemente grande
+para colocar todo el proceso?
+```
+
+Con paginación, el problema cambia.
+
+Un proceso puede dividirse conceptualmente en páginas:
+
+```text
+Proceso
+  ↓
+┌────────┬────────┬────────┬────────┐
+│ Página │ Página │ Página │ Página │
+│   0    │   1    │   2    │   3    │
+└────────┴────────┴────────┴────────┘
+```
+
+y esas páginas pueden ubicarse en diferentes marcos físicos:
+
+```text
+Página 0 → Marco 7
+Página 1 → Marco 21
+Página 2 → Marco 4
+Página 3 → Marco 15
+```
+
+Los marcos no necesitan encontrarse uno junto al otro.
+
+Por ello, la paginación reduce considerablemente el problema clásico de necesitar un único hueco físico contiguo del tamaño completo del proceso.
+
+# Respuesta a la pregunta del laboratorio
+
+> **¿Cómo cambia el mapa de memoria cuando modificamos solamente la política de selección?**
+
+Una respuesta completa sería:
+
+::: {.callout-success title="Conclusión"}
+Aunque First Fit, Best Fit y Worst Fit reciben exactamente los mismos bloques y los mismos procesos, cada método utiliza una regla diferente para seleccionar el hueco.
+
+Cada asignación modifica el estado de la memoria que encontrará el siguiente proceso.
+
+Por esa razón, una diferencia aparentemente pequeña en la política de selección puede producir **mapas de memoria completamente distintos después de varias asignaciones**.
+
+En nuestro escenario:
+
+```text
+First Fit → asignó 4 procesos
+Best Fit  → asignó 5 procesos
+Worst Fit → asignó 4 procesos
+```
+
+Esto no significa que Best Fit sea universalmente superior.
+
+El comportamiento depende de:
+
+- distribución inicial de los huecos;
+- tamaño de los procesos;
+- orden de llegada;
+- liberaciones posteriores;
+- costo de búsqueda;
+- modelo de administración de memoria.
+
+**La política de selección modifica el futuro estado del recurso.**
+:::
+
+# Comprobación final
+
+Después de resolver el laboratorio, el estudiante debería poder explicar sin memorizar:
+
+1. por qué First Fit y Worst Fit rechazaron P5;
+2. por qué Best Fit logró conservar un hueco de `600 KB` hasta la llegada de P5;
+3. por qué tener más memoria libre total no significa necesariamente poder asignar un proceso contiguo;
+4. cómo la fragmentación externa aparece a partir de huecos dispersos;
+5. qué cambiaría conceptualmente con compactación;
+6. por qué paginación modifica el problema;
+7. por qué no existe un método de ajuste universalmente superior.
+
+> Si puede explicar estas siete ideas con sus propias palabras, ya no está únicamente ejecutando algoritmos: **está comprendiendo cómo una política de administración modifica el comportamiento del Sistema Operativo**.
+
+
+# 26. Autoevaluación
+
+1. ¿Qué problema resuelve un método de ajuste?
+2. ¿Cuál es el criterio de First Fit?
+3. ¿Por qué First Fit puede detener la búsqueda antes?
+4. ¿Cuál es el criterio de Best Fit?
+5. ¿Qué significa “mejor” dentro de Best Fit?
+6. ¿Cuál es el criterio de Worst Fit?
+7. ¿Por qué dos métodos pueden seleccionar el mismo bloque?
+8. ¿Qué ocurre con el espacio sobrante después de una asignación?
+9. ¿Qué es fragmentación externa?
+10. ¿Puede existir suficiente memoria libre total y aun así no poder asignar un proceso contiguamente?
+11. ¿Qué hace la compactación?
+12. ¿Por qué compactar tiene un costo?
+13. ¿Por qué no podemos afirmar que un método siempre es superior?
+14. ¿Por qué First/Best/Worst Fit no describen por sí solos la administración de memoria de un SO moderno?
+15. ¿Cuál es la idea básica del Buddy System?
+
+---
+
+# 27. Para recordar
+
+```text
+NUEVO PROCESO
+      ↓
+BUSCAR HUECOS DONDE QUEPA
+      ↓
+¿QUÉ CRITERIO UTILIZAMOS?
+      ↓
+┌────────────┬────────────┬────────────┐
+│ FIRST FIT  │ BEST FIT   │ WORST FIT  │
+│ primero    │ menor que  │ mayor que  │
+│ suficiente │ sea válido │ sea válido │
+└────────────┴────────────┴────────────┘
+      ↓
+ASIGNAR
+      ↓
+ACTUALIZAR HUECO RESTANTE
+      ↓
+NUEVAS SOLICITUDES
+      ↓
+PUEDE APARECER FRAGMENTACIÓN EXTERNA
+      ↓
+COMPACTACIÓN (si el modelo y el costo lo permiten)
+```
+
+::: {.callout-success title="Idea de cierre"}
+Los tres métodos observan **la misma memoria** y reciben **el mismo proceso**.
+
+Lo único que cambia es la **regla de decisión**.
+
+Esa pequeña diferencia puede producir mapas de memoria completamente distintos después de varias asignaciones.
+:::
+
+---
+
+# Conexión con la siguiente clase
+
+Ya sabemos:
+
+- reconocer huecos libres;
+- seleccionar espacios mediante diferentes políticas;
+- actualizar el estado de la memoria;
+- identificar fragmentación externa;
+- comprender el papel conceptual de la compactación.
+
+El siguiente paso será utilizar estas ideas para **simular decisiones de administración de memoria**, comparar resultados y continuar conectando el modelo de asignación contigua con la memoria virtual y la paginación estudiadas anteriormente.
+
+---
+
+# Referencias y notas de actualización
+
+Material base:
+
+- Presentación **Métodos de Ajuste de Memoria**, Sistemas Operativos I, Ing. Jorge L. García.
+- Capítulo 14 del libro: **Administración de memoria en ejecución**.
+
+Para la actualización conceptual del capítulo se contrastaron los ejemplos didácticos con documentación técnica actual de Microsoft sobre memoria virtual y con la documentación del subsistema de memoria del kernel de Linux.
+
+::: {.callout-note title="Criterio editorial"}
+Se conservaron del material original los ejes de **First Fit, Best Fit, Worst Fit, fragmentación, compactación, pseudocódigo, comparación y simulación**. Se amplió la explicación paso a paso y se evitó asociar de forma simplificada un algoritmo de ajuste concreto con Windows o Linux modernos.
+:::

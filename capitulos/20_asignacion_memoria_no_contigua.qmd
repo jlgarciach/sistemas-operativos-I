@@ -1,0 +1,1097 @@
+---
+title: "Asignación de Memoria No Contigua"
+subtitle: "Paginación, páginas, marcos y traducción de direcciones"
+author: "Ing. Jorge L. García"
+date: "2026-09-09"
+---
+
+# Clase 18 — Asignación de Memoria No Contigua
+
+## De dónde venimos
+
+En la clase anterior estudiamos la **asignación de memoria contigua**.
+
+Encontramos una limitación importante:
+
+> Un proceso puede tener suficiente memoria libre disponible y, aun así, no poder cargarse si no existe un único hueco contiguo suficientemente grande.
+
+Por ejemplo:
+
+```text
+Huecos libres:
+[90 KB, 70 KB, 60 KB, 80 KB]
+
+Memoria libre total = 300 KB
+Proceso P           = 150 KB
+Mayor hueco         = 90 KB
+```
+
+Aunque existen 300 KB libres:
+
+```text
+P → NO puede asignarse de forma contigua
+```
+
+La pregunta con la que cerramos fue:
+
+> **¿Qué cambiaría si pudiéramos dividir un proceso y colocar sus partes en diferentes regiones de memoria física?**
+
+Ese es nuestro punto de partida.
+
+# Objetivos de aprendizaje
+
+Al finalizar la clase, el estudiante podrá:
+
+1. explicar qué significa asignar memoria de forma no contigua;
+2. diferenciar una **página** de un **marco**;
+3. explicar el funcionamiento básico de la paginación;
+4. interpretar una tabla de páginas;
+5. traducir una dirección lógica sencilla a una dirección física;
+6. identificar ventajas y costos de la paginación;
+7. comparar asignación contigua y no contigua;
+8. representar gráficamente la ubicación de un proceso paginado.
+
+# 1. Rompiendo una restricción
+
+En asignación contigua teníamos:
+
+```text
+Proceso P = 12 KB
+```
+
+y necesitábamos:
+
+```text
+┌──────────────────────────┐
+│ P = 12 KB continuos      │
+└──────────────────────────┘
+```
+
+Pero imaginemos que la memoria física disponible se encuentra así:
+
+```text
+┌──────────────┐
+│ Ocupado      │
+├──────────────┤
+│ Libre 4 KB   │
+├──────────────┤
+│ Ocupado      │
+├──────────────┤
+│ Libre 4 KB   │
+├──────────────┤
+│ Ocupado      │
+├──────────────┤
+│ Libre 4 KB   │
+└──────────────┘
+```
+
+Tenemos exactamente:
+
+```text
+4 + 4 + 4 = 12 KB
+```
+
+Pero no existe un hueco continuo de 12 KB.
+
+¿Y si pudiéramos hacer esto?
+
+```text
+Proceso P
+┌──────────┐
+│ Parte 0  │ ──────────► Libre 4 KB
+├──────────┤
+│ Parte 1  │ ──────────► Libre 4 KB
+├──────────┤
+│ Parte 2  │ ──────────► Libre 4 KB
+└──────────┘
+```
+
+Ahora sí podemos utilizar los tres espacios.
+
+::: {.callout-note title="Idea central"}
+En la **asignación no contigua**, un proceso puede estar dividido en partes que se almacenan en diferentes regiones de la memoria física.
+:::
+
+# 2. Paginación
+
+Una de las técnicas fundamentales de asignación no contigua es la **paginación**.
+
+La idea consiste en dividir:
+
+- el espacio de memoria del proceso en bloques de tamaño fijo llamados **páginas**;
+- la memoria física en bloques del mismo tamaño llamados **marcos**.
+
+```text
+PROCESO                     MEMORIA FÍSICA
+
+┌──────────┐                ┌──────────┐
+│ Página 0 │                │ Marco 0  │
+├──────────┤                ├──────────┤
+│ Página 1 │                │ Marco 1  │
+├──────────┤                ├──────────┤
+│ Página 2 │                │ Marco 2  │
+├──────────┤                ├──────────┤
+│ Página 3 │                │ Marco 3  │
+└──────────┘                ├──────────┤
+                            │ Marco 4  │
+                            ├──────────┤
+                            │ Marco 5  │
+                            └──────────┘
+```
+
+# 3. Página y marco no son lo mismo
+
+::: {.callout-important title="No confundir"}
+**Página:** bloque del espacio lógico del proceso.
+
+**Marco:** bloque de la memoria física.
+:::
+
+Si el tamaño de página es:
+
+```text
+4 KB
+```
+
+entonces cada marco también mide:
+
+```text
+4 KB
+```
+
+Esto permite colocar cualquier página en cualquier marco libre.
+
+# 4. Un proceso ya no necesita estar junto
+
+Supongamos:
+
+```text
+Proceso P = 16 KB
+Tamaño de página = 4 KB
+```
+
+Entonces:
+
+```text
+Número de páginas = 16 / 4 = 4
+```
+
+El proceso se divide así:
+
+```text
+P0 = Página 0
+P1 = Página 1
+P2 = Página 2
+P3 = Página 3
+```
+
+Podrían ubicarse físicamente así:
+
+```text
+MEMORIA FÍSICA
+
+Marco 0   → Otro proceso
+Marco 1   → Página 2 de P
+Marco 2   → Libre
+Marco 3   → Página 0 de P
+Marco 4   → Otro proceso
+Marco 5   → Página 3 de P
+Marco 6   → Página 1 de P
+Marco 7   → Libre
+```
+
+Observe algo importante:
+
+```text
+Página 0 → Marco 3
+Página 1 → Marco 6
+Página 2 → Marco 1
+Página 3 → Marco 5
+```
+
+Las páginas **no necesitan estar en orden físico**.
+
+# 5. Entonces aparece un nuevo problema
+
+El programa trabaja con su propio espacio lógico.
+
+Por ejemplo, puede solicitar información que se encuentra en:
+
+```text
+Página 2
+```
+
+Pero físicamente esa página está en:
+
+```text
+Marco 1
+```
+
+¿Cómo sabe el sistema dónde encontrarla?
+
+Necesitamos una estructura que mantenga esa correspondencia.
+
+# 6. Tabla de páginas
+
+La **tabla de páginas** relaciona cada página lógica con el marco físico donde se encuentra.
+
+Para nuestro ejemplo:
+
+| Página | Marco |
+|---:|---:|
+| 0 | 3 |
+| 1 | 6 |
+| 2 | 1 |
+| 3 | 5 |
+
+Podemos leerla así:
+
+```text
+Página 0 → Marco 3
+Página 1 → Marco 6
+Página 2 → Marco 1
+Página 3 → Marco 5
+```
+
+::: {.callout-tip title="La tabla es el mapa"}
+El proceso conoce sus **páginas**.
+
+La memoria física contiene **marcos**.
+
+La tabla de páginas permite relacionar ambos mundos.
+:::
+
+# 7. Dirección lógica
+
+Una dirección generada por el proceso puede separarse conceptualmente en:
+
+```text
+┌──────────────┬────────────────┐
+│   Página     │ Desplazamiento │
+└──────────────┴────────────────┘
+```
+
+La **página** indica qué bloque lógico contiene el dato.
+
+El **desplazamiento** indica la posición del dato dentro de esa página.
+
+Por ejemplo:
+
+```text
+Página = 2
+Desplazamiento = 500 bytes
+```
+
+Significa:
+
+> El dato se encuentra 500 bytes después del inicio de la página 2.
+
+# 8. Traducción de dirección
+
+Supongamos:
+
+```text
+Página lógica = 2
+Desplazamiento = 500 bytes
+```
+
+La tabla indica:
+
+```text
+Página 2 → Marco 1
+```
+
+Por lo tanto:
+
+```text
+Dirección lógica:
+[ Página 2 | desplazamiento 500 ]
+
+                  ↓ tabla de páginas
+
+Dirección física:
+[ Marco 1  | desplazamiento 500 ]
+```
+
+Observe:
+
+> **El desplazamiento no cambia.**
+
+Lo que cambia es la página lógica por el marco físico correspondiente.
+
+# 9. Dirección física numérica
+
+Ahora podemos calcular la dirección física.
+
+Si:
+
+```text
+Tamaño de marco = 4096 bytes
+Marco = 1
+Desplazamiento = 500 bytes
+```
+
+Entonces:
+
+```text
+Dirección física
+= (marco × tamaño del marco) + desplazamiento
+
+= (1 × 4096) + 500
+
+= 4596
+```
+
+Por tanto:
+
+```text
+Dirección física = 4596
+```
+
+# 10. Ejemplo completo
+
+Tenemos:
+
+```text
+Tamaño de página = 1 KB = 1024 bytes
+```
+
+Tabla:
+
+| Página | Marco |
+|---:|---:|
+| 0 | 5 |
+| 1 | 2 |
+| 2 | 7 |
+| 3 | 1 |
+
+El proceso genera:
+
+```text
+Página = 2
+Desplazamiento = 300
+```
+
+### Paso 1 — Consultar la tabla
+
+```text
+Página 2 → Marco 7
+```
+
+### Paso 2 — Mantener el desplazamiento
+
+```text
+Desplazamiento = 300
+```
+
+### Paso 3 — Calcular
+
+```text
+Dirección física
+= (7 × 1024) + 300
+= 7168 + 300
+= 7468
+```
+
+Resultado:
+
+```text
+Dirección física = 7468
+```
+
+# 11. ¿Y si nos dan una dirección lógica completa?
+
+Supongamos:
+
+```text
+Tamaño de página = 1000 bytes
+Dirección lógica = 2350
+```
+
+Tenemos que descubrir:
+
+```text
+¿En qué página está?
+¿A qué distancia del inicio de esa página?
+```
+
+Calculamos:
+
+```text
+Página = dirección lógica / tamaño de página
+
+Página = 2350 / 1000
+Página = 2
+```
+
+Usamos la parte entera.
+
+El desplazamiento es:
+
+```text
+Desplazamiento = 2350 % 1000
+Desplazamiento = 350
+```
+
+Entonces:
+
+```text
+2350 → Página 2 + desplazamiento 350
+```
+
+::: {.callout-note title="Regla práctica"}
+Para una dirección lógica:
+
+```text
+página = dirección / tamaño_página
+desplazamiento = dirección % tamaño_página
+```
+
+Se utiliza división entera para obtener la página.
+:::
+
+# 12. Hagamos la traducción completa
+
+Tabla:
+
+| Página | Marco |
+|---:|---:|
+| 0 | 4 |
+| 1 | 7 |
+| 2 | 1 |
+| 3 | 5 |
+
+Datos:
+
+```text
+Tamaño de página = 1000 bytes
+Dirección lógica = 2350
+```
+
+Ya sabemos:
+
+```text
+Página = 2
+Desplazamiento = 350
+```
+
+Consultamos:
+
+```text
+Página 2 → Marco 1
+```
+
+Finalmente:
+
+```text
+Dirección física
+= (1 × 1000) + 350
+= 1350
+```
+
+Por tanto:
+
+```text
+Dirección lógica 2350
+          ↓
+Página 2 | desplazamiento 350
+          ↓
+Tabla de páginas
+          ↓
+Marco 1  | desplazamiento 350
+          ↓
+Dirección física 1350
+```
+
+# 13. ¿Quién realiza esta traducción?
+
+En los sistemas modernos, la traducción de direcciones se apoya en hardware especializado.
+
+Ya conocimos este componente:
+
+> **MMU — Memory Management Unit**
+
+Conceptualmente:
+
+```text
+CPU
+ │
+ │ Dirección lógica
+ ▼
+┌──────────────┐
+│     MMU      │
+└──────────────┘
+ │
+ │ Traducción
+ ▼
+Tabla de páginas
+ │
+ ▼
+Dirección física
+ │
+ ▼
+Memoria RAM
+```
+
+::: {.callout-note title="Conexión con clases anteriores"}
+En multiprogramación vimos que la MMU participa en la traducción de direcciones lógicas a físicas durante la ejecución.
+
+Ahora podemos comprender **cómo una tabla de páginas forma parte de ese proceso de traducción**.
+:::
+
+# 14. Una ventaja importante
+
+Regresemos al problema inicial:
+
+```text
+Huecos:
+[4 KB, 4 KB, 4 KB]
+
+Proceso:
+12 KB
+```
+
+Con asignación contigua:
+
+```text
+NO cabe.
+```
+
+Con páginas de 4 KB:
+
+```text
+Proceso = 3 páginas
+```
+
+Podemos utilizar tres marcos libres separados:
+
+```text
+Página 0 → Marco libre A
+Página 1 → Marco libre F
+Página 2 → Marco libre C
+```
+
+Por lo tanto:
+
+```text
+SÍ puede asignarse.
+```
+
+Esta es una de las grandes ventajas de la asignación no contigua.
+
+# 15. ¿Desaparece la fragmentación?
+
+Una conclusión apresurada sería:
+
+> “Si utilizamos paginación ya no existe fragmentación.”
+
+Eso sería incorrecto.
+
+La paginación evita el problema clásico de **fragmentación externa** asociado con la necesidad de grandes huecos contiguos.
+
+Pero todavía puede existir **fragmentación interna**.
+
+# 16. Fragmentación interna en paginación
+
+Supongamos:
+
+```text
+Tamaño de página = 4 KB
+Proceso = 10 KB
+```
+
+Necesitamos:
+
+```text
+Página 0 = 4 KB
+Página 1 = 4 KB
+Página 2 = 2 KB utilizados
+```
+
+Pero la última página ocupa un marco completo de 4 KB.
+
+```text
+Último marco:
+
+┌─────────────────┐
+│ Usado      2 KB │
+├─────────────────┤
+│ Sin usar   2 KB │
+└─────────────────┘
+```
+
+Entonces:
+
+```text
+Fragmentación interna = 2 KB
+```
+
+::: {.callout-important title="Conclusión"}
+La paginación reduce el problema de la **fragmentación externa**, pero puede producir **fragmentación interna**, especialmente en la última página de un proceso.
+:::
+
+# 17. ¿Cuántas páginas necesita un proceso?
+
+Supongamos:
+
+```text
+Proceso = 18 KB
+Página = 4 KB
+```
+
+Dividimos:
+
+```text
+18 / 4 = 4.5
+```
+
+No podemos utilizar media página física.
+
+Necesitamos:
+
+```text
+5 páginas
+```
+
+Capacidad reservada:
+
+```text
+5 × 4 = 20 KB
+```
+
+Espacio no utilizado:
+
+```text
+20 - 18 = 2 KB
+```
+
+# 18. Ejercicio guiado
+
+Datos:
+
+```text
+Proceso = 13 KB
+Tamaño de página = 4 KB
+```
+
+Determine:
+
+1. número de páginas necesarias;
+2. memoria física reservada;
+3. espacio no utilizado en la última página.
+
+::: {.callout-note title="Respuesta"}
+```text
+13 / 4 = 3.25
+```
+
+Se necesitan:
+
+```text
+4 páginas
+```
+
+Memoria reservada:
+
+```text
+4 × 4 = 16 KB
+```
+
+Fragmentación interna:
+
+```text
+16 - 13 = 3 KB
+```
+:::
+
+# 19. Ahora usted traduce
+
+Tabla:
+
+| Página | Marco |
+|---:|---:|
+| 0 | 6 |
+| 1 | 2 |
+| 2 | 8 |
+| 3 | 4 |
+
+Datos:
+
+```text
+Tamaño de página = 1000 bytes
+Dirección lógica = 2750
+```
+
+Responda:
+
+1. ¿Qué página contiene la dirección?
+2. ¿Cuál es el desplazamiento?
+3. ¿En qué marco está esa página?
+4. ¿Cuál es la dirección física?
+
+::: {.callout-note title="Respuesta"}
+```text
+Página = 2750 / 1000 = 2
+Desplazamiento = 2750 % 1000 = 750
+Página 2 → Marco 8
+Dirección física = (8 × 1000) + 750
+Dirección física = 8750
+```
+:::
+
+# 20. Dibujemos el proceso
+
+Tenemos:
+
+```text
+Proceso P = 16 KB
+Página = 4 KB
+```
+
+Tabla:
+
+| Página | Marco |
+|---:|---:|
+| 0 | 5 |
+| 1 | 1 |
+| 2 | 7 |
+| 3 | 3 |
+
+Complete el mapa:
+
+```text
+MEMORIA FÍSICA
+
+Marco 0 → __________________
+Marco 1 → __________________
+Marco 2 → __________________
+Marco 3 → __________________
+Marco 4 → __________________
+Marco 5 → __________________
+Marco 6 → __________________
+Marco 7 → __________________
+```
+
+Una posible representación:
+
+```text
+Marco 0 → Libre / otro proceso
+Marco 1 → Página 1 de P
+Marco 2 → Libre / otro proceso
+Marco 3 → Página 3 de P
+Marco 4 → Libre / otro proceso
+Marco 5 → Página 0 de P
+Marco 6 → Libre / otro proceso
+Marco 7 → Página 2 de P
+```
+
+# 21. Lo que ganamos y lo que cuesta
+
+## Ventajas
+
+- Un proceso no necesita ocupar un único bloque contiguo.
+- Se aprovechan marcos libres distribuidos en memoria.
+- Se reduce el problema de fragmentación externa.
+- Facilita una administración más flexible de la memoria.
+
+## Costos
+
+- Debemos mantener tablas de páginas.
+- Cada acceso requiere traducir una dirección lógica a física.
+- Las estructuras de traducción también consumen memoria.
+- Puede existir fragmentación interna.
+- La administración es más compleja que en un modelo contiguo.
+
+# 22. Contigua vs. No Contigua
+
+| Característica | Contigua | No contigua / paginación |
+|---|---|---|
+| Ubicación del proceso | Un bloque continuo | Varios marcos |
+| División del proceso | No necesaria | Páginas |
+| Unidad física | Bloque/partición | Marco |
+| Fragmentación externa | Puede ocurrir | Se reduce significativamente |
+| Fragmentación interna | Puede ocurrir | Puede ocurrir |
+| Traducción | Más sencilla | Requiere correspondencia página-marco |
+| Estructura adicional | Menor | Tabla de páginas |
+| Flexibilidad | Menor | Mayor |
+
+# 23. Un caso para pensar como ingeniero
+
+Un sistema tiene marcos libres:
+
+```text
+Marco 1
+Marco 4
+Marco 7
+Marco 9
+```
+
+Cada marco mide:
+
+```text
+4 KB
+```
+
+Llega un proceso:
+
+```text
+P = 14 KB
+```
+
+Preguntas:
+
+1. ¿Cuántas páginas necesita?
+2. ¿Puede cargarse utilizando esos cuatro marcos?
+3. Proponga una tabla de páginas.
+4. ¿Cuánta fragmentación interna queda?
+5. Dibuje el resultado.
+
+Una solución posible:
+
+```text
+P necesita 4 páginas.
+
+Página 0 → Marco 1
+Página 1 → Marco 4
+Página 2 → Marco 7
+Página 3 → Marco 9
+```
+
+Memoria reservada:
+
+```text
+4 × 4 = 16 KB
+```
+
+Fragmentación interna:
+
+```text
+16 - 14 = 2 KB
+```
+
+# 24. ¿Qué sucedería si...?
+
+Analice cada situación.
+
+### Situación A
+
+Hay suficiente memoria libre total, pero ningún hueco contiguo es suficientemente grande.
+
+**¿Qué modelo tiene ventaja?**
+
+La asignación no contigua.
+
+### Situación B
+
+Una página lógica cambia de marco físico.
+
+**¿Debe cambiar la dirección lógica utilizada por el proceso?**
+
+Conceptualmente, no. La correspondencia de la tabla permite mantener separado el espacio lógico de la ubicación física.
+
+### Situación C
+
+Un proceso utiliza solamente una pequeña parte de su última página.
+
+**¿Qué tipo de desperdicio aparece?**
+
+Fragmentación interna.
+
+# 25. El viaje completo de una dirección
+
+Podemos resumir el proceso así:
+
+```text
+             PROCESO
+                │
+                ▼
+       Dirección lógica
+                │
+                ▼
+     ┌─────────────────────┐
+     │ Página | Desplazam. │
+     └─────────────────────┘
+                │
+                ▼
+        Tabla de páginas
+                │
+       Página → Marco
+                │
+                ▼
+     ┌─────────────────────┐
+     │ Marco  | Desplazam. │
+     └─────────────────────┘
+                │
+                ▼
+       Dirección física
+                │
+                ▼
+              RAM
+```
+
+Este esquema debe quedar claro antes de avanzar.
+
+# 26. Actividad corta de clase
+
+Trabajen en parejas.
+
+Datos:
+
+```text
+Tamaño de página = 1 KB
+
+Tabla:
+Página 0 → Marco 3
+Página 1 → Marco 8
+Página 2 → Marco 2
+Página 3 → Marco 6
+Página 4 → Marco 1
+```
+
+Traduzcan:
+
+```text
+Dirección lógica A = 450
+Dirección lógica B = 1750
+Dirección lógica C = 3200
+Dirección lógica D = 4090
+```
+
+Para cada una escriban:
+
+```text
+Dirección lógica
+      ↓
+Página + desplazamiento
+      ↓
+Marco
+      ↓
+Dirección física
+```
+
+# 27. De la asignación al diseño
+
+Hasta este punto hemos visto dos formas diferentes de enfrentar el mismo problema:
+
+```text
+¿Cómo colocar procesos en memoria?
+```
+
+### Asignación contigua
+
+```text
+Buscar un bloque suficientemente grande.
+```
+
+### Asignación no contigua
+
+```text
+Dividir el proceso y utilizar diferentes marcos.
+```
+
+Pero esto introduce nuevas preguntas:
+
+- ¿Cómo administrar tablas de páginas grandes?
+- ¿Qué sucede si una página necesaria no está actualmente en RAM?
+- ¿Podemos ejecutar un proceso aunque no todas sus páginas estén cargadas?
+- ¿Qué relación existe entre paginación y memoria virtual?
+
+Estas preguntas abren el siguiente nivel de la administración de memoria.
+
+# Cierre de clase
+
+Responda de forma concreta:
+
+1. ¿Qué significa asignación no contigua?
+2. ¿Qué diferencia existe entre página y marco?
+3. ¿Para qué sirve una tabla de páginas?
+4. ¿Qué partes forman una dirección lógica paginada?
+5. ¿Qué parte de la dirección permanece igual durante la traducción?
+6. ¿Qué función cumple la MMU?
+7. ¿Por qué la paginación reduce la fragmentación externa?
+8. ¿Por qué todavía puede existir fragmentación interna?
+9. ¿Qué ventaja tiene la paginación frente a la asignación contigua?
+10. ¿Qué costo adicional introduce?
+
+::: {.callout-success title="Idea para llevarse hoy"}
+La paginación cambia una pregunta:
+
+**“¿Dónde encuentro un bloque suficientemente grande?”**
+
+por otra:
+
+**“¿Qué marcos libres puedo utilizar y cómo relaciono cada página con ellos?”**
+
+Ese cambio permite que un proceso ya no dependa de un único espacio físico contiguo.
+:::
+
+---
+
+# Sección para el docente
+
+::: {.callout-warning title="NO PUBLICAR ANTES DE LA CLASE"}
+Esta sección contiene respuestas y puntos de discusión para el docente.
+:::
+
+## Respuestas del cierre
+
+1. Permite almacenar las diferentes partes de un proceso en regiones físicas separadas.
+2. Una página pertenece al espacio lógico del proceso; un marco pertenece a la memoria física.
+3. Mantiene la correspondencia entre páginas lógicas y marcos físicos.
+4. Número de página y desplazamiento.
+5. El desplazamiento.
+6. Participa en la traducción de direcciones lógicas a físicas durante la ejecución.
+7. Porque no exige un único hueco físico continuo para almacenar todo el proceso.
+8. Porque la última página puede no utilizar completamente el marco que tiene asignado.
+9. Puede aprovechar marcos libres dispersos en la memoria.
+10. Tablas de páginas, traducción de direcciones, consumo adicional de memoria y mayor complejidad de administración.
+
+## Respuestas de la actividad corta
+
+Con páginas de 1 KB = 1024 bytes:
+
+### A = 450
+
+```text
+Página 0
+Desplazamiento 450
+Página 0 → Marco 3
+Física = (3 × 1024) + 450 = 3522
+```
+
+### B = 1750
+
+```text
+Página 1
+Desplazamiento = 1750 - 1024 = 726
+Página 1 → Marco 8
+Física = (8 × 1024) + 726 = 8918
+```
+
+### C = 3200
+
+```text
+Página 3
+Desplazamiento = 3200 - 3072 = 128
+Página 3 → Marco 6
+Física = (6 × 1024) + 128 = 6272
+```
+
+### D = 4090
+
+```text
+Página 3
+Desplazamiento = 4090 - 3072 = 1018
+Página 3 → Marco 6
+Física = (6 × 1024) + 1018 = 7162
+```
+
+## Punto de discusión final
+
+Preguntar:
+
+> Si paginación permite utilizar marcos separados, ¿necesitamos tener **todas** las páginas del proceso en RAM para comenzar a ejecutarlo?
+
+No desarrollar todavía toda la respuesta si el tema siguiente será memoria virtual.
+
+Utilizar la pregunta para dejar abierto el siguiente paso conceptual.

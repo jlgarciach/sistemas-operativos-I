@@ -1,0 +1,852 @@
+---
+title: "Asignación de Memoria Contigua"
+subtitle: "Particiones, métodos de ajuste, fragmentación y compactación"
+author: "Ing. Jorge L. García"
+date: "2026-09-09"
+---
+
+# Clase 17 — Asignación de Memoria Contigua
+
+## ¿Dónde estamos?
+
+Hasta ahora hemos estudiado cómo el Sistema Operativo administra procesos y cómo la memoria permite mantener programas en ejecución.
+
+En esta clase nos concentraremos en una pregunta concreta:
+
+> **¿Cómo puede el Sistema Operativo decidir en qué lugar de la memoria colocar un proceso cuando este debe ocupar un bloque continuo?**
+
+A esta forma de organización la llamamos **asignación de memoria contigua**.
+
+::: {.callout-note title="Idea central"}
+En asignación contigua, **cada proceso ocupa una única región continua de memoria física**.
+
+Si un proceso necesita 200 KB, el Sistema Operativo debe encontrar un bloque libre de al menos 200 KB consecutivos.
+:::
+
+# Objetivos de aprendizaje
+
+Al finalizar la clase, el estudiante podrá:
+
+1. explicar qué significa asignar memoria de forma contigua;
+2. diferenciar particiones fijas y particiones dinámicas;
+3. identificar fragmentación interna y externa;
+4. aplicar **First Fit, Best Fit y Worst Fit** a un mapa de huecos;
+5. interpretar cómo cada decisión modifica el estado futuro de la memoria;
+6. explicar cuándo la compactación puede resolver un problema de fragmentación externa;
+7. justificar técnicamente una decisión de asignación.
+
+# 1. El problema de colocar procesos en memoria
+
+Supongamos una memoria simplificada:
+
+```text
+┌─────────────────────────┐
+│ Sistema Operativo       │
+├─────────────────────────┤
+│        LIBRE            │
+│        700 KB           │
+└─────────────────────────┘
+```
+
+Llega un proceso:
+
+```text
+P1 = 250 KB
+```
+
+El Sistema Operativo puede reservar 250 KB continuos:
+
+```text
+┌─────────────────────────┐
+│ Sistema Operativo       │
+├─────────────────────────┤
+│ P1              250 KB  │
+├─────────────────────────┤
+│ Libre           450 KB  │
+└─────────────────────────┘
+```
+
+Hasta aquí parece sencillo.
+
+El problema aparece cuando entran y salen muchos procesos.
+
+# 2. ¿Qué significa "contigua"?
+
+Una región es **contigua** cuando sus posiciones de memoria se encuentran una después de otra.
+
+Por ejemplo:
+
+```text
+Direcciones
+1000 ─────────────────────
+      P1
+      P1
+      P1
+      P1
+1499 ─────────────────────
+```
+
+P1 ocupa un único bloque continuo.
+
+No sería asignación contigua si P1 estuviera distribuido así:
+
+```text
+┌───────────────┐
+│ Parte de P1   │
+├───────────────┤
+│ P2            │
+├───────────────┤
+│ Parte de P1   │
+└───────────────┘
+```
+
+Ese segundo escenario nos conducirá después a la **asignación no contigua**.
+
+# 3. Particiones fijas
+
+Una primera estrategia consiste en dividir previamente la memoria en bloques de tamaño establecido.
+
+```text
+┌─────────────────────────┐
+│ Sistema Operativo       │
+├─────────────────────────┤
+│ Partición 1     200 KB  │
+├─────────────────────────┤
+│ Partición 2     200 KB  │
+├─────────────────────────┤
+│ Partición 3     200 KB  │
+├─────────────────────────┤
+│ Partición 4     200 KB  │
+└─────────────────────────┘
+```
+
+Cada proceso ocupa una partición.
+
+Supongamos:
+
+```text
+P1 = 180 KB
+P2 = 120 KB
+P3 = 195 KB
+```
+
+El resultado podría ser:
+
+| Partición | Tamaño | Proceso | Espacio sin utilizar |
+|---|---:|---:|---:|
+| 1 | 200 KB | P1 = 180 KB | 20 KB |
+| 2 | 200 KB | P2 = 120 KB | 80 KB |
+| 3 | 200 KB | P3 = 195 KB | 5 KB |
+| 4 | 200 KB | Libre | 200 KB |
+
+Los 20 + 80 + 5 KB que quedan dentro de particiones ocupadas no pueden entregarse fácilmente a otro proceso.
+
+## Fragmentación interna
+
+::: {.callout-important title="Fragmentación interna"}
+Es el espacio desperdiciado **dentro de una región ya asignada** porque el proceso utiliza menos memoria que el tamaño reservado.
+:::
+
+En nuestro ejemplo:
+
+```text
+Fragmentación interna = 20 + 80 + 5
+                       = 105 KB
+```
+
+# 4. Particiones dinámicas
+
+En lugar de establecer todos los tamaños con anticipación, podemos crear una partición de acuerdo con el tamaño requerido por cada proceso.
+
+Partimos de:
+
+```text
+┌─────────────────────────┐
+│ Libre            800 KB │
+└─────────────────────────┘
+```
+
+Llegan:
+
+```text
+P1 = 180 KB
+P2 = 250 KB
+P3 = 120 KB
+```
+
+Podríamos obtener:
+
+```text
+┌─────────────────────────┐
+│ P1               180 KB │
+├─────────────────────────┤
+│ P2               250 KB │
+├─────────────────────────┤
+│ P3               120 KB │
+├─────────────────────────┤
+│ Libre            250 KB │
+└─────────────────────────┘
+```
+
+Las particiones dinámicas se adaptan mejor al tamaño solicitado.
+
+Pero aparece otro problema cuando los procesos terminan.
+
+# 5. Cuando los procesos salen
+
+Supongamos que termina `P2`.
+
+```text
+┌─────────────────────────┐
+│ P1               180 KB │
+├─────────────────────────┤
+│ LIBRE            250 KB │
+├─────────────────────────┤
+│ P3               120 KB │
+├─────────────────────────┤
+│ LIBRE            250 KB │
+└─────────────────────────┘
+```
+
+Tenemos:
+
+```text
+Memoria libre total = 500 KB
+```
+
+Ahora llega:
+
+```text
+P4 = 400 KB
+```
+
+Pregunta:
+
+> **¿Puede cargarse P4?**
+
+No.
+
+Aunque existen **500 KB libres en total**, no existe un único bloque contiguo de 400 KB.
+
+## Fragmentación externa
+
+::: {.callout-important title="Fragmentación externa"}
+Existe memoria libre suficiente en total, pero se encuentra distribuida en **huecos separados** y ninguno es suficientemente grande para satisfacer una solicitud contigua.
+:::
+
+Este concepto será fundamental durante toda la clase.
+
+# 6. El Sistema Operativo debe elegir
+
+Cuando existen varios huecos suficientemente grandes para un proceso, surge otra pregunta:
+
+> **¿Cuál hueco debemos utilizar?**
+
+Supongamos:
+
+```text
+Huecos libres:
+[100 KB, 500 KB, 200 KB, 300 KB, 600 KB]
+```
+
+Llega:
+
+```text
+P1 = 212 KB
+```
+
+Hay tres candidatos:
+
+```text
+500 KB
+300 KB
+600 KB
+```
+
+¿Qué bloque elegimos?
+
+Aquí aparecen los **métodos de ajuste**.
+
+# 7. First Fit — El primero que funciona
+
+**First Fit** recorre los huecos y selecciona el **primer bloque suficientemente grande**.
+
+```text
+Huecos:
+[100, 500, 200, 300, 600]
+
+Proceso:
+P1 = 212
+```
+
+Recorrido:
+
+```text
+100  → no cabe
+500  → sí cabe  ← DETENER BÚSQUEDA
+```
+
+Después de asignar:
+
+```text
+500 - 212 = 288 KB
+```
+
+Nuevo estado:
+
+```text
+[100, 288, 200, 300, 600]
+```
+
+::: {.callout-tip title="Ventaja conceptual"}
+First Fit puede tomar una decisión rápidamente porque no necesita encontrar el mejor hueco: **se detiene al encontrar el primero válido**.
+:::
+
+Pero rapidez de búsqueda no significa necesariamente mejor aprovechamiento futuro.
+
+# 8. Best Fit — El hueco suficiente más pequeño
+
+**Best Fit** busca entre los huecos válidos y selecciona el **menor que pueda contener el proceso**.
+
+Mismo escenario:
+
+```text
+Huecos:
+[100, 500, 200, 300, 600]
+
+P1 = 212 KB
+```
+
+Candidatos:
+
+```text
+500 KB
+300 KB  ← menor candidato válido
+600 KB
+```
+
+Asignación:
+
+```text
+300 - 212 = 88 KB
+```
+
+Nuevo estado:
+
+```text
+[100, 500, 200, 88, 600]
+```
+
+La decisión minimizó el sobrante **de esta asignación**.
+
+::: {.callout-warning title="Cuidado"}
+Que Best Fit produzca el menor sobrante inmediato **no garantiza** que al finalizar toda una secuencia produzca menos fragmentación.
+
+Puede terminar creando muchos huecos pequeños.
+:::
+
+# 9. Worst Fit — Utilizar el hueco más grande
+
+**Worst Fit** selecciona el **mayor hueco disponible**.
+
+Con los mismos datos:
+
+```text
+Huecos:
+[100, 500, 200, 300, 600]
+
+P1 = 212 KB
+```
+
+Selecciona:
+
+```text
+600 KB
+```
+
+Sobrante:
+
+```text
+600 - 212 = 388 KB
+```
+
+Nuevo estado:
+
+```text
+[100, 500, 200, 300, 388]
+```
+
+La idea es dejar un sobrante que todavía pueda ser útil.
+
+Pero tampoco existe garantía de que sea la mejor decisión para las solicitudes futuras.
+
+# 10. Comparación inmediata
+
+Para una misma solicitud:
+
+```text
+Huecos iniciales = [100, 500, 200, 300, 600]
+P1 = 212 KB
+```
+
+| Método | Hueco seleccionado | Sobrante |
+|---|---:|---:|
+| First Fit | 500 KB | 288 KB |
+| Best Fit | 300 KB | 88 KB |
+| Worst Fit | 600 KB | 388 KB |
+
+Los tres pudieron asignar el proceso.
+
+Sin embargo, **el mapa de memoria futuro ya es diferente**.
+
+::: {.callout-note title="Pregunta de ingeniería"}
+Si todos lograron colocar P1, ¿podemos afirmar que los tres métodos son equivalentes?
+
+**No.** La decisión actual modifica las opciones disponibles para los procesos que lleguen después.
+:::
+
+# 11. Ejemplo completo — La secuencia importa
+
+Tenemos:
+
+```text
+Huecos iniciales:
+[120 KB, 400 KB, 250 KB, 600 KB, 180 KB]
+
+Procesos:
+P1 = 175 KB
+P2 = 230 KB
+P3 = 390 KB
+P4 = 110 KB
+P5 = 280 KB
+```
+
+Este será nuestro escenario de trabajo.
+
+## ¿Cómo debemos resolverlo?
+
+Para **cada proceso**:
+
+1. observar el mapa actual;
+2. identificar los huecos candidatos;
+3. aplicar la política correspondiente;
+4. restar el tamaño asignado;
+5. actualizar el mapa;
+6. continuar con el siguiente proceso.
+
+::: {.callout-important title="Regla"}
+No resuelva todos los procesos utilizando el mapa inicial.
+
+**Cada asignación cambia el problema que recibe el siguiente proceso.**
+:::
+
+# 12. Simulación guiada — First Fit
+
+Estado inicial:
+
+```text
+[120, 400, 250, 600, 180]
+```
+
+### P1 = 175 KB
+
+```text
+120 → no
+400 → sí
+```
+
+Nuevo mapa:
+
+```text
+[120, 225, 250, 600, 180]
+```
+
+### P2 = 230 KB
+
+```text
+120 → no
+225 → no
+250 → sí
+```
+
+Nuevo mapa:
+
+```text
+[120, 225, 20, 600, 180]
+```
+
+### P3 = 390 KB
+
+El primer hueco suficiente es 600 KB:
+
+```text
+600 - 390 = 210
+```
+
+Nuevo mapa:
+
+```text
+[120, 225, 20, 210, 180]
+```
+
+### P4 = 110 KB
+
+El primer hueco suficiente es 120 KB:
+
+```text
+120 - 110 = 10
+```
+
+Nuevo mapa:
+
+```text
+[10, 225, 20, 210, 180]
+```
+
+### P5 = 280 KB
+
+Ningún hueco tiene 280 KB.
+
+```text
+P5 → NO SE ASIGNA
+```
+
+Pero observemos:
+
+```text
+Memoria libre total
+= 10 + 225 + 20 + 210 + 180
+= 645 KB
+```
+
+Tenemos **645 KB libres**, pero no podemos colocar un proceso de 280 KB.
+
+¿Por qué?
+
+> **Fragmentación externa.**
+
+# 13. Compactación
+
+Una posible respuesta frente a la fragmentación externa es mover procesos para reunir los espacios libres.
+
+Antes:
+
+```text
+┌──────────────┐
+│ P1           │
+├──────────────┤
+│ Libre 100 KB │
+├──────────────┤
+│ P2           │
+├──────────────┤
+│ Libre 80 KB  │
+├──────────────┤
+│ P3           │
+├──────────────┤
+│ Libre 120 KB │
+└──────────────┘
+```
+
+Después de compactar:
+
+```text
+┌──────────────┐
+│ P1           │
+├──────────────┤
+│ P2           │
+├──────────────┤
+│ P3           │
+├──────────────┤
+│ Libre 300 KB │
+└──────────────┘
+```
+
+Ahora existe un hueco contiguo de 300 KB.
+
+## Entonces... ¿por qué no compactar siempre?
+
+Porque compactar implica:
+
+- mover procesos y datos;
+- copiar contenido en memoria;
+- ajustar información relacionada con sus ubicaciones;
+- consumir CPU y tiempo;
+- afectar temporalmente el rendimiento.
+
+::: {.callout-warning title="Compactar tiene costo"}
+La compactación puede solucionar un problema de espacio contiguo, pero **no es una operación gratuita**.
+:::
+
+# 14. Fragmentación interna vs. externa
+
+| Característica | Interna | Externa |
+|---|---|---|
+| ¿Dónde está el espacio desperdiciado? | Dentro del bloque asignado | Entre bloques ocupados |
+| Ejemplo típico | Particiones fijas | Particiones dinámicas |
+| ¿Existe memoria libre? | Sí, dentro de una asignación | Sí, distribuida en huecos |
+| Problema | Se reservó más de lo necesario | No existe un hueco contiguo suficiente |
+| Posible respuesta | Cambiar estrategia/tamaño de asignación | Compactación u otro modelo de memoria |
+
+# 15. No confundir memoria libre con memoria utilizable
+
+Considere:
+
+```text
+Huecos:
+[90 KB, 70 KB, 60 KB, 80 KB]
+```
+
+Memoria libre total:
+
+```text
+90 + 70 + 60 + 80 = 300 KB
+```
+
+Llega:
+
+```text
+P = 150 KB
+```
+
+Hay 300 KB libres.
+
+Pero:
+
+```text
+Mayor hueco = 90 KB
+```
+
+Por lo tanto:
+
+```text
+P NO puede asignarse de forma contigua.
+```
+
+Esta diferencia entre **cantidad total libre** y **tamaño del mayor hueco** es una de las ideas más importantes de esta clase.
+
+# 16. Ejercicio rápido
+
+Huecos:
+
+```text
+[80, 240, 130, 350, 200] KB
+```
+
+Llega:
+
+```text
+P = 125 KB
+```
+
+Determine:
+
+1. ¿Qué hueco selecciona First Fit?
+2. ¿Qué hueco selecciona Best Fit?
+3. ¿Qué hueco selecciona Worst Fit?
+4. ¿Cuánto queda libre en el bloque seleccionado en cada caso?
+
+::: {.callout-note title="Respuesta"}
+- First Fit → 240 KB → sobran 115 KB.
+- Best Fit → 130 KB → sobran 5 KB.
+- Worst Fit → 350 KB → sobran 225 KB.
+:::
+
+# 17. Ahora compliquemos el escenario
+
+Estado:
+
+```text
+[100, 300, 170, 420, 210] KB
+```
+
+Llegan, en orden:
+
+```text
+P1 = 160 KB
+P2 = 205 KB
+P3 = 290 KB
+```
+
+Trabaje con uno de los tres métodos.
+
+Al finalizar indique:
+
+- mapa de huecos;
+- memoria libre total;
+- mayor hueco libre;
+- procesos asignados;
+- procesos rechazados.
+
+Después compare su resultado con otro equipo que haya utilizado una política diferente.
+
+# 18. ¿Cuál es el mejor método?
+
+La respuesta correcta no es simplemente:
+
+```text
+First Fit
+Best Fit
+Worst Fit
+```
+
+Debemos considerar:
+
+- orden de los huecos;
+- tamaño de las solicitudes;
+- secuencia de llegada;
+- costo de búsqueda;
+- huecos residuales;
+- solicitudes futuras;
+- fragmentación producida.
+
+::: {.callout-tip title="Pensamiento de ingeniero"}
+Una política no debe evaluarse únicamente por **la decisión que acaba de tomar**.
+
+También debemos preguntarnos:
+
+> **¿Qué estado del sistema deja para la siguiente decisión?**
+:::
+
+# 19. Conexión con el reto de Administración de Memoria
+
+En la actividad de clase trabajaremos exactamente este tipo de decisiones.
+
+Cada equipo analizará el mismo escenario desde una perspectiva diferente:
+
+```text
+First Fit
+Best Fit
+Worst Fit
+Fragmentación + Compactación
+Arquitectura de memoria moderna
+```
+
+La intención no será memorizar cuál método "gana".
+
+Será demostrar:
+
+```text
+investigar
+    ↓
+analizar
+    ↓
+aplicar
+    ↓
+representar
+    ↓
+explicar
+    ↓
+cuestionar
+    ↓
+defender
+```
+
+# 20. El límite del modelo contiguo
+
+Volvamos al problema:
+
+```text
+Memoria libre total = 645 KB
+Proceso solicitado  = 280 KB
+Mayor hueco libre   = 225 KB
+```
+
+El proceso no puede cargarse porque necesita **un único espacio continuo**.
+
+Entonces aparece una pregunta natural:
+
+> **¿Y si un proceso pudiera dividirse y colocarse en diferentes regiones físicas de memoria?**
+
+Por ejemplo:
+
+```text
+Proceso P
+┌───────────┐
+│ Parte 1   │ ───────► Marco físico A
+├───────────┤
+│ Parte 2   │ ───────► Marco físico F
+├───────────┤
+│ Parte 3   │ ───────► Marco físico C
+└───────────┘
+```
+
+Ya no necesitaríamos encontrar un único hueco del tamaño completo del proceso.
+
+Ese será nuestro siguiente paso.
+
+# Próxima clase
+
+## Clase 18 — Asignación de Memoria No Contigua
+
+Estudiaremos:
+
+- por qué surge la asignación no contigua;
+- páginas;
+- marcos;
+- paginación;
+- tabla de páginas;
+- direcciones lógicas y físicas;
+- traducción de direcciones;
+- ventajas y costos del nuevo modelo.
+
+::: {.callout-success title="Idea para llevarse hoy"}
+En asignación contigua, el problema no consiste únicamente en preguntar:
+
+**¿Cuánta memoria queda libre?**
+
+También debemos preguntar:
+
+**¿Dónde está esa memoria y cuál es el mayor bloque continuo disponible?**
+:::
+
+# Cierre de clase
+
+Responda sin consultar sus apuntes:
+
+1. ¿Qué diferencia existe entre particiones fijas y dinámicas?
+2. ¿Qué diferencia existe entre fragmentación interna y externa?
+3. ¿Qué criterio utiliza First Fit?
+4. ¿Qué criterio utiliza Best Fit?
+5. ¿Qué criterio utiliza Worst Fit?
+6. ¿Por qué 500 KB libres no garantizan que pueda cargarse un proceso de 300 KB?
+7. ¿Qué hace la compactación?
+8. ¿Qué costo tiene compactar?
+9. ¿Por qué diferentes políticas producen diferentes estados finales de memoria?
+10. ¿Qué limitación fundamental de la asignación contigua intentaremos resolver en la próxima clase?
+
+---
+
+# Sección para el docente
+
+::: {.callout-warning title="NO PUBLICAR ANTES DE LA CLASE"}
+Esta sección contiene respuestas y puntos de discusión para el docente.
+:::
+
+## Respuestas del cierre
+
+1. **Particiones fijas:** tamaños definidos previamente. **Dinámicas:** se crean según las necesidades de los procesos.
+2. **Interna:** espacio desperdiciado dentro de una región asignada. **Externa:** memoria libre separada en huecos entre regiones ocupadas.
+3. First Fit selecciona el primer hueco suficientemente grande.
+4. Best Fit selecciona el menor hueco suficientemente grande.
+5. Worst Fit selecciona el mayor hueco disponible que pueda contener el proceso.
+6. Porque la memoria libre puede encontrarse fragmentada y no existir un bloque contiguo de 300 KB.
+7. Reorganiza/mueve regiones ocupadas para reunir huecos libres.
+8. Movimiento y copia de memoria, ajustes de ubicación y consumo de recursos.
+9. Porque cada política selecciona huecos diferentes y cada decisión modifica el estado que recibe la siguiente solicitud.
+10. La obligación de encontrar un único bloque físico contiguo del tamaño requerido por el proceso.
+
+## Pregunta de cierre sugerida
+
+> Tenemos suficiente memoria libre para un proceso, pero no existe un hueco contiguo suficientemente grande. ¿El problema es falta de memoria?
+
+**Respuesta esperada:** No necesariamente. El problema puede ser la distribución de la memoria libre, específicamente fragmentación externa.
+
+## Puente conceptual
+
+No explicar todavía toda la paginación.
+
+Terminar con la pregunta:
+
+> **¿Qué cambiaría si pudiéramos dividir un proceso y colocar sus partes en diferentes regiones de memoria física?**
+
+La respuesta formal se desarrolla en la **Clase 18 — Asignación de Memoria No Contigua**.

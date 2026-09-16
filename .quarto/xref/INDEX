@@ -58,5 +58,20 @@
   },
   "capitulos/14_administracion_memoria_en_ejecucion.qmd": {
     "14_administracion_memoria_en_ejecucion.html": "c18f2939"
+  },
+  "capitulos/17_gestion_memoria_sistemas_monoprogramados.qmd": {
+    "17_gestion_memoria_sistemas_monoprogramados.html": "8e4fa474"
+  },
+  "capitulos/15_metodos_ajuste_memoria_con_solucion.qmd": {
+    "15_metodos_ajuste_memoria_con_solucion.html": "74707227"
+  },
+  "capitulos/15_metodos_ajuste_memoria.qmd": {
+    "15_metodos_ajuste_memoria.html": "6bc079eb"
+  },
+  "capitulos/16_actividad_reto_administracion_memoria.qmd": {
+    "16_actividad_reto_administracion_memoria.html": "731f46b0"
+  },
+  "capitulos/18_gestion_memoria_sistemas_multiprogramados.qmd": {
+    "18_gestion_memoria_sistemas_multiprogramados.html": "9c7baa8b"
   }
 }

@@ -1,0 +1,888 @@
+---
+title: "Sistemas Operativos I"
+subtitle: "Proyecto Integrador del Curso — Proyecto No. 2"
+author: "Universidad Mariano Gálvez de Guatemala"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+  pdf:
+    toc: true
+    number-sections: true
+---
+
+# Proyecto No. 2 — Evolución del Simulador por Módulos
+
+## Objetivo
+
+Dar continuidad al simulador desarrollado en el **Proyecto No. 1**, incorporando un nuevo componente relacionado con los temas estudiados durante la segunda parte del curso.
+
+Cada equipo deberá integrar al simulador **un módulo de especialización asignado por el docente**, analizar cómo dicho componente afecta el funcionamiento de los procesos y demostrar su comportamiento mediante escenarios de prueba.
+
+::: {.callout-important title="Un mismo simulador que continúa evolucionando"}
+No se desarrollará un proyecto nuevo.
+
+El punto de partida obligatorio será el simulador construido en el Proyecto No. 1.
+
+La segunda etapa consiste en **hacer evolucionar esa solución** mediante la incorporación de un nuevo componente del Sistema Operativo.
+:::
+
+# Filosofía del Proyecto Integrador
+
+Durante el semestre construiremos un único simulador que evolucionará conforme avancemos en los contenidos del curso.
+
+En el Proyecto No. 1 todos los equipos trabajaron sobre una base común:
+
+- concepto de proceso;
+- PCB;
+- estados de un proceso;
+- transiciones;
+- cola Ready;
+- proceso Running;
+- cola Waiting/Bloqueados;
+- finalización de procesos.
+
+En el Proyecto No. 2 cada equipo se especializará en **uno de los nuevos componentes estudiados**.
+
+La evolución será:
+
+```text
+                 PROYECTO No. 1
+                       │
+                       ▼
+             Procesos + PCB + Estados
+                       │
+                       ▼
+                  Colas del SO
+                       │
+                       │ EVOLUCIÓN
+                       ▼
+              MÓDULO ASIGNADO
+                       │
+        ┌──────────────┼──────────────┐
+        │              │              │
+     modifica       interactúa      amplía
+        │              │              │
+        ▼              ▼              ▼
+       PCB          procesos       simulador
+        └──────────────┼──────────────┘
+                       ▼
+             PROYECTO No. 2
+```
+
+# ¿Por qué trabajaremos por módulos?
+
+Un Sistema Operativo está formado por múltiples componentes que trabajan de manera coordinada.
+
+Pretender implementar todos estos componentes simultáneamente puede provocar que el proyecto se concentre únicamente en escribir una gran cantidad de código.
+
+Ese **no es el objetivo principal**.
+
+En este proyecto buscamos que cada equipo pueda:
+
+- comprender profundamente un problema;
+- analizarlo;
+- diseñar una solución;
+- integrarlo con lo construido anteriormente;
+- probar diferentes escenarios;
+- explicar las decisiones tomadas;
+- defender técnicamente su propuesta.
+
+::: {.callout-note title="El código es una herramienta"}
+En este curso se evaluará principalmente la **calidad de la solución y la comprensión de los conceptos de Sistemas Operativos**.
+
+La cantidad de líneas de código no determina la calidad del proyecto.
+:::
+
+# Base común obligatoria
+
+Independientemente del módulo asignado, todos los equipos deberán conservar el funcionamiento fundamental del Proyecto No. 1.
+
+El simulador deberá continuar permitiendo, como mínimo:
+
+- crear procesos;
+- identificar los procesos mediante su PCB;
+- mostrar información del PCB;
+- representar los estados;
+- realizar transiciones;
+- visualizar las colas;
+- identificar procesos Ready;
+- identificar el proceso Running;
+- representar procesos Waiting/Bloqueados;
+- finalizar procesos.
+
+El nuevo módulo deberá **interactuar con esta base**.
+
+No se aceptará como evolución un programa completamente independiente que no tenga relación con los procesos construidos en la primera etapa.
+
+# Asignación de módulos
+
+El docente asignará **al azar** uno de los siguientes módulos a cada equipo.
+
+| Tema | Módulo |
+|---:|---|
+| 1 | Administración de memoria |
+| 2 | Métodos de ajuste de memoria |
+| 3 | Fragmentación y compactación |
+| 4 | Paginación |
+| 5 | Recursos e interbloqueos |
+
+Registro de asignación:
+
+| Equipo | Tema asignado |
+|---|---|
+| Equipo 1 | ______________________________ |
+| Equipo 2 | ______________________________ |
+| Equipo 3 | ______________________________ |
+| Equipo 4 | ______________________________ |
+| Equipo 5 | ______________________________ |
+
+::: {.callout-tip title="Todos los módulos tienen el mismo valor"}
+No existen módulos de mayor o menor importancia para efectos de evaluación.
+
+Cada equipo será evaluado por la profundidad con que analice, integre, pruebe y defienda el tema asignado.
+:::
+
+# Pregunta guía común
+
+Todos los equipos deberán responder, desde la perspectiva de su módulo, la siguiente pregunta:
+
+> **¿Cómo modifica el nuevo componente asignado el comportamiento de los procesos que ya existían en nuestro simulador?**
+
+Esta pregunta deberá estar presente en:
+
+- el análisis;
+- el diseño;
+- las pruebas;
+- los resultados;
+- las conclusiones;
+- la defensa.
+
+# Módulo 1 — Administración de memoria
+
+## Misión
+
+Hacer evolucionar el simulador para que los procesos necesiten y utilicen memoria.
+
+Hasta ahora un proceso podía existir principalmente mediante su PCB y su estado.
+
+Ahora deberá considerarse:
+
+```text
+Proceso
+   ↓
+¿Cuánta memoria necesita?
+   ↓
+¿Existe memoria disponible?
+   ↓
+Asignar memoria
+   ↓
+Ejecutarse
+   ↓
+Finalizar
+   ↓
+Liberar memoria
+```
+
+## El equipo deberá representar
+
+- memoria total del sistema;
+- memoria disponible;
+- memoria ocupada;
+- memoria requerida por cada proceso;
+- asignación de memoria;
+- liberación de memoria;
+- actualización del estado de la memoria.
+
+El PCB deberá evolucionar para reflejar la información que el equipo considere necesaria.
+
+Ejemplo:
+
+```text
+================================
+PCB
+================================
+PID:               105
+Estado:            READY
+Memoria requerida: 180 MB
+Memoria asignada:  Sí
+================================
+```
+
+## Situaciones que deberá demostrar
+
+Como mínimo:
+
+1. proceso que solicita memoria y puede recibirla;
+2. varios procesos ocupando memoria;
+3. proceso que solicita más memoria de la disponible;
+4. proceso que finaliza y libera memoria;
+5. reutilización de memoria liberada.
+
+## Preguntas que deberá poder responder
+
+- ¿Qué ocurre con un proceso si no existe memoria suficiente?
+- ¿Qué información nueva necesita el PCB?
+- ¿Cuándo se asigna memoria?
+- ¿Cuándo debe liberarse?
+- ¿Cómo afecta la memoria al ciclo de vida del proceso?
+
+# Módulo 2 — Métodos de ajuste de memoria
+
+## Misión
+
+Incorporar al simulador diferentes políticas para seleccionar dónde colocar un proceso dentro de la memoria disponible.
+
+El equipo deberá trabajar con:
+
+- First Fit;
+- Best Fit;
+- Worst Fit.
+
+El usuario deberá poder seleccionar o comparar las políticas.
+
+Ejemplo:
+
+```text
+MÉTODO DE ASIGNACIÓN
+
+1. First Fit
+2. Best Fit
+3. Worst Fit
+```
+
+## El simulador deberá mostrar
+
+Para cada solicitud:
+
+- proceso;
+- memoria solicitada;
+- huecos disponibles;
+- bloque seleccionado;
+- espacio restante;
+- mapa o estado de memoria resultante.
+
+## Prueba fundamental
+
+El equipo deberá ejecutar **la misma secuencia de procesos y los mismos bloques libres** con los tres métodos.
+
+Posteriormente deberá comparar los resultados.
+
+```text
+MISMA MEMORIA
+      +
+MISMOS PROCESOS
+      ↓
+ ┌────┼─────┐
+ ↓    ↓     ↓
+First Best Worst
+ Fit   Fit   Fit
+ ↓     ↓     ↓
+Mapas finales
+diferentes
+```
+
+## Situaciones que deberá demostrar
+
+1. funcionamiento de First Fit;
+2. funcionamiento de Best Fit;
+3. funcionamiento de Worst Fit;
+4. una misma carga ejecutada con los tres métodos;
+5. comparación y análisis de los resultados.
+
+## Preguntas que deberá poder responder
+
+- ¿Por qué cambia el mapa si los procesos son los mismos?
+- ¿Qué criterio utiliza cada método?
+- ¿Cuál realizó menos búsqueda?
+- ¿Cuál produjo mejores resultados en sus pruebas?
+- ¿Puede afirmarse que un método es siempre superior?
+
+# Módulo 3 — Fragmentación y compactación
+
+## Misión
+
+Construir una evolución del simulador que permita observar cómo aparecen huecos libres durante la ejecución de procesos y cómo estos pueden provocar fragmentación externa.
+
+El equipo deberá provocar intencionalmente una situación como:
+
+```text
+Memoria libre total: 600 MB
+
+Huecos:
+100 MB
+150 MB
+200 MB
+150 MB
+
+Nuevo proceso:
+300 MB
+```
+
+Existe suficiente memoria en total:
+
+```text
+600 MB > 300 MB
+```
+
+pero ningún hueco individual puede almacenar el proceso.
+
+## El simulador deberá representar
+
+- procesos ocupando memoria;
+- liberación de memoria;
+- huecos libres;
+- memoria libre total;
+- mayor hueco disponible;
+- proceso que no puede asignarse por fragmentación;
+- compactación;
+- estado antes y después de compactar.
+
+Ejemplo:
+
+```text
+ANTES
+
+[P1][Libre][P2][Libre][P3][Libre]
+
+              ↓
+          COMPACTAR
+              ↓
+
+DESPUÉS
+
+[P1][P2][P3][--------- Libre ---------]
+```
+
+## Situaciones que deberá demostrar
+
+1. memoria inicialmente utilizada;
+2. finalización de procesos y generación de huecos;
+3. aparición de fragmentación externa;
+4. proceso rechazado aunque exista suficiente memoria total;
+5. compactación y nueva situación de memoria.
+
+## Preguntas que deberá poder responder
+
+- ¿Por qué memoria libre no significa necesariamente memoria utilizable?
+- ¿Qué provoca los huecos?
+- ¿Qué es fragmentación externa?
+- ¿Qué consigue la compactación?
+- ¿Por qué compactar tiene un costo?
+
+# Módulo 4 — Paginación
+
+## Misión
+
+Modificar conceptualmente el modelo de memoria del simulador para representar cómo un proceso puede dividirse en páginas y ubicarse en marcos físicos no necesariamente contiguos.
+
+El equipo deberá definir:
+
+- tamaño de página;
+- tamaño de marco;
+- tamaño del proceso;
+- número de páginas necesarias;
+- marcos disponibles;
+- tabla de páginas.
+
+Ejemplo:
+
+```text
+Proceso P4 = 14 KB
+Tamaño de página = 4 KB
+
+Páginas necesarias = 4
+```
+
+Una posible tabla:
+
+| Página | Marco |
+|---:|---:|
+| 0 | 7 |
+| 1 | 2 |
+| 2 | 11 |
+| 3 | 5 |
+
+## El simulador deberá permitir observar
+
+```text
+PROCESO
+   ↓
+Páginas
+   ↓
+┌───────┬───────┬───────┬───────┐
+│ pág 0 │ pág 1 │ pág 2 │ pág 3 │
+└───────┴───────┴───────┴───────┘
+    ↓       ↓       ↓       ↓
+ marco 7 marco 2 marco 11 marco 5
+```
+
+## Situaciones que deberá demostrar
+
+1. proceso dividido en páginas;
+2. cálculo del número de páginas;
+3. asignación de páginas a marcos;
+4. marcos físicamente no contiguos;
+5. liberación de marcos cuando termina el proceso.
+
+## Preguntas que deberá poder responder
+
+- ¿Por qué el tamaño de página y marco debe ser compatible?
+- ¿Qué sucede con un proceso cuyo tamaño no es múltiplo exacto del tamaño de página?
+- ¿Por qué los marcos no necesitan estar juntos?
+- ¿Qué función cumple la tabla de páginas?
+- ¿Qué problema del modelo de asignación contigua cambia con paginación?
+
+::: {.callout-note title="Alcance"}
+No se espera construir un administrador completo de memoria virtual.
+
+Se evaluará una simulación simplificada que permita **comprender y demostrar el concepto**.
+:::
+
+# Módulo 5 — Recursos e interbloqueos
+
+## Misión
+
+Hacer que los procesos del Proyecto No. 1 puedan solicitar, utilizar y liberar recursos del sistema.
+
+Por ejemplo:
+
+```text
+R1 = Impresora
+R2 = Disco
+R3 = Escáner
+```
+
+El simulador deberá identificar:
+
+- recursos disponibles;
+- recursos ocupados;
+- proceso que posee cada recurso;
+- proceso que solicita un recurso;
+- procesos esperando recursos.
+
+## Integración con estados
+
+Aquí deberá existir una relación clara con el Proyecto No. 1.
+
+Por ejemplo:
+
+```text
+P3 está RUNNING
+       ↓
+solicita R1
+       ↓
+R1 está ocupado
+       ↓
+P3 no puede continuar
+       ↓
+P3 pasa a WAITING
+```
+
+Cuando el recurso sea liberado, el equipo deberá explicar y representar qué ocurre con el proceso.
+
+## Interbloqueo
+
+El equipo deberá provocar al menos un escenario como:
+
+```text
+P1 posee R1
+P1 solicita R2
+
+P2 posee R2
+P2 solicita R1
+```
+
+Representación conceptual:
+
+```text
+P1 ── espera ──> R2
+↑                │
+│                ↓
+R1 <── espera ── P2
+```
+
+El simulador deberá:
+
+- identificar procesos involucrados;
+- identificar recursos involucrados;
+- mostrar las dependencias;
+- detectar o advertir el interbloqueo;
+- proponer o ejecutar una estrategia para tratarlo.
+
+## Situaciones que deberá demostrar
+
+1. recurso disponible y asignación correcta;
+2. recurso ocupado;
+3. proceso que pasa a Waiting;
+4. liberación y reutilización del recurso;
+5. interbloqueo y tratamiento propuesto.
+
+## Preguntas que deberá poder responder
+
+- ¿Por qué un proceso pasa a Waiting?
+- ¿Qué relación existe entre recursos y estados?
+- ¿Cuándo aparece un interbloqueo?
+- ¿Qué condiciones se cumplen?
+- ¿Cómo decidió el equipo tratar la situación?
+
+# Integración: la condición más importante
+
+Cada módulo debe afectar de alguna manera el simulador original.
+
+No queremos:
+
+```text
+PROYECTO 1          PROYECTO 2
+
+Procesos            Programa separado
+Estados      +      del nuevo tema
+PCB
+```
+
+Queremos:
+
+```text
+            SIMULADOR
+                │
+        ┌───────┴───────┐
+        │               │
+  Proyecto No. 1    Nuevo módulo
+        │               │
+        └───────┬───────┘
+                ▼
+         interactúan entre sí
+                ▼
+       SIMULADOR EVOLUCIONADO
+```
+
+::: {.callout-important title="Pregunta para comprobar integración"}
+Durante la defensa el docente podrá preguntar:
+
+> **Muéstreme exactamente qué parte del comportamiento de sus procesos cambió debido al módulo que les fue asignado.**
+
+El equipo deberá poder demostrarlo directamente en el simulador.
+:::
+
+# Actualización del diseño
+
+El informe deberá incluir un diagrama actualizado.
+
+El diagrama no necesita representar cada línea de código.
+
+Debe permitir comprender:
+
+1. qué existía en el Proyecto No. 1;
+2. qué componente fue agregado;
+3. cómo se comunica con los componentes existentes.
+
+Ejemplo:
+
+```text
+┌─────────────────────────────┐
+│          SIMULADOR          │
+└──────────────┬──────────────┘
+               │
+      ┌────────┴─────────┐
+      │                  │
+      ▼                  ▼
+ GESTIÓN DE          MÓDULO
+ PROCESOS             NUEVO
+      │                  │
+      │                  │
+      └────────┬─────────┘
+               ▼
+        ESTADO DEL SISTEMA
+```
+
+Cada equipo deberá adaptar el diagrama a su módulo.
+
+# Evolución del PCB
+
+Cuando el módulo lo requiera, el PCB deberá actualizarse.
+
+Por ejemplo, podría incorporar información sobre:
+
+```text
+memoria requerida
+memoria asignada
+recurso asignado
+recurso solicitado
+número de páginas
+```
+
+No todos los equipos deberán agregar los mismos campos.
+
+Cada equipo deberá justificar cuáles necesita y por qué.
+
+# Escenarios de prueba
+
+Cada equipo deberá documentar **como mínimo cinco escenarios de prueba** relacionados específicamente con su módulo.
+
+No deben limitarse a demostrar que el menú abre correctamente.
+
+Las pruebas deberán demostrar comportamiento del Sistema Operativo.
+
+Para cada prueba deberá documentarse:
+
+- objetivo;
+- estado inicial;
+- datos utilizados;
+- acción realizada;
+- resultado esperado;
+- resultado obtenido;
+- interpretación del resultado.
+
+Se recomienda utilizar:
+
+| No. | Escenario | Estado inicial | Acción | Resultado esperado | Resultado obtenido |
+|---:|---|---|---|---|---|
+| 1 | ... | ... | ... | ... | ... |
+| 2 | ... | ... | ... | ... | ... |
+
+::: {.callout-warning title="Una captura no es una prueba"}
+Las capturas de pantalla son evidencia.
+
+La prueba consiste en **definir qué se quiere comprobar, ejecutar el escenario e interpretar el resultado**.
+:::
+
+# Estado general del simulador
+
+Todos los equipos deberán incorporar o actualizar una vista que permita observar el estado general del simulador.
+
+La información dependerá del módulo asignado.
+
+Por ejemplo:
+
+```text
+========================================
+          ESTADO DEL SISTEMA
+========================================
+
+PROCESOS
+----------------------------------------
+Ready:       P2, P5
+Running:     P1
+Waiting:     P3
+Terminated:  P4
+
+MÓDULO DEL EQUIPO
+----------------------------------------
+Información relevante
+del componente implementado
+
+========================================
+```
+
+Un equipo de memoria podría mostrar memoria ocupada y libre.
+
+Un equipo de paginación podría mostrar páginas y marcos.
+
+Un equipo de interbloqueos podría mostrar recursos y dependencias.
+
+# Documento a entregar
+
+El documento deberá presentarse en PDF y contener:
+
+1. Carátula.
+2. Introducción actualizada.
+3. Objetivos.
+4. Resumen del Proyecto No. 1.
+5. Módulo asignado.
+6. Análisis del problema.
+7. Explicación conceptual del módulo.
+8. Descripción de la evolución propuesta.
+9. Modificaciones realizadas al PCB, estados o componentes, cuando corresponda.
+10. Diagrama general actualizado.
+11. Descripción de la solución implementada.
+12. Escenarios de prueba.
+13. Evidencias de ejecución.
+14. Análisis de resultados.
+15. Conclusiones.
+
+# Introducción
+
+La introducción deberá explicar claramente la continuidad.
+
+Como orientación:
+
+> En el Proyecto No. 1 se desarrolló la primera versión del simulador, enfocada en procesos, PCB, estados y colas. En esta segunda etapa se amplía el sistema mediante la incorporación del módulo de ____________, permitiendo analizar cómo este componente modifica el comportamiento de los procesos y su interacción con el Sistema Operativo.
+
+Cada equipo deberá completar y adaptar esta idea a su solución.
+
+# Análisis de resultados
+
+Después de ejecutar las pruebas, el equipo deberá interpretar los resultados.
+
+No será suficiente indicar:
+
+```text
+La prueba funcionó correctamente.
+```
+
+Se espera explicar **por qué ocurrió el resultado**.
+
+Por ejemplo:
+
+> El proceso P5 no pudo recibir memoria aunque existían 450 MB libres, debido a que el mayor hueco contiguo disponible era de 200 MB. El resultado evidencia un escenario de fragmentación externa.
+
+La explicación deberá utilizar correctamente la terminología estudiada.
+
+# Conclusiones
+
+Las conclusiones deberán derivarse del trabajo realizado.
+
+Como mínimo deberán responder:
+
+1. ¿Cómo evolucionó el simulador respecto al Proyecto No. 1?
+2. ¿Qué comportamiento nuevo permitió representar el módulo?
+3. ¿Qué aprendieron mediante los escenarios de prueba?
+4. ¿Qué limitaciones tiene la simulación respecto a un Sistema Operativo real?
+
+Las conclusiones deberán ser específicas del módulo asignado.
+
+# Criterios de evaluación
+
+Todos los equipos serán evaluados con la misma rúbrica.
+
+| Criterio | Puntos |
+|---|---:|
+| Continuidad e integración con el Proyecto No. 1 | 15 |
+| Comprensión conceptual del módulo asignado | 15 |
+| Análisis y diseño de la solución | 15 |
+| Funcionamiento de la simulación | 20 |
+| Escenarios de prueba y análisis de resultados | 15 |
+| Diagrama y documentación técnica | 5 |
+| Conclusiones | 5 |
+| Presentación y defensa | 10 |
+| **TOTAL** | **100** |
+
+::: {.callout-tip title="¿Qué tendrá mayor valor?"}
+La evaluación no premiará al equipo que construya el programa más grande.
+
+Tendrá mayor valor el equipo que pueda demostrar:
+
+**comprensión + integración + pruebas + explicación + defensa.**
+:::
+
+# Defensa del proyecto
+
+Durante la defensa, cualquier integrante deberá poder explicar:
+
+- qué problema resuelve su módulo;
+- cómo funciona;
+- cómo se integró con el Proyecto No. 1;
+- qué cambió en los procesos;
+- qué escenario de prueba considera más importante;
+- qué resultado inesperado encontró;
+- qué limitaciones tiene su simulación.
+
+El docente podrá modificar condiciones durante la demostración.
+
+Por ejemplo:
+
+```text
+Cambie el tamaño del proceso.
+
+Libere este recurso.
+
+Finalice P3.
+
+Cambie el método de ajuste.
+
+Reduzca la memoria disponible.
+
+Explique por qué este proceso está en Waiting.
+```
+
+La finalidad no será evaluar memoria de código, sino comprobar la **comprensión del comportamiento simulado**.
+
+# Uso de Inteligencia Artificial
+
+Las herramientas de Inteligencia Artificial pueden utilizarse como apoyo para:
+
+- comprender conceptos;
+- revisar la redacción;
+- consultar documentación;
+- analizar mensajes de error;
+- comparar alternativas;
+- reforzar temas estudiados.
+
+El equipo será responsable de la solución entregada.
+
+Durante la defensa deberá poder explicar y justificar:
+
+- el diseño;
+- las decisiones;
+- las pruebas;
+- los resultados;
+- el comportamiento del simulador.
+
+::: {.callout-warning title="La IA no sustituye la defensa"}
+Una solución que funciona pero que el equipo no puede explicar no demuestra el aprendizaje esperado.
+:::
+
+# Aprendizaje colectivo
+
+Cada equipo se especializará en un componente diferente.
+
+Al finalizar las presentaciones tendremos cinco posibles evoluciones de la misma base:
+
+```text
+                    PROYECTO No. 1
+                  Procesos + PCB
+                        │
+          ┌─────────────┼─────────────┐
+          │             │             │
+          ▼             ▼             ▼
+     Administración   Métodos    Fragmentación
+       de memoria    de ajuste   y compactación
+          │             │             │
+          └──────┐      │      ┌──────┘
+                 │      │      │
+                 ▼      ▼      ▼
+              Paginación    Recursos e
+                          interbloqueos
+```
+
+Cada equipo profundizará en **una parte**, pero las exposiciones permitirán que todos conozcan las distintas formas en que el simulador puede evolucionar.
+
+# Evolución del Proyecto Integrador
+
+```text
+PROYECTO No. 1
+Procesos
+PCB
+Estados
+Colas
+        │
+        ▼
+PROYECTO No. 2
+Todo lo anterior
++
+UN MÓDULO DE ESPECIALIZACIÓN
+        │
+        ▼
+PROYECTO No. 3
+Integración de nuevos componentes
++
+Sistema de archivos
++
+Persistencia
+        │
+        ▼
+SIMULADOR INTEGRADO
+DE UN SISTEMA OPERATIVO
+```
+
+::: {.callout-success title="Proyecto Integrador"}
+No estamos construyendo proyectos aislados.
+
+Estamos observando cómo **un mismo sistema evoluciona conforme aumenta nuestro conocimiento sobre el funcionamiento de un Sistema Operativo**.
+:::
+
+# Pregunta final
+
+Al concluir el proyecto, cada equipo deberá ser capaz de responder:
+
+> **¿Cómo modificó nuestro módulo el comportamiento de los procesos y qué aprendimos sobre el funcionamiento interno de un Sistema Operativo al incorporarlo?**

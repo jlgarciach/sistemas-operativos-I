@@ -1,0 +1,406 @@
+---
+title: "Gestión de Memoria en Sistemas Multiprogramados"
+subtitle: "Clase No. 18 - Sistemas Operativos I"
+---
+
+# Gestión de Memoria en Sistemas Multiprogramados
+
+## ¿Qué aprenderemos en esta clase?
+
+Al finalizar este capítulo, el estudiante será capaz de:
+
+- Explicar por qué la multiprogramación mejora el aprovechamiento de la CPU.
+- Diferenciar particiones fijas y particiones dinámicas.
+- Distinguir fragmentación interna de fragmentación externa.
+- Aplicar conceptualmente First Fit, Best Fit y Worst Fit.
+- Explicar la compactación y el swapping.
+- Comprender el propósito de la protección, la relocación dinámica y la MMU.
+- Explicar el uso básico de memoria compartida entre procesos.
+
+::: {.callout-tip title="Tres preguntas fundamentales"}
+1. ¿Cómo podemos mantener varios procesos en memoria sin que interfieran entre sí?
+2. ¿Qué hacemos cuando el espacio libre existe, pero está dividido en pequeños huecos?
+3. ¿Cómo puede un proceso usar direcciones lógicas sin conocer su posición física exacta?
+:::
+
+## 1. El problema que dejó la monoprogramación
+
+En la Clase 17 vimos un sistema con un único programa de usuario en memoria. Ese modelo es sencillo, pero tiene una limitación importante: cuando el programa espera una operación de entrada/salida, la CPU puede quedar ociosa.
+
+La **multiprogramación** propone mantener **varios procesos residentes en memoria al mismo tiempo**. Cuando uno espera, otro puede utilizar la CPU.
+
+```{mermaid}
+flowchart LR
+    RAM["Memoria\nP1 | P2 | P3"] --> CPU[CPU]
+    P1["P1 espera E/S"] -.-> CPU
+    P2["P2 listo"] --> CPU
+```
+
+> **Idea clave:** tener varios procesos en memoria no significa que una sola CPU ejecute todas sus instrucciones exactamente al mismo instante. Significa que el sistema puede alternar entre procesos y aprovechar mejor el procesador.
+
+## 2. Evolución conceptual
+
+Podemos entender la evolución de la administración de memoria como una respuesta a nuevas necesidades:
+
+```{mermaid}
+timeline
+    title Evolución conceptual del manejo de memoria
+    Monoprogramación : Un programa de usuario en memoria
+    Multiprogramación : Varios procesos residentes
+    Particiones y swapping : Mayor flexibilidad
+    Paginación y segmentación : Asignación no contigua
+```
+
+En esta clase nos concentraremos en la **multiprogramación mediante particiones**, el intercambio de procesos y los mecanismos necesarios para proteger y reubicar programas.
+
+## 3. Asignación contigua en multiprogramación
+
+Una primera solución consiste en mantener varios procesos en memoria, pero exigir que **cada proceso ocupe un bloque contiguo** de direcciones físicas.
+
+```{mermaid}
+flowchart TB
+    SO["Sistema Operativo"] --> P1["Proceso P1"]
+    P1 --> P2["Proceso P2"]
+    P2 --> P3["Proceso P3"]
+    P3 --> L["Espacio libre"]
+```
+
+El reto ya no es solamente cargar un programa, sino decidir **cómo dividir la memoria disponible entre varios procesos**.
+
+## 4. Particiones fijas
+
+En las **particiones fijas**, la memoria se divide previamente en bloques de tamaño determinado. Cada proceso se coloca en una partición capaz de contenerlo.
+
+### Ejemplo
+
+Tenemos tres particiones de 100 KB:
+
+| Partición | Tamaño | Proceso | Tamaño del proceso | Espacio no utilizado dentro de la partición |
+|---|---:|---|---:|---:|
+| 1 | 100 KB | P1 | 80 KB | 20 KB |
+| 2 | 100 KB | P2 | 90 KB | 10 KB |
+| 3 | 100 KB | P3 | 50 KB | 50 KB |
+
+Aunque los procesos utilizan 220 KB, las tres particiones ocupan 300 KB. Dentro de ellas quedan **80 KB que no pueden aprovecharse para otro proceso**.
+
+### Fragmentación interna
+
+Ese espacio desperdiciado **dentro de una región ya asignada** recibe el nombre de **fragmentación interna**.
+
+```{mermaid}
+flowchart TB
+    A["Partición 100 KB"] --> P["P1: 80 KB"]
+    A --> F["20 KB sin utilizar\nFragmentación interna"]
+```
+
+## 5. Particiones dinámicas
+
+En las **particiones dinámicas**, el sistema crea un bloque de memoria aproximadamente del tamaño que necesita cada proceso conforme este llega.
+
+Ejemplo de distribución:
+
+| Bloque | Tamaño |
+|---|---:|
+| P1 | 120 KB |
+| Libre | 30 KB |
+| P2 | 200 KB |
+| Libre | 10 KB |
+| P3 | 80 KB |
+| P4 | 150 KB |
+
+Este enfoque reduce el desperdicio dentro de las particiones, pero introduce otro problema.
+
+## 6. Fragmentación externa
+
+Con el tiempo, los procesos terminan, entran nuevos procesos y aparecen **huecos libres dispersos** entre regiones ocupadas.
+
+```{mermaid}
+flowchart TB
+    P1[P1] --> L1["Libre 30 KB"]
+    L1 --> P2[P2]
+    P2 --> L2["Libre 10 KB"]
+    L2 --> P3[P3]
+    P3 --> L3["Libre 40 KB"]
+```
+
+Supongamos que necesitamos cargar un proceso de **60 KB**. En total existen 80 KB libres, pero ningún hueco individual alcanza 60 KB. Como el proceso necesita un bloque contiguo, **no puede cargarse**.
+
+A esto lo llamamos **fragmentación externa**.
+
+::: {.callout-important title="Diferencia fundamental"}
+- **Fragmentación interna:** el desperdicio queda *dentro* de un bloque asignado.
+- **Fragmentación externa:** el espacio libre queda *fuera* de los procesos, pero dividido en huecos dispersos.
+:::
+
+## 7. ¿Dónde colocar un nuevo proceso?
+
+Cuando existen varios huecos libres, el sistema necesita decidir cuál utilizar. Tres estrategias clásicas son **First Fit, Best Fit y Worst Fit**.
+
+### First Fit
+
+Recorre la memoria desde el inicio y utiliza **el primer hueco suficientemente grande**.
+
+### Best Fit
+
+Busca entre los huecos disponibles y utiliza **el hueco más pequeño que sea suficientemente grande** para el proceso.
+
+### Worst Fit
+
+Utiliza **el hueco libre más grande**, esperando dejar un remanente todavía aprovechable.
+
+> **Corrección conceptual importante:** Best Fit no elige el espacio más grande; elige el **menor espacio que todavía permite alojar el proceso**.
+
+## 8. Ejercicio de algoritmos de ajuste
+
+Huecos libres disponibles:
+
+**100 KB, 500 KB, 200 KB, 300 KB y 600 KB**
+
+Llega un proceso de **212 KB**.
+
+- **First Fit:** selecciona 500 KB, porque es el primer hueco suficiente.
+- **Best Fit:** selecciona 300 KB, porque es el menor hueco donde cabe el proceso.
+- **Worst Fit:** selecciona 600 KB, porque es el hueco más grande.
+
+### Ahora tú
+
+Con los mismos huecos, llega un proceso de **180 KB**. Determina qué hueco elegiría cada estrategia.
+
+<details>
+<summary>Ver respuesta</summary>
+
+- First Fit: **500 KB**.
+- Best Fit: **200 KB**.
+- Worst Fit: **600 KB**.
+
+</details>
+
+## 9. Compactación
+
+Una forma de combatir la fragmentación externa consiste en **mover los procesos residentes** para reunir los huecos dispersos en un solo bloque libre grande.
+
+```{mermaid}
+flowchart LR
+    A["P1 | Libre | P2 | Libre | P3"] -->|Compactación| B["P1 | P2 | P3 | Libre"]
+```
+
+La compactación puede recuperar un espacio contiguo útil, pero tiene un costo: mover procesos implica copiar memoria y ajustar sus ubicaciones. Por ello requiere mecanismos de relocación adecuados.
+
+## 10. Swapping
+
+El **swapping** consiste en trasladar temporalmente un proceso entre la memoria principal y un área de almacenamiento secundario para liberar RAM y permitir la entrada de otro proceso.
+
+```{mermaid}
+flowchart LR
+    RAM["RAM\nP1 | P2 | P3"] <--> SWAP["Almacenamiento secundario\nÁrea de intercambio"]
+```
+
+### Secuencia conceptual
+
+1. Se selecciona un proceso para suspenderlo.
+2. Su estado/memoria se traslada al almacenamiento secundario.
+3. Se libera su espacio en RAM.
+4. Otro proceso puede ocupar el espacio disponible.
+5. Cuando sea necesario, el proceso suspendido puede volver a memoria.
+
+### Ventajas y costos
+
+| Ventajas | Costos o limitaciones |
+|---|---|
+| Permite liberar RAM | Implica operaciones de E/S mucho más lentas que la RAM |
+| Aumenta la flexibilidad | Introduce latencia |
+| Permite mantener más trabajo disponible para el sistema | Puede interactuar con problemas de fragmentación |
+
+## 11. Protección de memoria
+
+Cuando varios procesos comparten la RAM, ya no podemos permitir que uno escriba libremente sobre el espacio de otro.
+
+Un mecanismo conceptual sencillo utiliza un **registro base** y un **registro límite**.
+
+- **Base:** indica dónde comienza el espacio físico permitido para el proceso.
+- **Límite:** establece el rango válido que puede utilizar.
+
+```{mermaid}
+flowchart LR
+    CPU[CPU] --> V{¿Dirección válida?}
+    B[Registro base] --> V
+    L[Registro límite] --> V
+    V -->|Sí| RAM[Memoria]
+    V -->|No| E[Excepción / protección]
+```
+
+La protección es esencial: P1 no debe modificar accidentalmente el código o los datos de P2 ni la memoria reservada para el sistema operativo.
+
+## 12. Relocación dinámica
+
+En la Clase 17 vimos la **relocación estática**, donde el ajuste de direcciones se realiza al cargar el programa.
+
+En un sistema multiprogramado resulta útil que la traducción pueda realizarse **durante la ejecución**. A esto lo llamamos **relocación dinámica**.
+
+```{mermaid}
+flowchart LR
+    CPU[CPU] --> DL["Dirección lógica"]
+    DL --> MMU[MMU]
+    MMU --> DF["Dirección física"]
+    DF --> RAM[RAM]
+```
+
+## 13. ¿Qué es la MMU?
+
+La **MMU (Memory Management Unit)** es el componente de hardware encargado de participar en la traducción de las direcciones generadas por la CPU hacia direcciones físicas de memoria.
+
+En un modelo sencillo con base y desplazamiento:
+
+$$
+\text{Dirección física} = \text{Base} + \text{Dirección lógica}
+$$
+
+Supongamos:
+
+- Base de P2 = 8000
+- Dirección lógica solicitada = 350
+
+Entonces:
+
+$$
+8000 + 350 = 8350
+$$
+
+La CPU trabaja con la dirección lógica; el mecanismo de administración de memoria permite llegar a la dirección física correspondiente.
+
+## 14. Memoria compartida
+
+La protección mantiene separados a los procesos, pero algunas veces **queremos que dos o más procesos compartan intencionalmente una región de memoria**.
+
+```{mermaid}
+flowchart TB
+    P1[P1] --> M["Región de memoria compartida"]
+    P2[P2] --> M
+    P3[P3] --> M
+```
+
+La memoria compartida puede utilizarse como mecanismo de **comunicación entre procesos (IPC)** y para evitar duplicar ciertos datos comunes.
+
+Sin embargo, compartir memoria introduce un nuevo reto: los procesos deben **sincronizar** sus accesos para evitar condiciones de carrera y datos inconsistentes.
+
+::: {.callout-note title="Conexión con temas anteriores"}
+Aquí vuelven a aparecer conceptos como exclusión mutua, semáforos y sincronización. La administración de memoria y la administración de procesos están estrechamente relacionadas.
+:::
+
+## 15. Comparación: monoprogramación y multiprogramación
+
+| Característica | Monoprogramación | Multiprogramación |
+|---|---|---|
+| Programas/procesos de usuario residentes | Uno | Varios |
+| Administración | Más sencilla | Más compleja |
+| Aprovechamiento de CPU | Menor cuando el programa espera | Mayor al alternar procesos |
+| Protección entre procesos | No es el problema central | Fundamental |
+| Relocación | Puede ser estática | Puede requerir mecanismos dinámicos |
+| Fragmentación | Modelo sencillo | Puede aparecer interna o externa según la técnica |
+
+## 16. Caso integrador
+
+Disponemos de **1024 KB** de RAM. El sistema operativo ocupa **200 KB**. El resto se administra mediante particiones dinámicas.
+
+Se cargan:
+
+- P1 = 200 KB
+- P2 = 150 KB
+- P3 = 180 KB
+
+Después termina P2.
+
+### Preguntas
+
+1. Dibuja el estado de la memoria antes de que termine P2.
+2. Dibuja el estado después de liberar P2.
+3. ¿Qué tipo de fragmentación puede comenzar a observarse?
+4. Si llega P4 de 140 KB, ¿puede utilizar el hueco dejado por P2?
+5. ¿Cuánto espacio quedaría en ese hueco?
+6. Si existen varios huecos, ¿qué información necesitarías para decidir el resultado de First Fit, Best Fit y Worst Fit?
+
+## 17. Laboratorio conceptual: simulemos First Fit
+
+Considera los huecos:
+
+```text
+[120 KB] [60 KB] [300 KB] [180 KB]
+```
+
+Llegan, en orden:
+
+```text
+P1 = 50 KB
+P2 = 170 KB
+P3 = 100 KB
+```
+
+Trabaja paso a paso:
+
+1. Asigna P1 usando First Fit.
+2. Actualiza el tamaño del hueco restante.
+3. Asigna P2.
+4. Actualiza nuevamente la memoria.
+5. Asigna P3.
+6. Dibuja el estado final.
+
+> No busques solamente el resultado. El objetivo es comprender que **cada asignación modifica el conjunto de huecos disponibles para la siguiente decisión**.
+
+## 18. Puente hacia las siguientes clases
+
+Hasta aquí hemos intentado mantener cada proceso en **un bloque contiguo**. Esto genera una pregunta muy importante:
+
+> ¿Es realmente necesario que todo el proceso esté almacenado en posiciones consecutivas de memoria física?
+
+La respuesta conduce a las siguientes clases del libro:
+
+- **Clase 19: Asignación de memoria contigua** - profundizaremos en las técnicas, criterios y problemas de la asignación contigua.
+- **Clase 20: Asignación de memoria no contigua** - estudiaremos cómo dividir un proceso y distribuir sus partes en distintas regiones de memoria.
+
+Así, las clases 17 y 18 establecen el **contexto de gestión de memoria**, mientras que las clases 19 y 20 desarrollan las **técnicas de asignación** con mayor profundidad.
+
+## 19. Resumen
+
+```{mermaid}
+flowchart TB
+    GM["Gestión de memoria multiprogramada"] --> PF["Particiones fijas"]
+    GM --> PD["Particiones dinámicas"]
+    PF --> FI["Fragmentación interna"]
+    PD --> FE["Fragmentación externa"]
+    FE --> C[Compactación]
+    PD --> FIT["First / Best / Worst Fit"]
+    GM --> S[Swapping]
+    GM --> P[Protección]
+    GM --> R["Relocación dinámica / MMU"]
+    GM --> MC["Memoria compartida"]
+```
+
+### Lo que debes llevarte de esta clase
+
+- La multiprogramación mantiene varios procesos en memoria para aprovechar mejor la CPU.
+- Las particiones fijas pueden producir fragmentación interna.
+- Las particiones dinámicas pueden producir fragmentación externa.
+- First Fit, Best Fit y Worst Fit representan diferentes estrategias para seleccionar huecos libres.
+- La compactación reúne espacio libre disperso, pero requiere mover procesos.
+- El swapping permite liberar temporalmente RAM trasladando procesos al almacenamiento secundario.
+- La protección evita que un proceso interfiera con otro.
+- La MMU permite traducir direcciones durante la ejecución.
+- La memoria compartida permite comunicación eficiente, pero requiere sincronización.
+
+## 20. Autoevaluación
+
+1. ¿Por qué la multiprogramación puede aumentar el aprovechamiento de la CPU?
+2. ¿Cuál es la diferencia entre una partición fija y una dinámica?
+3. ¿Qué es fragmentación interna?
+4. ¿Qué es fragmentación externa?
+5. ¿Qué hueco selecciona First Fit?
+6. ¿Qué hueco selecciona Best Fit?
+7. ¿Qué hueco selecciona Worst Fit?
+8. ¿Qué problema intenta resolver la compactación?
+9. ¿Qué significa swapping?
+10. ¿Por qué se necesita protección de memoria en multiprogramación?
+11. ¿Qué función cumple la MMU?
+12. ¿Qué diferencia existe entre relocación estática y dinámica?
+13. ¿Para qué puede utilizarse memoria compartida?
+14. ¿Por qué la memoria compartida necesita mecanismos de sincronización?
+15. ¿Qué problema de la asignación contigua prepara el camino hacia la asignación no contigua?

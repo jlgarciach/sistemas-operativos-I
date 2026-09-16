@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Universidad Mariano Gálvez de Guatemala">
+
+<title>Sistemas Operativos I</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="Proyecto_Integrador_SOI_Proyecto_2_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Proyecto_Integrador_SOI_Proyecto_2_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="Proyecto_Integrador_SOI_Proyecto_2_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="Proyecto_Integrador_SOI_Proyecto_2_files/libs/quarto-html/popper.min.js"></script>
+<script src="Proyecto_Integrador_SOI_Proyecto_2_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Proyecto_Integrador_SOI_Proyecto_2_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Proyecto_Integrador_SOI_Proyecto_2_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Proyecto_Integrador_SOI_Proyecto_2_files/libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Proyecto_Integrador_SOI_Proyecto_2_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Proyecto_Integrador_SOI_Proyecto_2_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Proyecto_Integrador_SOI_Proyecto_2_files/libs/bootstrap/bootstrap-138a6193a3bd40baf1e627da441a4734.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#proyecto-no.-2-evolución-del-simulador-administración-de-procesos-memoria-y-recursos" id="toc-proyecto-no.-2-evolución-del-simulador-administración-de-procesos-memoria-y-recursos" class="nav-link active" data-scroll-target="#proyecto-no.-2-evolución-del-simulador-administración-de-procesos-memoria-y-recursos">Proyecto No.&nbsp;2 — Evolución del Simulador: Administración de Procesos, Memoria y Recursos</a>
+  <ul class="collapse">
+  <li><a href="#objetivo" id="toc-objetivo" class="nav-link" data-scroll-target="#objetivo">Objetivo</a></li>
+  </ul></li>
+  <li><a href="#filosofía-del-proyecto" id="toc-filosofía-del-proyecto" class="nav-link" data-scroll-target="#filosofía-del-proyecto">Filosofía del Proyecto</a></li>
+  <li><a href="#el-problema-que-deberá-resolver-el-simulador" id="toc-el-problema-que-deberá-resolver-el-simulador" class="nav-link" data-scroll-target="#el-problema-que-deberá-resolver-el-simulador">El problema que deberá resolver el simulador</a></li>
+  <li><a href="#requerimiento-1.-mantener-el-proyecto-no.-1" id="toc-requerimiento-1.-mantener-el-proyecto-no.-1" class="nav-link" data-scroll-target="#requerimiento-1.-mantener-el-proyecto-no.-1">Requerimiento 1. Mantener el Proyecto No.&nbsp;1</a></li>
+  <li><a href="#requerimiento-2.-evolución-del-pcb" id="toc-requerimiento-2.-evolución-del-pcb" class="nav-link" data-scroll-target="#requerimiento-2.-evolución-del-pcb">Requerimiento 2. Evolución del PCB</a></li>
+  <li><a href="#requerimiento-3.-administración-de-memoria" id="toc-requerimiento-3.-administración-de-memoria" class="nav-link" data-scroll-target="#requerimiento-3.-administración-de-memoria">Requerimiento 3. Administración de memoria</a></li>
+  <li><a href="#requerimiento-4.-solicitud-y-asignación-de-memoria" id="toc-requerimiento-4.-solicitud-y-asignación-de-memoria" class="nav-link" data-scroll-target="#requerimiento-4.-solicitud-y-asignación-de-memoria">Requerimiento 4. Solicitud y asignación de memoria</a></li>
+  <li><a href="#requerimiento-5.-métodos-de-ajuste-de-memoria" id="toc-requerimiento-5.-métodos-de-ajuste-de-memoria" class="nav-link" data-scroll-target="#requerimiento-5.-métodos-de-ajuste-de-memoria">Requerimiento 5. Métodos de ajuste de memoria</a></li>
+  <li><a href="#requerimiento-6.-liberación-de-memoria" id="toc-requerimiento-6.-liberación-de-memoria" class="nav-link" data-scroll-target="#requerimiento-6.-liberación-de-memoria">Requerimiento 6. Liberación de memoria</a></li>
+  <li><a href="#requerimiento-7.-fragmentación" id="toc-requerimiento-7.-fragmentación" class="nav-link" data-scroll-target="#requerimiento-7.-fragmentación">Requerimiento 7. Fragmentación</a></li>
+  <li><a href="#requerimiento-8.-compactación" id="toc-requerimiento-8.-compactación" class="nav-link" data-scroll-target="#requerimiento-8.-compactación">Requerimiento 8. Compactación</a></li>
+  <li><a href="#requerimiento-9.-administración-de-recursos" id="toc-requerimiento-9.-administración-de-recursos" class="nav-link" data-scroll-target="#requerimiento-9.-administración-de-recursos">Requerimiento 9. Administración de recursos</a></li>
+  <li><a href="#requerimiento-10.-solicitud-y-liberación-de-recursos" id="toc-requerimiento-10.-solicitud-y-liberación-de-recursos" class="nav-link" data-scroll-target="#requerimiento-10.-solicitud-y-liberación-de-recursos">Requerimiento 10. Solicitud y liberación de recursos</a></li>
+  <li><a href="#requerimiento-11.-interbloqueos" id="toc-requerimiento-11.-interbloqueos" class="nav-link" data-scroll-target="#requerimiento-11.-interbloqueos">Requerimiento 11. Interbloqueos</a></li>
+  <li><a href="#requerimiento-12.-tratamiento-del-interbloqueo" id="toc-requerimiento-12.-tratamiento-del-interbloqueo" class="nav-link" data-scroll-target="#requerimiento-12.-tratamiento-del-interbloqueo">Requerimiento 12. Tratamiento del interbloqueo</a></li>
+  <li><a href="#requerimiento-13.-paginación-extensión-conceptual" id="toc-requerimiento-13.-paginación-extensión-conceptual" class="nav-link" data-scroll-target="#requerimiento-13.-paginación-extensión-conceptual">Requerimiento 13. Paginación — Extensión conceptual</a></li>
+  <li><a href="#requerimiento-14.-estado-general-del-sistema" id="toc-requerimiento-14.-estado-general-del-sistema" class="nav-link" data-scroll-target="#requerimiento-14.-estado-general-del-sistema">Requerimiento 14. Estado general del sistema</a></li>
+  <li><a href="#menú-general-sugerido" id="toc-menú-general-sugerido" class="nav-link" data-scroll-target="#menú-general-sugerido">Menú general sugerido</a></li>
+  <li><a href="#integración-esperada" id="toc-integración-esperada" class="nav-link" data-scroll-target="#integración-esperada">Integración esperada</a></li>
+  <li><a href="#escenarios-mínimos-de-prueba" id="toc-escenarios-mínimos-de-prueba" class="nav-link" data-scroll-target="#escenarios-mínimos-de-prueba">Escenarios mínimos de prueba</a>
+  <ul class="collapse">
+  <li><a href="#escenario-1-creación-y-asignación-correcta" id="toc-escenario-1-creación-y-asignación-correcta" class="nav-link" data-scroll-target="#escenario-1-creación-y-asignación-correcta">Escenario 1 — Creación y asignación correcta</a></li>
+  <li><a href="#escenario-2-comparación-de-métodos-de-ajuste" id="toc-escenario-2-comparación-de-métodos-de-ajuste" class="nav-link" data-scroll-target="#escenario-2-comparación-de-métodos-de-ajuste">Escenario 2 — Comparación de métodos de ajuste</a></li>
+  <li><a href="#escenario-3-memoria-insuficiente-por-fragmentación" id="toc-escenario-3-memoria-insuficiente-por-fragmentación" class="nav-link" data-scroll-target="#escenario-3-memoria-insuficiente-por-fragmentación">Escenario 3 — Memoria insuficiente por fragmentación</a></li>
+  <li><a href="#escenario-4-liberación-y-compactación" id="toc-escenario-4-liberación-y-compactación" class="nav-link" data-scroll-target="#escenario-4-liberación-y-compactación">Escenario 4 — Liberación y compactación</a></li>
+  <li><a href="#escenario-5-proceso-esperando-recurso" id="toc-escenario-5-proceso-esperando-recurso" class="nav-link" data-scroll-target="#escenario-5-proceso-esperando-recurso">Escenario 5 — Proceso esperando recurso</a></li>
+  <li><a href="#escenario-6-interbloqueo" id="toc-escenario-6-interbloqueo" class="nav-link" data-scroll-target="#escenario-6-interbloqueo">Escenario 6 — Interbloqueo</a></li>
+  <li><a href="#escenario-7-finalización-completa" id="toc-escenario-7-finalización-completa" class="nav-link" data-scroll-target="#escenario-7-finalización-completa">Escenario 7 — Finalización completa</a></li>
+  <li><a href="#escenario-8-estado-general" id="toc-escenario-8-estado-general" class="nav-link" data-scroll-target="#escenario-8-estado-general">Escenario 8 — Estado general</a></li>
+  </ul></li>
+  <li><a href="#evidencias-de-prueba" id="toc-evidencias-de-prueba" class="nav-link" data-scroll-target="#evidencias-de-prueba">Evidencias de prueba</a></li>
+  <li><a href="#documento-a-entregar" id="toc-documento-a-entregar" class="nav-link" data-scroll-target="#documento-a-entregar">Documento a entregar</a></li>
+  <li><a href="#introducción-del-informe" id="toc-introducción-del-informe" class="nav-link" data-scroll-target="#introducción-del-informe">Introducción del informe</a></li>
+  <li><a href="#diagrama-general-actualizado" id="toc-diagrama-general-actualizado" class="nav-link" data-scroll-target="#diagrama-general-actualizado">Diagrama general actualizado</a></li>
+  <li><a href="#código-fuente" id="toc-código-fuente" class="nav-link" data-scroll-target="#código-fuente">Código fuente</a></li>
+  <li><a href="#conclusiones" id="toc-conclusiones" class="nav-link" data-scroll-target="#conclusiones">Conclusiones</a></li>
+  <li><a href="#criterios-de-evaluación" id="toc-criterios-de-evaluación" class="nav-link" data-scroll-target="#criterios-de-evaluación">Criterios de evaluación</a></li>
+  <li><a href="#defensa-del-proyecto" id="toc-defensa-del-proyecto" class="nav-link" data-scroll-target="#defensa-del-proyecto">Defensa del proyecto</a></li>
+  <li><a href="#uso-de-inteligencia-artificial" id="toc-uso-de-inteligencia-artificial" class="nav-link" data-scroll-target="#uso-de-inteligencia-artificial">Uso de Inteligencia Artificial</a></li>
+  <li><a href="#visión-del-proyecto-integrador" id="toc-visión-del-proyecto-integrador" class="nav-link" data-scroll-target="#visión-del-proyecto-integrador">Visión del Proyecto Integrador</a></li>
+  <li><a href="#pregunta-guía-del-proyecto-no.-2" id="toc-pregunta-guía-del-proyecto-no.-2" class="nav-link" data-scroll-target="#pregunta-guía-del-proyecto-no.-2">Pregunta guía del Proyecto No.&nbsp;2</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="Proyecto_Integrador_SOI_Proyecto_2.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Sistemas Operativos I</h1>
+<p class="subtitle lead">Proyecto Integrador del Curso — Proyecto No.&nbsp;2</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Universidad Mariano Gálvez de Guatemala </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="proyecto-no.-2-evolución-del-simulador-administración-de-procesos-memoria-y-recursos" class="level1">
+<h1>Proyecto No.&nbsp;2 — Evolución del Simulador: Administración de Procesos, Memoria y Recursos</h1>
+<section id="objetivo" class="level2">
+<h2 class="anchored" data-anchor-id="objetivo">Objetivo</h2>
+<p>Ampliar el simulador desarrollado en el <strong>Proyecto No.&nbsp;1</strong> para integrar, de forma coherente, los conceptos estudiados durante la segunda parte del curso, especialmente la <strong>administración de memoria</strong>, la <strong>asignación y liberación de recursos</strong>, la <strong>fragmentación</strong>, los <strong>métodos de ajuste</strong> y los <strong>interbloqueos</strong>.</p>
+<p>El propósito principal no es evaluar la complejidad del código fuente, sino la capacidad del equipo para <strong>analizar, diseñar y representar mediante una simulación el comportamiento interno de un sistema operativo</strong>.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="Continuidad del Proyecto Integrador">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Continuidad del Proyecto Integrador
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Este proyecto <strong>no consiste en desarrollar un simulador nuevo</strong>.</p>
+<p>Cada equipo deberá tomar como punto de partida el simulador construido en el Proyecto No.&nbsp;1 y hacerlo evolucionar.</p>
+<p>El objetivo es observar cómo los componentes estudiados durante el curso comienzan a relacionarse dentro de un mismo sistema.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="filosofía-del-proyecto" class="level1">
+<h1>Filosofía del Proyecto</h1>
+<p>Durante el semestre construiremos un único simulador que evolucionará conforme avancemos en los contenidos del curso.</p>
+<p>En el Proyecto No.&nbsp;1 se construyó la base relacionada con:</p>
+<ul>
+<li>procesos;</li>
+<li>PCB;</li>
+<li>estados;</li>
+<li>transiciones;</li>
+<li>cola Ready;</li>
+<li>proceso Running;</li>
+<li>procesos Waiting/Bloqueados;</li>
+<li>finalización.</li>
+</ul>
+<p>En el Proyecto No.&nbsp;2 los procesos dejarán de ser elementos aislados.</p>
+<p>Ahora deberán interactuar con dos componentes fundamentales del sistema operativo:</p>
+<ol type="1">
+<li><strong>la memoria</strong>;</li>
+<li><strong>los recursos del sistema</strong>.</li>
+</ol>
+<p>La evolución conceptual será:</p>
+<pre class="text"><code>PROYECTO No. 1
+
+Proceso
+   ↓
+PCB
+   ↓
+Estados y transiciones
+   ↓
+Colas de procesos
+
+        │
+        │ EVOLUCIÓN
+        ▼
+
+PROYECTO No. 2
+
+Proceso
+   ↓
+PCB
+   ↓
+Solicita memoria
+   ↓
+Utiliza recursos
+   ↓
+Puede quedar bloqueado
+   ↓
+Puede generar interbloqueos
+   ↓
+Finaliza
+   ↓
+Libera memoria y recursos</code></pre>
+</section>
+<section id="el-problema-que-deberá-resolver-el-simulador" class="level1">
+<h1>El problema que deberá resolver el simulador</h1>
+<p>En un sistema operativo real, crear un proceso no significa únicamente asignarle un identificador y cambiar su estado.</p>
+<p>Un proceso necesita recursos para poder ejecutarse.</p>
+<p>En esta etapa deberán plantearse preguntas como:</p>
+<blockquote class="blockquote">
+<p>¿Cuánta memoria necesita el proceso?</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>¿Existe memoria suficiente?</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>¿Dónde será colocado?</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>¿Qué sucede si existe memoria libre, pero está fragmentada?</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>¿Qué ocurre cuando un proceso termina?</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>¿Qué recursos está utilizando?</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>¿Qué sucede cuando solicita un recurso que está ocupado?</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>¿Puede producirse un interbloqueo?</p>
+</blockquote>
+<p>El simulador deberá permitir observar estas situaciones de una forma comprensible.</p>
+</section>
+<section id="requerimiento-1.-mantener-el-proyecto-no.-1" class="level1">
+<h1>Requerimiento 1. Mantener el Proyecto No.&nbsp;1</h1>
+<p>El simulador deberá conservar las funcionalidades desarrolladas anteriormente.</p>
+<p>Como mínimo deberá continuar permitiendo:</p>
+<ul>
+<li>crear procesos;</li>
+<li>identificar cada proceso mediante su PCB;</li>
+<li>mostrar información del PCB;</li>
+<li>representar estados;</li>
+<li>realizar transiciones;</li>
+<li>visualizar las colas;</li>
+<li>identificar el proceso en ejecución;</li>
+<li>representar procesos bloqueados;</li>
+<li>finalizar procesos.</li>
+</ul>
+<div class="callout callout-style-default callout-warning callout-titled" title="No eliminar para volver a construir">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>No eliminar para volver a construir
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Las nuevas funcionalidades deberán <strong>integrarse con el diseño existente</strong>.</p>
+<p>No se considerará evolución del proyecto si el equipo elimina la solución anterior y presenta módulos independientes sin relación entre ellos.</p>
+</div>
+</div>
+</section>
+<section id="requerimiento-2.-evolución-del-pcb" class="level1">
+<h1>Requerimiento 2. Evolución del PCB</h1>
+<p>El PCB utilizado en el Proyecto No.&nbsp;1 deberá evolucionar para almacenar información necesaria para la nueva simulación.</p>
+<p>Cada equipo determinará qué campos necesita incorporar.</p>
+<p>Como mínimo deberá poder identificarse:</p>
+<pre class="text"><code>PID
+Nombre del proceso
+Estado
+Memoria requerida
+Memoria asignada
+Recursos asignados
+Recursos solicitados</code></pre>
+<p>Podrán conservarse otros campos definidos en el Proyecto No.&nbsp;1.</p>
+<p>Ejemplo conceptual:</p>
+<pre class="text"><code>=================================
+PCB DEL PROCESO
+=================================
+PID:                105
+Nombre:             Navegador
+Estado:             READY
+Memoria requerida:  180 MB
+Memoria asignada:   Sí
+Recursos asignados: Disco
+Recurso solicitado: Ninguno
+=================================</code></pre>
+<p>El equipo deberá justificar por qué cada nuevo dato forma parte de su representación del PCB.</p>
+</section>
+<section id="requerimiento-3.-administración-de-memoria" class="level1">
+<h1>Requerimiento 3. Administración de memoria</h1>
+<p>El simulador deberá incorporar un modelo simplificado de memoria principal.</p>
+<p>El equipo deberá definir:</p>
+<ul>
+<li>memoria total disponible;</li>
+<li>memoria reservada para el sistema operativo, si su diseño la contempla;</li>
+<li>memoria disponible para procesos;</li>
+<li>bloques o huecos libres;</li>
+<li>memoria ocupada por cada proceso.</li>
+</ul>
+<p>Por ejemplo:</p>
+<pre class="text"><code>MEMORIA TOTAL: 1024 MB
+
+┌───────────────────────────────┐
+│ Sistema Operativo     200 MB  │
+├───────────────────────────────┤
+│ P1                    150 MB  │
+├───────────────────────────────┤
+│ Libre                   90 MB  │
+├───────────────────────────────┤
+│ P3                    220 MB  │
+├───────────────────────────────┤
+│ Libre                  164 MB  │
+├───────────────────────────────┤
+│ P5                    200 MB  │
+└───────────────────────────────┘</code></pre>
+<p>No es obligatorio utilizar esta representación exacta.</p>
+<p>Cada equipo puede diseñar una alternativa, siempre que permita comprender claramente el estado de la memoria.</p>
+</section>
+<section id="requerimiento-4.-solicitud-y-asignación-de-memoria" class="level1">
+<h1>Requerimiento 4. Solicitud y asignación de memoria</h1>
+<p>Cuando se cree un proceso, el simulador deberá considerar la cantidad de memoria requerida.</p>
+<p>Conceptualmente:</p>
+<pre class="text"><code>Crear proceso
+      ↓
+Generar / actualizar PCB
+      ↓
+Solicitar memoria
+      ↓
+¿Existe un bloque adecuado?
+     /              \
+   Sí                No
+   ↓                  ↓
+Asignar             No asignar
+memoria             memoria
+   ↓                  ↓
+Continuar           Informar situación</code></pre>
+<p>El equipo deberá definir y explicar qué sucede con el proceso cuando no puede obtener la memoria solicitada.</p>
+<p>La decisión deberá ser coherente con el modelo de estados implementado.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Aquí se evalúa diseño">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Aquí se evalúa diseño
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>No se proporcionará una única respuesta obligatoria para todas las decisiones del simulador.</p>
+<p>El equipo deberá plantear una solución, justificarla y demostrar que mantiene coherencia con los conceptos estudiados.</p>
+</div>
+</div>
+</section>
+<section id="requerimiento-5.-métodos-de-ajuste-de-memoria" class="level1">
+<h1>Requerimiento 5. Métodos de ajuste de memoria</h1>
+<p>El simulador deberá implementar y permitir comparar:</p>
+<ul>
+<li><strong>First Fit</strong>;</li>
+<li><strong>Best Fit</strong>;</li>
+<li><strong>Worst Fit</strong>.</li>
+</ul>
+<p>El usuario deberá poder seleccionar la política de asignación.</p>
+<p>Ejemplo:</p>
+<pre class="text"><code>MÉTODO DE ASIGNACIÓN DE MEMORIA
+
+1. First Fit
+2. Best Fit
+3. Worst Fit
+
+Seleccione:</code></pre>
+<p>Al realizar una asignación deberá ser posible observar:</p>
+<ul>
+<li>proceso que solicita memoria;</li>
+<li>cantidad solicitada;</li>
+<li>huecos disponibles;</li>
+<li>bloque seleccionado;</li>
+<li>espacio restante;</li>
+<li>estado de la memoria después de la asignación.</li>
+</ul>
+<p>El equipo deberá poder ejecutar una misma secuencia de procesos utilizando diferentes políticas y explicar por qué el mapa final puede ser distinto.</p>
+</section>
+<section id="requerimiento-6.-liberación-de-memoria" class="level1">
+<h1>Requerimiento 6. Liberación de memoria</h1>
+<p>Cuando un proceso finalice, la memoria utilizada deberá ser liberada.</p>
+<p>La simulación deberá reflejar esta modificación.</p>
+<pre class="text"><code>P4
+RUNNING
+   ↓
+TERMINATED
+   ↓
+Liberar memoria
+   ↓
+Actualizar mapa
+   ↓
+Nuevo hueco disponible</code></pre>
+<p>El equipo deberá demostrar al menos un escenario donde la finalización de procesos produzca nuevos espacios libres.</p>
+</section>
+<section id="requerimiento-7.-fragmentación" class="level1">
+<h1>Requerimiento 7. Fragmentación</h1>
+<p>El simulador deberá permitir observar el efecto de la fragmentación externa dentro del modelo de asignación contigua utilizado.</p>
+<p>Deberá ser posible identificar una situación como:</p>
+<pre class="text"><code>Memoria libre total: 600 MB
+
+Huecos:
+100 MB
+150 MB
+200 MB
+150 MB</code></pre>
+<p>y posteriormente intentar asignar:</p>
+<pre class="text"><code>Proceso nuevo: 300 MB</code></pre>
+<p>Aunque existen <code>600 MB</code> libres en total, ningún hueco individual puede almacenar el proceso.</p>
+<p>El equipo deberá explicar:</p>
+<ul>
+<li>por qué existe memoria suficiente en total;</li>
+<li>por qué el proceso no puede asignarse;</li>
+<li>qué relación tiene esta situación con la fragmentación externa.</li>
+</ul>
+</section>
+<section id="requerimiento-8.-compactación" class="level1">
+<h1>Requerimiento 8. Compactación</h1>
+<p>El simulador deberá incorporar una representación de <strong>compactación de memoria</strong> o, como mínimo, una simulación claramente demostrable de su efecto.</p>
+<p>Ejemplo conceptual:</p>
+<pre class="text"><code>ANTES
+
+[P1][Libre][P2][Libre][P3][Libre]
+
+              ↓
+
+          COMPACTAR
+
+              ↓
+
+DESPUÉS
+
+[P1][P2][P3][-------- Libre --------]</code></pre>
+<p>El equipo deberá explicar:</p>
+<ul>
+<li>qué problema intenta resolver la compactación;</li>
+<li>qué cambia en el mapa;</li>
+<li>por qué compactar memoria tiene un costo;</li>
+<li>por qué no debe considerarse una operación gratuita.</li>
+</ul>
+</section>
+<section id="requerimiento-9.-administración-de-recursos" class="level1">
+<h1>Requerimiento 9. Administración de recursos</h1>
+<p>El simulador deberá incorporar recursos que puedan ser utilizados por los procesos.</p>
+<p>Cada equipo podrá seleccionar recursos apropiados para su simulación.</p>
+<p>Por ejemplo:</p>
+<pre class="text"><code>R1 = Impresora
+R2 = Disco
+R3 = Escáner
+R4 = Dispositivo de comunicación</code></pre>
+<p>El sistema deberá poder identificar:</p>
+<ul>
+<li>recursos disponibles;</li>
+<li>recursos ocupados;</li>
+<li>proceso que posee un recurso;</li>
+<li>procesos que esperan un recurso.</li>
+</ul>
+<p>Ejemplo:</p>
+<pre class="text"><code>==================================
+RECURSOS DEL SISTEMA
+==================================
+Impresora  → P3
+Disco      → P1
+Escáner    → Disponible
+==================================</code></pre>
+</section>
+<section id="requerimiento-10.-solicitud-y-liberación-de-recursos" class="level1">
+<h1>Requerimiento 10. Solicitud y liberación de recursos</h1>
+<p>Un proceso deberá poder solicitar un recurso.</p>
+<p>Si el recurso está disponible, podrá ser asignado.</p>
+<p>Si está ocupado, el equipo deberá definir cómo se refleja esta situación en el estado del proceso.</p>
+<p>Ejemplo conceptual:</p>
+<pre class="text"><code>P3 solicita Impresora
+        ↓
+¿Disponible?
+   /          \
+ Sí            No
+ ↓              ↓
+Asignar       Esperar
+recurso       recurso</code></pre>
+<p>Cuando un proceso finalice o deje de utilizar el recurso, éste deberá volver a estar disponible.</p>
+</section>
+<section id="requerimiento-11.-interbloqueos" class="level1">
+<h1>Requerimiento 11. Interbloqueos</h1>
+<p>El simulador deberá poder representar al menos un escenario donde varios procesos y recursos puedan generar un <strong>interbloqueo</strong>.</p>
+<p>Ejemplo:</p>
+<pre class="text"><code>P1 posee R1
+P1 solicita R2
+
+P2 posee R2
+P2 solicita R1</code></pre>
+<p>Conceptualmente:</p>
+<pre class="text"><code>P1 ── espera ──&gt; R2
+↑                │
+│                ↓
+R1 &lt;── espera ── P2</code></pre>
+<p>El simulador deberá permitir:</p>
+<ul>
+<li>identificar los procesos involucrados;</li>
+<li>identificar los recursos involucrados;</li>
+<li>mostrar la espera existente;</li>
+<li>detectar o advertir la situación de interbloqueo;</li>
+<li>explicar por qué se produjo.</li>
+</ul>
+<p>El equipo deberá relacionar el escenario con las condiciones estudiadas en clase.</p>
+</section>
+<section id="requerimiento-12.-tratamiento-del-interbloqueo" class="level1">
+<h1>Requerimiento 12. Tratamiento del interbloqueo</h1>
+<p>Además de detectar o representar el interbloqueo, el equipo deberá explicar qué estrategia propone su simulador para tratarlo.</p>
+<p>La solución podrá basarse en los conceptos estudiados, por ejemplo:</p>
+<ul>
+<li>prevención;</li>
+<li>evitación conceptual;</li>
+<li>detección;</li>
+<li>recuperación.</li>
+</ul>
+<p>No se espera necesariamente implementar un algoritmo complejo de un sistema operativo real.</p>
+<p>Se evaluará que el equipo comprenda el problema y plantee una solución técnicamente coherente.</p>
+</section>
+<section id="requerimiento-13.-paginación-extensión-conceptual" class="level1">
+<h1>Requerimiento 13. Paginación — Extensión conceptual</h1>
+<p>La paginación deberá incorporarse como una <strong>extensión conceptual del simulador</strong>.</p>
+<p>El objetivo es demostrar que el equipo comprende cómo cambia el problema cuando dejamos de exigir que todo un proceso se encuentre en un único bloque contiguo.</p>
+<p>El equipo deberá representar al menos:</p>
+<ul>
+<li>tamaño de página;</li>
+<li>tamaño de marco;</li>
+<li>cantidad de páginas requeridas;</li>
+<li>asignación de páginas a marcos;</li>
+<li>tabla de páginas simplificada.</li>
+</ul>
+<p>Ejemplo:</p>
+<pre class="text"><code>Proceso P6 = 14 KB
+Tamaño de página = 4 KB
+
+Páginas necesarias = 4</code></pre>
+<p>Tabla conceptual:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">Página</th>
+<th style="text-align: right;">Marco</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+</tr>
+</tbody>
+</table>
+<p>El equipo deberá explicar por qué estos marcos <strong>no necesitan ser contiguos</strong>.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Profundidad esperada">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Profundidad esperada
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>No se pretende construir un administrador completo de memoria virtual.</p>
+<p>Se busca demostrar comprensión del concepto y relacionarlo con el problema de asignación contigua estudiado anteriormente.</p>
+</div>
+</div>
+</section>
+<section id="requerimiento-14.-estado-general-del-sistema" class="level1">
+<h1>Requerimiento 14. Estado general del sistema</h1>
+<p>El simulador deberá incorporar una vista que permita observar el estado general del sistema.</p>
+<p>Esta pantalla deberá integrar información de diferentes componentes.</p>
+<p>Ejemplo:</p>
+<pre class="text"><code>========================================
+          ESTADO DEL SISTEMA
+========================================
+
+PROCESOS
+----------------------------------------
+Ready:       P2, P5
+Running:     P1
+Waiting:     P3
+Terminated:  P4
+
+MEMORIA
+----------------------------------------
+Total:       1024 MB
+Ocupada:      720 MB
+Libre:        304 MB
+Método:      Best Fit
+Huecos:      [100, 54, 150]
+
+RECURSOS
+----------------------------------------
+Impresora:   P3
+Disco:       P1
+Escáner:     Disponible
+
+INTERBLOQUEO
+----------------------------------------
+No detectado
+
+========================================</code></pre>
+<p>Esta representación será especialmente importante durante la demostración del proyecto.</p>
+</section>
+<section id="menú-general-sugerido" class="level1">
+<h1>Menú general sugerido</h1>
+<p>El diseño del menú queda a criterio del equipo.</p>
+<p>Como referencia, el simulador podría organizarse de la siguiente manera:</p>
+<pre class="text"><code>========================================
+      SIMULADOR DE SISTEMA OPERATIVO
+========================================
+
+GESTIÓN DE PROCESOS
+1. Crear proceso
+2. Mostrar procesos
+3. Mostrar PCB
+4. Cambiar estado
+5. Mostrar colas
+6. Finalizar proceso
+
+ADMINISTRACIÓN DE MEMORIA
+7. Mostrar mapa de memoria
+8. Asignar memoria
+9. Liberar memoria
+10. Mostrar fragmentación
+11. Compactar memoria
+12. Cambiar método de ajuste
+
+ADMINISTRACIÓN DE RECURSOS
+13. Mostrar recursos
+14. Asignar recurso
+15. Liberar recurso
+16. Detectar interbloqueo
+
+SISTEMA
+17. Mostrar estado general
+
+0. Salir</code></pre>
+<div class="callout callout-style-default callout-warning callout-titled" title="No copiar mecánicamente">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>No copiar mecánicamente
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Este menú representa una posible organización.</p>
+<p>Los equipos pueden proponer una arquitectura diferente si ésta resulta más adecuada para su solución.</p>
+<p>Durante la evaluación deberán justificar sus decisiones de diseño.</p>
+</div>
+</div>
+</section>
+<section id="integración-esperada" class="level1">
+<h1>Integración esperada</h1>
+<p>El principal criterio del Proyecto No.&nbsp;2 será la <strong>integración</strong>.</p>
+<p>No queremos observar tres programas separados:</p>
+<pre class="text"><code>Programa de procesos
+Programa de memoria
+Programa de interbloqueos</code></pre>
+<p>Queremos observar un único simulador donde los componentes se relacionen.</p>
+<p>Por ejemplo:</p>
+<pre class="text"><code>CREAR PROCESO
+      ↓
+Crear PCB
+      ↓
+Solicitar memoria
+      ↓
+Asignar memoria
+      ↓
+READY
+      ↓
+RUNNING
+      ↓
+Solicitar recurso
+      ↓
+¿Disponible?
+ /           \
+Sí            No
+↓              ↓
+Continúa     WAITING
+               ↓
+        ¿Existe interbloqueo?
+               ↓
+            Detectar</code></pre>
+<p>Y al finalizar:</p>
+<pre class="text"><code>TERMINATED
+     ↓
+Liberar memoria
+     ↓
+Liberar recursos
+     ↓
+Actualizar colas
+     ↓
+Actualizar estado general</code></pre>
+<p>Esta relación entre componentes deberá poder observarse durante la demostración.</p>
+</section>
+<section id="escenarios-mínimos-de-prueba" class="level1">
+<h1>Escenarios mínimos de prueba</h1>
+<p>El proyecto deberá incluir pruebas planificadas.</p>
+<p>Como mínimo deberán demostrar los siguientes escenarios.</p>
+<section id="escenario-1-creación-y-asignación-correcta" class="level2">
+<h2 class="anchored" data-anchor-id="escenario-1-creación-y-asignación-correcta">Escenario 1 — Creación y asignación correcta</h2>
+<p>Crear un proceso que pueda recibir memoria correctamente.</p>
+<p>Demostrar:</p>
+<ul>
+<li>PCB;</li>
+<li>memoria solicitada;</li>
+<li>memoria asignada;</li>
+<li>estado resultante.</li>
+</ul>
+</section>
+<section id="escenario-2-comparación-de-métodos-de-ajuste" class="level2">
+<h2 class="anchored" data-anchor-id="escenario-2-comparación-de-métodos-de-ajuste">Escenario 2 — Comparación de métodos de ajuste</h2>
+<p>Ejecutar una misma carga utilizando:</p>
+<ul>
+<li>First Fit;</li>
+<li>Best Fit;</li>
+<li>Worst Fit.</li>
+</ul>
+<p>Comparar los mapas finales y explicar las diferencias.</p>
+</section>
+<section id="escenario-3-memoria-insuficiente-por-fragmentación" class="level2">
+<h2 class="anchored" data-anchor-id="escenario-3-memoria-insuficiente-por-fragmentación">Escenario 3 — Memoria insuficiente por fragmentación</h2>
+<p>Construir una situación donde exista suficiente memoria libre total, pero ningún hueco sea suficientemente grande.</p>
+<p>Explicar el resultado.</p>
+</section>
+<section id="escenario-4-liberación-y-compactación" class="level2">
+<h2 class="anchored" data-anchor-id="escenario-4-liberación-y-compactación">Escenario 4 — Liberación y compactación</h2>
+<p>Finalizar uno o varios procesos.</p>
+<p>Demostrar:</p>
+<ol type="1">
+<li>memoria antes;</li>
+<li>liberación;</li>
+<li>huecos generados;</li>
+<li>compactación;</li>
+<li>memoria después.</li>
+</ol>
+</section>
+<section id="escenario-5-proceso-esperando-recurso" class="level2">
+<h2 class="anchored" data-anchor-id="escenario-5-proceso-esperando-recurso">Escenario 5 — Proceso esperando recurso</h2>
+<p>Un proceso deberá solicitar un recurso ocupado.</p>
+<p>Demostrar la relación entre:</p>
+<pre class="text"><code>solicitud de recurso
+        ↓
+recurso ocupado
+        ↓
+proceso esperando
+        ↓
+estado WAITING</code></pre>
+</section>
+<section id="escenario-6-interbloqueo" class="level2">
+<h2 class="anchored" data-anchor-id="escenario-6-interbloqueo">Escenario 6 — Interbloqueo</h2>
+<p>Crear intencionalmente un escenario de interbloqueo.</p>
+<p>El equipo deberá identificar:</p>
+<ul>
+<li>procesos;</li>
+<li>recursos;</li>
+<li>dependencias;</li>
+<li>causa;</li>
+<li>estrategia propuesta.</li>
+</ul>
+</section>
+<section id="escenario-7-finalización-completa" class="level2">
+<h2 class="anchored" data-anchor-id="escenario-7-finalización-completa">Escenario 7 — Finalización completa</h2>
+<p>Finalizar un proceso que posea memoria y recursos.</p>
+<p>Demostrar que:</p>
+<ul>
+<li>cambia a <code>TERMINATED</code>;</li>
+<li>libera memoria;</li>
+<li>libera recursos;</li>
+<li>actualiza las estructuras correspondientes.</li>
+</ul>
+</section>
+<section id="escenario-8-estado-general" class="level2">
+<h2 class="anchored" data-anchor-id="escenario-8-estado-general">Escenario 8 — Estado general</h2>
+<p>Mostrar una situación donde existan simultáneamente:</p>
+<ul>
+<li>procesos Ready;</li>
+<li>un proceso Running;</li>
+<li>al menos un proceso Waiting;</li>
+<li>memoria ocupada y libre;</li>
+<li>recursos ocupados y disponibles.</li>
+</ul>
+<p>Mostrar el estado general y explicar qué está ocurriendo.</p>
+</section>
+</section>
+<section id="evidencias-de-prueba" class="level1">
+<h1>Evidencias de prueba</h1>
+<p>Cada escenario deberá documentarse.</p>
+<p>Se recomienda utilizar una tabla como:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 15%">
+<col style="width: 15%">
+<col style="width: 15%">
+<col style="width: 15%">
+<col style="width: 15%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">No.</th>
+<th>Escenario</th>
+<th>Estado inicial</th>
+<th>Acción</th>
+<th>Resultado esperado</th>
+<th>Resultado obtenido</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td>Asignación</td>
+<td>Memoria disponible</td>
+<td>Crear P1</td>
+<td>P1 recibe memoria</td>
+<td>…</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td>Fragmentación</td>
+<td>Huecos dispersos</td>
+<td>Crear proceso grande</td>
+<td>No puede asignarse</td>
+<td>…</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td>Interbloqueo</td>
+<td>P1 y P2 poseen recursos</td>
+<td>Solicitar recurso contrario</td>
+<td>Detectar bloqueo</td>
+<td>…</td>
+</tr>
+</tbody>
+</table>
+<p>Las capturas de pantalla deberán servir como <strong>evidencia</strong>, no sustituir la explicación.</p>
+</section>
+<section id="documento-a-entregar" class="level1">
+<h1>Documento a entregar</h1>
+<p>El informe deberá presentarse en PDF.</p>
+<p>La estructura mínima será:</p>
+<ol type="1">
+<li>Carátula.</li>
+<li>Introducción.</li>
+<li>Objetivos.</li>
+<li>Descripción del simulador desarrollado en el Proyecto No.&nbsp;1.</li>
+<li><strong>Descripción de la evolución realizada para el Proyecto No.&nbsp;2.</strong></li>
+<li>Arquitectura o diseño general de la solución.</li>
+<li>Evolución del PCB.</li>
+<li>Diseño del administrador de memoria.</li>
+<li>Métodos de ajuste implementados.</li>
+<li>Fragmentación y compactación.</li>
+<li>Diseño de administración de recursos.</li>
+<li>Diseño y tratamiento de interbloqueos.</li>
+<li>Representación conceptual de paginación.</li>
+<li>Diagrama general actualizado.</li>
+<li>Descripción de los principales componentes de la solución.</li>
+<li>Escenarios de prueba.</li>
+<li>Evidencias de ejecución.</li>
+<li>Resultados obtenidos.</li>
+<li>Conclusiones.</li>
+</ol>
+</section>
+<section id="introducción-del-informe" class="level1">
+<h1>Introducción del informe</h1>
+<p>La introducción deberá dejar claro que este proyecto es una continuación.</p>
+<p>Deberá explicar:</p>
+<ul>
+<li>qué se construyó en el Proyecto No.&nbsp;1;</li>
+<li>qué conocimientos nuevos se incorporan;</li>
+<li>por qué fue necesario modificar el simulador;</li>
+<li>cuál es el alcance de esta segunda versión.</li>
+</ul>
+<p>No debe presentarse el Proyecto No.&nbsp;2 como si el Proyecto No.&nbsp;1 nunca hubiera existido.</p>
+</section>
+<section id="diagrama-general-actualizado" class="level1">
+<h1>Diagrama general actualizado</h1>
+<p>El equipo deberá actualizar el diseño general del simulador.</p>
+<p>No se busca un diagrama extremadamente detallado de cada línea del programa.</p>
+<p>Se espera una representación de componentes y relaciones.</p>
+<p>Por ejemplo:</p>
+<pre class="text"><code>┌──────────────────────────────┐
+│       SIMULADOR DEL SO       │
+└──────────────┬───────────────┘
+               │
+       ┌───────┼────────┐
+       │       │        │
+       ▼       ▼        ▼
+  PROCESOS   MEMORIA  RECURSOS
+       │       │        │
+       │       │        ▼
+       │       │   INTERBLOQUEOS
+       │       │        │
+       └───────┼────────┘
+               ▼
+        ESTADO GENERAL</code></pre>
+<p>El equipo puede utilizar otra representación si comunica mejor su arquitectura.</p>
+</section>
+<section id="código-fuente" class="level1">
+<h1>Código fuente</h1>
+<p>El código deberá estar:</p>
+<ul>
+<li>organizado;</li>
+<li>comentado;</li>
+<li>legible;</li>
+<li>dividido lógicamente;</li>
+<li>relacionado con el diseño presentado.</li>
+</ul>
+<p>Sin embargo, en esta etapa <strong>no se calificará principalmente la sintaxis o sofisticación de programación</strong>.</p>
+<p>Se evaluará que el código sea un medio adecuado para representar la solución propuesta.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="Quinto semestre">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Quinto semestre
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>El objetivo no es demostrar quién escribe más líneas de código.</p>
+<p>El objetivo es demostrar quién comprende mejor el problema, propone una solución coherente y puede defender técnicamente las decisiones tomadas.</p>
+</div>
+</div>
+</section>
+<section id="conclusiones" class="level1">
+<h1>Conclusiones</h1>
+<p>Las conclusiones deberán analizar lo aprendido durante la evolución del simulador.</p>
+<p>Como mínimo deberán abordar:</p>
+<ul>
+<li>cómo cambió el simulador respecto al Proyecto No.&nbsp;1;</li>
+<li>cómo se relacionan procesos y memoria;</li>
+<li>qué efecto producen las políticas de asignación;</li>
+<li>qué consecuencias tiene la fragmentación;</li>
+<li>cómo afectan los recursos al estado de los procesos;</li>
+<li>qué aprendieron al provocar y analizar un interbloqueo;</li>
+<li>qué limitaciones mantiene el simulador frente a un sistema operativo real.</li>
+</ul>
+<p>No se aceptarán como conclusiones únicamente frases generales como:</p>
+<blockquote class="blockquote">
+<p>“El proyecto fue interesante.”</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>“Aprendimos sobre Sistemas Operativos.”</p>
+</blockquote>
+<p>Las conclusiones deberán derivarse de las pruebas y resultados obtenidos.</p>
+</section>
+<section id="criterios-de-evaluación" class="level1">
+<h1>Criterios de evaluación</h1>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Criterio</th>
+<th style="text-align: right;">Puntos</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Continuidad e integración con el Proyecto No.&nbsp;1</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td>Diseño y evolución del PCB</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td>Administración y representación de memoria</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr class="even">
+<td>First Fit, Best Fit y Worst Fit</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="odd">
+<td>Fragmentación, liberación y compactación</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td>Administración de recursos</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="odd">
+<td>Interbloqueos: representación, análisis y tratamiento</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr class="even">
+<td>Paginación y relación con memoria contigua</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="odd">
+<td>Escenarios de prueba y análisis de resultados</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td>Presentación, documentación y defensa</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="odd">
+<td><strong>TOTAL</strong></td>
+<td style="text-align: right;"><strong>100</strong></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="defensa-del-proyecto" class="level1">
+<h1>Defensa del proyecto</h1>
+<p>Durante la presentación, el docente podrá solicitar al equipo:</p>
+<ul>
+<li>ejecutar un escenario diferente al presentado;</li>
+<li>crear un nuevo proceso;</li>
+<li>modificar el tamaño de memoria solicitado;</li>
+<li>cambiar First Fit por Best Fit o Worst Fit;</li>
+<li>finalizar un proceso y observar qué ocurre con la memoria;</li>
+<li>explicar un hueco específico;</li>
+<li>provocar una situación de fragmentación;</li>
+<li>explicar por qué un proceso está en Waiting;</li>
+<li>liberar un recurso;</li>
+<li>provocar o romper un interbloqueo;</li>
+<li>interpretar el estado general del sistema;</li>
+<li>explicar cualquier decisión tomada en el diseño.</li>
+</ul>
+<p>Cualquier integrante deberá poder explicar el funcionamiento general del simulador.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="La defensa no consiste en memorizar el código">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>La defensa no consiste en memorizar el código
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Las preguntas estarán orientadas principalmente a comprobar que el equipo comprende <strong>qué está simulando, por qué ocurre y qué decisión tomó para resolverlo</strong>.</p>
+</div>
+</div>
+</section>
+<section id="uso-de-inteligencia-artificial" class="level1">
+<h1>Uso de Inteligencia Artificial</h1>
+<p>Las herramientas de Inteligencia Artificial pueden utilizarse como apoyo para el aprendizaje.</p>
+<p>Se permite utilizarlas para:</p>
+<ul>
+<li>comprender conceptos;</li>
+<li>revisar redacción;</li>
+<li>analizar mensajes de error;</li>
+<li>consultar documentación;</li>
+<li>contrastar alternativas de solución;</li>
+<li>solicitar explicaciones sobre conceptos estudiados.</li>
+</ul>
+<p>Sin embargo, la solución presentada será responsabilidad del equipo.</p>
+<p>Durante la defensa, los estudiantes deberán demostrar que comprenden:</p>
+<ul>
+<li>la arquitectura propuesta;</li>
+<li>las decisiones tomadas;</li>
+<li>el comportamiento de los procesos;</li>
+<li>la administración de memoria;</li>
+<li>los métodos de ajuste;</li>
+<li>la fragmentación;</li>
+<li>los recursos;</li>
+<li>los interbloqueos;</li>
+<li>las pruebas realizadas.</li>
+</ul>
+<p>La utilización de IA <strong>no sustituye la comprensión ni la capacidad de defender técnicamente la solución</strong>.</p>
+</section>
+<section id="visión-del-proyecto-integrador" class="level1">
+<h1>Visión del Proyecto Integrador</h1>
+<p>El proyecto continuará evolucionando.</p>
+<pre class="text"><code>PROYECTO No. 1
+Procesos
+PCB
+Estados
+Colas
+        │
+        ▼
+PROYECTO No. 2
+Todo lo anterior
++
+Administración de memoria
+Métodos de ajuste
+Fragmentación
+Compactación
+Recursos
+Interbloqueos
+Paginación conceptual
+        │
+        ▼
+PROYECTO No. 3
+Todo lo anterior
++
+Sistema de archivos
+Persistencia
+Integración final
+        │
+        ▼
+SIMULADOR INTEGRADO
+DE UN SISTEMA OPERATIVO</code></pre>
+<div class="callout-success" title="La meta">
+<p>Al finalizar el semestre no tendremos tres proyectos aislados.</p>
+<p>Tendremos <strong>un simulador que habrá evolucionado junto con los conocimientos adquiridos durante el curso</strong>.</p>
+<p>Cada nueva versión deberá permitir comprender mejor cómo los distintos componentes de un sistema operativo se relacionan entre sí.</p>
+</div>
+</section>
+<section id="pregunta-guía-del-proyecto-no.-2" class="level1">
+<h1>Pregunta guía del Proyecto No.&nbsp;2</h1>
+<blockquote class="blockquote">
+<p><strong>¿Qué ocurre con nuestros procesos cuando el sistema operativo también debe administrar la memoria y los recursos que necesitan para ejecutarse?</strong></p>
+</blockquote>
+<p>Esta pregunta deberá acompañar el análisis, las pruebas y la defensa del proyecto.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

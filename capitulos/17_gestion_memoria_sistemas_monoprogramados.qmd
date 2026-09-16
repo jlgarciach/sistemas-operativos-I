@@ -1,0 +1,296 @@
+---
+title: "Gestión de Memoria en Sistemas Monoprogramados"
+subtitle: "Clase No. 17 - Sistemas Operativos I"
+---
+
+# Gestión de Memoria en Sistemas Monoprogramados
+
+## ¿Qué aprenderemos en esta clase?
+
+Al finalizar este capítulo, el estudiante será capaz de:
+
+- Explicar cómo se organiza la memoria principal cuando solo existe un programa de usuario en ejecución.
+- Representar la distribución entre el sistema operativo, el programa y el espacio disponible.
+- Diferenciar una dirección lógica de una dirección física.
+- Explicar el uso de direcciones absolutas y la relocación estática.
+- Calcular direcciones físicas a partir de una dirección base y un desplazamiento.
+- Identificar ventajas, limitaciones y riesgos del modelo monoprogramado.
+
+::: {.callout-tip title="Tres preguntas fundamentales"}
+1. ¿Cómo se organiza la memoria cuando solo ejecutamos un programa a la vez?
+2. ¿Cómo sabe el programa en qué dirección física se encuentran sus instrucciones y datos?
+3. ¿Por qué este modelo sencillo dejó de ser suficiente para los sistemas modernos?
+:::
+
+## 1. Antes de comenzar: ¿qué significa administrar memoria?
+
+La **memoria principal (RAM)** contiene temporalmente las instrucciones y los datos que necesita la CPU. Administrar memoria significa decidir **qué ocupa la memoria, dónde se coloca y cómo se accede a ello**.
+
+En un sistema monoprogramado esta tarea es especialmente sencilla: en un momento determinado solo existe **un programa de usuario** residente y ejecutándose en memoria principal.
+
+```{mermaid}
+flowchart LR
+    CPU[CPU] --> RAM["Memoria principal\nSistema Operativo + 1 programa"]
+```
+
+> **Idea clave:** monoprogramación no significa que la computadora no tenga sistema operativo. Significa que solo hay **un programa de usuario en ejecución a la vez**.
+
+## 2. ¿Qué es un sistema monoprogramado?
+
+En un sistema monoprogramado la memoria puede imaginarse dividida en dos grandes regiones:
+
+1. Una región reservada para el **sistema operativo**.
+2. Una región utilizada por el **programa de usuario**.
+
+No existe coexistencia de varios programas de usuario compitiendo por la RAM. El control es mucho más simple que en un sistema multiprogramado.
+
+```{mermaid}
+flowchart TB
+    M[Memoria principal]
+    SO["Sistema Operativo"]
+    P["Programa de usuario"]
+    M --> SO
+    M --> P
+```
+
+### Ejemplo conceptual
+
+Supongamos una memoria de **512 KB**:
+
+| Región | Tamaño | Contenido |
+|---|---:|---|
+| Sistema operativo | 128 KB | Kernel y componentes residentes |
+| Programa de usuario | 300 KB | Código, datos y pila |
+| Espacio no utilizado | 84 KB | Memoria disponible que no usa otro proceso |
+
+El espacio libre permanece sin aprovechar por otros programas mientras se mantiene el modelo monoprogramado.
+
+## 3. Asignación contigua simple
+
+La forma más sencilla de cargar el programa consiste en colocarlo en **un único bloque continuo de memoria**. A esto se le denomina **asignación contigua**.
+
+```{mermaid}
+flowchart TB
+    A["0 KB"] --> SO["Sistema Operativo\n128 KB"]
+    SO --> P["Programa\n300 KB"]
+    P --> L["Espacio no utilizado\n84 KB"]
+    L --> F["512 KB"]
+```
+
+### Características
+
+- El programa ocupa posiciones consecutivas de memoria.
+- Su tamaño no puede superar la memoria disponible para el usuario.
+- La administración es sencilla porque solo existe un bloque de programa que controlar.
+- Si queda memoria libre, no se utiliza para ejecutar simultáneamente otro programa.
+
+::: {.callout-note title="Conexión con la siguiente etapa del curso"}
+Aquí aparece por primera vez la **asignación contigua**. Más adelante, en la Clase 19, estudiaremos esta técnica como un problema general de administración de memoria y analizaremos algoritmos de asignación con mayor profundidad.
+:::
+
+## 4. Direcciones de memoria
+
+Cuando un programa utiliza una variable o ejecuta una instrucción, necesita localizarla en memoria. Para comprender este proceso distinguiremos dos conceptos.
+
+### Dirección lógica
+
+Es la referencia utilizada por el programa antes de considerar su ubicación física definitiva. Puede verse como una posición relativa dentro de su propio espacio de direcciones.
+
+### Dirección física
+
+Es la posición real que ocupa el dato o instrucción dentro de la memoria RAM.
+
+| Tipo | Pregunta que responde | Ejemplo |
+|---|---|---:|
+| Lógica | ¿Dónde está dentro del programa? | 250 |
+| Física | ¿Dónde está realmente en RAM? | 2250 |
+
+## 5. Direcciones absolutas
+
+Una estrategia muy simple consiste en generar **direcciones físicas fijas**. En este caso, el programa debe cargarse siempre en la ubicación para la cual fue preparado.
+
+Si una instrucción espera encontrar un dato en la dirección física 2250, cambiar el programa de posición sin ajustar sus referencias provocaría accesos incorrectos.
+
+```{mermaid}
+flowchart LR
+    P[Programa] --> D1[Dirección 2000]
+    P --> D2[Dirección 2250]
+    P --> D3[Dirección 2999]
+```
+
+Este enfoque es sencillo, pero poco flexible.
+
+## 6. Relocación estática
+
+Una alternativa consiste en permitir que el programa utilice direcciones relativas y realizar un ajuste **una sola vez, durante la carga**. A este procedimiento lo llamamos **relocación estática**.
+
+La idea puede expresarse de manera sencilla:
+
+$$
+\text{Dirección física} = \text{Dirección base} + \text{Dirección lógica}
+$$
+
+### Ejemplo
+
+El sistema operativo ocupa las direcciones **0 a 1999** y el programa utiliza direcciones lógicas **0 a 999**. El cargador decide colocar el programa a partir de la dirección **2000**.
+
+Si el programa solicita su dirección lógica 250:
+
+$$
+2000 + 250 = 2250
+$$
+
+Por lo tanto, la dirección física correspondiente es **2250**.
+
+```{mermaid}
+flowchart LR
+    DL["Dirección lógica\n250"] --> SUMA((+))
+    BASE["Base\n2000"] --> SUMA
+    SUMA --> DF["Dirección física\n2250"]
+```
+
+::: {.callout-important title="No confundamos los momentos"}
+En la **relocación estática**, el ajuste se realiza al cargar el programa. Una vez que comienza su ejecución, el programa permanece en esa ubicación. En sistemas más avanzados veremos **relocación dinámica**, donde la traducción ocurre durante la ejecución.
+:::
+
+## 7. Ejemplo en C++: simulando la relocación
+
+El siguiente programa no administra la RAM real del sistema operativo; únicamente nos ayuda a representar matemáticamente la traducción base + desplazamiento.
+
+```{cpp}
+#include <iostream>
+using namespace std;
+
+int main() {
+    int base = 2000;
+    int direccionLogica = 250;
+    int direccionFisica = base + direccionLogica;
+
+    cout << "Direccion fisica: " << direccionFisica << endl;
+    return 0;
+}
+```
+
+La salida esperada es:
+
+```text
+Direccion fisica: 2250
+```
+
+### Comprueba tu comprensión
+
+Si la dirección base fuera 4096 y el programa solicitara la dirección lógica 120, ¿cuál sería la dirección física?
+
+<details>
+<summary>Ver respuesta</summary>
+
+$$4096 + 120 = 4216$$
+
+La dirección física sería **4216**.
+
+</details>
+
+## 8. Protección de memoria: una limitación importante
+
+En los modelos monoprogramados más simples la protección puede ser mínima o inexistente. Si un programa escribe fuera del espacio que le corresponde, podría modificar memoria reservada para el sistema operativo.
+
+```{mermaid}
+flowchart TB
+    SO["Sistema Operativo"]
+    P["Programa de usuario"]
+    E["Escritura fuera de límites"]
+    P --> E --> SO
+```
+
+Esto ayuda a comprender por qué la **protección de memoria** se convirtió en una responsabilidad fundamental de los sistemas operativos posteriores.
+
+## 9. Ventajas y limitaciones
+
+| Ventajas | Limitaciones |
+|---|---|
+| Diseño sencillo | Solo un programa de usuario a la vez |
+| Administración de memoria simple | No aprovecha la RAM libre para ejecutar otros programas |
+| Poco trabajo de administración | Flexibilidad limitada para mover programas |
+| Adecuado para tareas dedicadas | Protección limitada en implementaciones simples |
+
+## 10. Un ejemplo cercano: sistemas dedicados
+
+El principio de ejecutar una única aplicación principal sigue siendo útil para comprender ciertos **sistemas embebidos y dispositivos dedicados**. Sin embargo, no debemos asumir que todo microcontrolador moderno carece de concurrencia o de un sistema operativo: algunos incorporan planificadores o sistemas operativos en tiempo real.
+
+La idea importante para esta clase es el **modelo conceptual**: una tarea principal, una organización sencilla de memoria y ausencia de varios programas de usuario residentes simultáneamente.
+
+## 11. Actividad guiada
+
+Una computadora dispone de **1 MB = 1024 KB** de memoria principal.
+
+- Sistema operativo: 256 KB
+- Programa de usuario: 500 KB
+
+Responde:
+
+1. ¿Cuánta memoria queda sin utilizar?
+2. Dibuja la distribución de memoria.
+3. Si el programa comienza en la dirección 256 KB, ¿qué representa esa posición?
+4. ¿Podría cargarse simultáneamente otro programa de 200 KB manteniendo estrictamente el modelo monoprogramado? Explica.
+
+### Solución de la parte numérica
+
+$$
+1024 - 256 - 500 = 268\text{ KB}
+$$
+
+Quedan **268 KB** sin utilizar.
+
+> **Atención:** si se considera 1 MB como 1000 KB se obtendrían 244 KB, pero en este ejercicio trabajaremos con **1 MB = 1024 KB** para mantener consistencia binaria.
+
+## 12. Reto de análisis
+
+Un programa utiliza direcciones lógicas de 0 a 1499. El sistema operativo ocupa las direcciones físicas 0 a 4095 y el programa se carga inmediatamente después.
+
+1. ¿Cuál es la dirección base del programa?
+2. ¿Cuál es la dirección física correspondiente a la dirección lógica 300?
+3. ¿Cuál es la última dirección física que podría utilizar el programa?
+4. ¿Qué tendría que ocurrir con las referencias del programa si se cargara en otra ubicación usando relocación estática?
+
+## 13. Del sistema monoprogramado al multiprogramado
+
+El gran problema del modelo estudiado aparece cuando el programa se detiene esperando una operación de entrada/salida: la CPU podría quedar sin trabajo aunque exista memoria disponible.
+
+Esto conduce a una pregunta natural:
+
+> **¿Por qué no mantener varios procesos en memoria y permitir que la CPU trabaje con otro mientras uno espera?**
+
+Esa pregunta nos lleva directamente a la **Clase 18: Gestión de Memoria en Sistemas Multiprogramados**.
+
+## 14. Resumen
+
+```{mermaid}
+flowchart LR
+    M[Monoprogramación] --> U["Un programa de usuario"]
+    M --> C["Asignación contigua simple"]
+    M --> D["Direcciones lógicas y físicas"]
+    D --> R["Relocación estática"]
+    R --> F["Física = Base + Lógica"]
+    M --> L["Simplicidad, pero poca flexibilidad"]
+```
+
+### Lo que debes llevarte de esta clase
+
+- La monoprogramación mantiene un único programa de usuario en memoria.
+- El programa puede ocupar un bloque contiguo de RAM.
+- Una dirección lógica representa una posición desde la perspectiva del programa; la dirección física es su ubicación real en RAM.
+- La relocación estática ajusta las direcciones al momento de cargar el programa.
+- La simplicidad del modelo tiene un costo: menor aprovechamiento de CPU y memoria y poca flexibilidad.
+
+## 15. Preguntas de autoevaluación
+
+1. ¿Qué caracteriza a un sistema monoprogramado?
+2. ¿Cómo se organiza típicamente su memoria?
+3. ¿Qué significa que la asignación sea contigua?
+4. ¿Cuál es la diferencia entre dirección lógica y física?
+5. ¿Qué es una dirección absoluta?
+6. ¿En qué momento ocurre la relocación estática?
+7. Si la base es 3000 y la dirección lógica es 450, ¿cuál es la dirección física?
+8. ¿Por qué puede desperdiciarse memoria en este modelo?
+9. ¿Qué riesgo existe si no hay protección de memoria?
+10. ¿Qué necesidad tecnológica conduce de la monoprogramación a la multiprogramación?
