@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650">
+<rect width="1200" height="650" fill="#f7f7f7"/>
+<text x="600" y="48" text-anchor="middle" font-family="Arial" font-size="32" font-weight="bold" fill="#333">Proyecto del semestre: SOI</text>
+<g font-family="Arial" font-size="21" text-anchor="middle">
+<rect x="470" y="85" width="260" height="66" rx="13" fill="#319f90"/><text x="600" y="126" fill="white">SOI</text>
+<line x1="600" y1="151" x2="600" y2="205" stroke="#646464" stroke-width="4"/>
+<line x1="100" y1="205" x2="1100" y2="205" stroke="#646464" stroke-width="4"/>
+</g>
+<g font-family="Arial" font-size="18" text-anchor="middle">
+<line x1="100" y1="205" x2="100" y2="255" stroke="#646464" stroke-width="3"/><rect x="25" y="255" width="150" height="62" rx="10" fill="#fbeae5" stroke="#d35400" stroke-width="2"/><text x="100" y="293">Clase_01</text>
+<line x1="300" y1="205" x2="300" y2="255" stroke="#646464" stroke-width="3"/><rect x="225" y="255" width="150" height="62" rx="10" fill="#fbeae5" stroke="#d35400" stroke-width="2"/><text x="300" y="293">Clase_02</text>
+<line x1="500" y1="205" x2="500" y2="255" stroke="#646464" stroke-width="3"/><rect x="425" y="255" width="150" height="62" rx="10" fill="#fbeae5" stroke="#d35400" stroke-width="2"/><text x="500" y="293">Clase_03</text>
+<line x1="700" y1="205" x2="700" y2="255" stroke="#646464" stroke-width="3"/><rect x="615" y="255" width="170" height="62" rx="10" fill="#fbeae5" stroke="#d35400" stroke-width="2"/><text x="700" y="293">Laboratorios</text>
+<line x1="900" y1="205" x2="900" y2="255" stroke="#646464" stroke-width="3"/><rect x="825" y="255" width="150" height="62" rx="10" fill="#fbeae5" stroke="#d35400" stroke-width="2"/><text x="900" y="293">Recursos</text>
+<line x1="1100" y1="205" x2="1100" y2="255" stroke="#646464" stroke-width="3"/><rect x="1000" y="255" width="190" height="62" rx="10" fill="#fbeae5" stroke="#d35400" stroke-width="2"/><text x="1095" y="293">Proyecto_Final</text>
+</g>
+<text x="600" y="430" text-anchor="middle" font-family="Arial" font-size="25" fill="#333">Una estructura que crecerá durante todo el semestre</text>
+<text x="600" y="485" text-anchor="middle" font-family="Courier New" font-size="24" fill="#646464">tree /f</text>
+</svg>
