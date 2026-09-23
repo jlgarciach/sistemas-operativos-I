@@ -5,7 +5,7 @@ author: "Ing. Jorge L. García"
 date: "2026-09-09"
 ---
 
-# Clase 18 — Asignación de Memoria No Contigua
+# Clase 20 — Asignación de Memoria No Contigua
 
 ## De dónde venimos
 

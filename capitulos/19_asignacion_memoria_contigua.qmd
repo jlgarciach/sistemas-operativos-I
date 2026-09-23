@@ -5,7 +5,7 @@ author: "Ing. Jorge L. García"
 date: "2026-09-09"
 ---
 
-# Clase 17 — Asignación de Memoria Contigua
+# Clase 19 — Asignación de Memoria Contigua
 
 ## ¿Dónde estamos?
 
@@ -776,7 +776,7 @@ Ese será nuestro siguiente paso.
 
 # Próxima clase
 
-## Clase 18 — Asignación de Memoria No Contigua
+## Clase 20 — Asignación de Memoria No Contigua
 
 Estudiaremos:
 
@@ -818,6 +818,11 @@ Responda sin consultar sus apuntes:
 
 # Sección para el docente
 
+<details>
+<summary><strong>🔐 Sección para el docente — Mostrar respuestas</strong></summary>
+
+<div style="margin-top: 20px;">
+
 ::: {.callout-warning title="NO PUBLICAR ANTES DE LA CLASE"}
 Esta sección contiene respuestas y puntos de discusión para el docente.
 :::
@@ -834,6 +839,10 @@ Esta sección contiene respuestas y puntos de discusión para el docente.
 8. Movimiento y copia de memoria, ajustes de ubicación y consumo de recursos.
 9. Porque cada política selecciona huecos diferentes y cada decisión modifica el estado que recibe la siguiente solicitud.
 10. La obligación de encontrar un único bloque físico contiguo del tamaño requerido por el proceso.
+
+</div>
+
+</details>
 
 ## Pregunta de cierre sugerida
 
