@@ -1,0 +1,245 @@
+---
+title: "Laboratorio de repaso: Administración de memoria"
+subtitle: "Sistemas monoprogramados y multiprogramados"
+author: "Ing. Jorge Luis García Chacón"
+format: html
+---
+
+# Laboratorio: De un proceso en memoria a varios procesos
+
+**Curso:** Sistemas Operativos I  
+**Tiempo estimado:** 60 minutos  
+**Modalidad:** Individual o parejas  
+**Propósito:** Repaso previo al examen
+
+::: {.callout-tip title="Idea central"}
+El laboratorio no busca memorizar definiciones. Busca que el estudiante pueda **observar una situación de memoria, representarla y explicar qué decisión debe tomar el Sistema Operativo**.
+:::
+
+# 1. Objetivos
+
+Al finalizar el laboratorio, el estudiante será capaz de:
+
+- Explicar la función del Sistema Operativo en la administración de memoria.
+- Diferenciar monoprogramación y multiprogramación.
+- Interpretar mapas sencillos de memoria.
+- Reconocer particiones fijas y dinámicas.
+- Identificar fragmentación interna y externa en situaciones simples.
+- Explicar conceptualmente el uso de swapping.
+- Relacionar la multiprogramación con un mejor aprovechamiento de CPU y memoria.
+
+# 2. Recordatorio rápido
+
+La memoria principal almacena temporalmente los programas y datos que están siendo utilizados. El Sistema Operativo debe saber qué zonas están ocupadas, asignar espacio, proteger los procesos y recuperar la memoria cuando deja de utilizarse.
+
+## Monoprogramación
+
+En un sistema monoprogramado existe **un solo proceso de usuario en memoria**. Su organización es sencilla, pero si ese proceso queda esperando una operación de entrada/salida, el CPU puede quedar desaprovechado.
+
+## Multiprogramación
+
+En un sistema multiprogramado pueden coexistir **varios procesos en memoria**. Cuando uno espera, otro puede utilizar el CPU. Esto mejora el aprovechamiento de los recursos y constituye una base de los sistemas multitarea modernos.
+
+# 3. Actividad 1 — Reconozca el modelo
+
+Clasifique cada situación como **monoprogramada** o **multiprogramada** y justifique su respuesta con una oración.
+
+| Situación | Tipo de sistema | Justificación |
+|---|---|---|
+| A. En RAM se encuentra el SO y únicamente P1 | | |
+| B. En RAM están P1, P2 y P3 simultáneamente | | |
+| C. Para cargar P2 debe finalizar primero P1 | | |
+| D. Mientras P1 espera E/S, P2 puede ejecutarse | | |
+
+::: {.callout-note title="Pregunta detonadora"}
+¿Cuál de los dos modelos puede aprovechar mejor el CPU cuando un proceso está esperando una operación de entrada/salida? Explique por qué.
+:::
+
+# 4. Actividad 2 — Mapa de un sistema monoprogramado
+
+Suponga una computadora con **1024 KB de RAM**.
+
+- Sistema Operativo: 200 KB
+- Proceso P1: 500 KB
+
+Complete:
+
+| Concepto | Cantidad |
+|---|---:|
+| RAM total | 1024 KB |
+| Sistema Operativo | 200 KB |
+| P1 | 500 KB |
+| Memoria libre | ______ KB |
+
+Dibuje el mapa de memoria:
+
+```text
++---------------------------+
+| Sistema Operativo 200 KB  |
++---------------------------+
+|                           |
+|       P1 500 KB           |
+|                           |
++---------------------------+
+|                           |
+|       Memoria libre       |
+|                           |
++---------------------------+
+```
+
+### Preguntas
+
+1. ¿Puede cargarse otro proceso de usuario simultáneamente si el sistema es estrictamente monoprogramado?
+2. Si P1 solicita una lectura de disco y debe esperar, ¿qué podría ocurrir con el aprovechamiento del CPU?
+3. ¿Qué ventaja tiene este modelo desde el punto de vista de simplicidad?
+
+# 5. Actividad 3 — Pasamos a multiprogramación
+
+Ahora el mismo equipo permite varios procesos en memoria.
+
+**RAM disponible para procesos: 800 KB** después de reservar el espacio del Sistema Operativo.
+
+Llegan los siguientes procesos:
+
+| Proceso | Tamaño |
+|---|---:|
+| P1 | 200 KB |
+| P2 | 250 KB |
+| P3 | 150 KB |
+
+Calcule:
+
+1. Memoria utilizada por los tres procesos.
+2. Memoria que queda libre.
+3. ¿Cabría un proceso P4 de 250 KB sin liberar memoria?
+
+Dibuje un mapa sencillo mostrando SO, P1, P2, P3 y el espacio libre.
+
+::: {.callout-important title="Repaso"}
+La multiprogramación no significa que todos los procesos estén usando un único CPU exactamente al mismo instante. Significa, en este contexto, que **varios procesos pueden residir en memoria y el Sistema Operativo puede alternar la ejecución entre ellos**.
+:::
+
+# 6. Actividad 4 — Particiones fijas
+
+Una memoria destinada a procesos se divide en cuatro particiones:
+
+- Partición A: 200 KB
+- Partición B: 200 KB
+- Partición C: 300 KB
+- Partición D: 300 KB
+
+Se carga un proceso de **170 KB** en la partición A.
+
+### Responda
+
+1. ¿Cuánto espacio de la partición queda sin utilizar?
+2. ¿Ese espacio puede ser utilizado directamente por otro proceso dentro de la misma partición?
+3. ¿Cómo se llama este desperdicio de espacio dentro de una partición asignada?
+
+::: {.callout-tip title="Pista"}
+Cuando el espacio desperdiciado queda **dentro** del bloque asignado, piense en fragmentación **interna**.
+:::
+
+# 7. Actividad 5 — Particiones dinámicas y fragmentación
+
+Observe el siguiente mapa:
+
+```text
++------------------+
+| P1      200 KB   |
++------------------+
+| Libre    80 KB   |
++------------------+
+| P2      250 KB   |
++------------------+
+| Libre   120 KB   |
++------------------+
+| P3      150 KB   |
++------------------+
+```
+
+Llega un nuevo proceso P4 que necesita **180 KB**.
+
+Responda:
+
+1. ¿Cuánta memoria libre existe en total?
+2. ¿Existe un bloque contiguo de 180 KB?
+3. ¿Por qué P4 tiene un problema aunque la suma de espacios libres sea suficiente?
+4. ¿Qué concepto describe esta situación?
+5. ¿Qué podría intentar hacer el Sistema Operativo para reunir los espacios libres?
+
+# 8. Actividad 6 — Swapping
+
+En memoria se encuentran P1, P2 y P3. P2 lleva un tiempo esperando y se necesita espacio para cargar P4.
+
+Explique con sus propias palabras qué ocurriría si el Sistema Operativo decide aplicar **swapping** a P2.
+
+Complete la secuencia:
+
+```text
+P2 en RAM
+    ↓
+____________________________
+    ↓
+Se libera espacio en RAM
+    ↓
+____________________________
+    ↓
+Más adelante P2 puede regresar a RAM
+```
+
+**Pregunta:** ¿por qué hacer swapping demasiadas veces puede reducir el rendimiento?
+
+# 9. Actividad 7 — Caso integrador
+
+Un sistema tiene **1200 KB de RAM**. El Sistema Operativo utiliza **200 KB**, por lo que quedan **1000 KB** para procesos.
+
+Se desea ejecutar:
+
+- P1 = 300 KB
+- P2 = 250 KB
+- P3 = 200 KB
+- P4 = 350 KB
+
+Trabaje paso a paso:
+
+1. ¿Cuánto ocupan P1 + P2 + P3?
+2. ¿Cuánto espacio queda después de cargar esos tres procesos?
+3. ¿Puede entrar P4 completo en ese momento?
+4. Si P2 se mueve temporalmente al almacenamiento secundario, ¿cuánto espacio quedaría disponible?
+5. ¿Podría entrar P4 después de retirar P2?
+6. ¿Qué técnica se utilizó al retirar temporalmente P2?
+7. ¿Por qué este escenario corresponde a un sistema multiprogramado?
+
+# 10. Comparación final
+
+Complete sin consultar sus apuntes:
+
+| Característica | Monoprogramado | Multiprogramado |
+|---|---|---|
+| Procesos de usuario residentes en RAM | | |
+| Complejidad de administración | | |
+| Aprovechamiento del CPU | | |
+| Necesidad de administrar varios espacios de memoria | | |
+| Posibilidad de swapping entre varios procesos | | |
+
+# 11. Repaso rápido para el examen
+
+Responda brevemente:
+
+1. ¿Qué administra el Sistema Operativo cuando hablamos de memoria principal?
+2. ¿Cuál es la diferencia esencial entre monoprogramación y multiprogramación?
+3. ¿Qué es una partición de memoria?
+4. ¿Cuál es la diferencia entre fragmentación interna y externa?
+5. ¿Qué problema intenta resolver la compactación?
+6. ¿Qué significa swapping?
+7. ¿Por qué la multiprogramación puede mejorar el aprovechamiento del CPU?
+8. Si existen 300 KB libres en total pero divididos en tres huecos de 100 KB, ¿podría cargarse directamente un proceso que necesita 250 KB contiguos? Explique.
+
+# 12. Cierre
+
+::: {.callout-note title="Conexión de conceptos"}
+La evolución de monoprogramación a multiprogramación obliga al Sistema Operativo a tomar más decisiones. Ya no basta con colocar un único programa en memoria: ahora debe **asignar, proteger, liberar, reorganizar e intercambiar memoria** entre varios procesos.
+:::
+
+Como evidencia, entregue las actividades 3, 5 y 7 resueltas y una conclusión de tres líneas sobre la diferencia entre ambos modelos.

@@ -1,0 +1,1779 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ing. Jorge L. García">
+
+<title>22&nbsp; Asignación de Memoria No Contigua – Sistemas Operativos I</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../capitulos/99_cierre.html" rel="next">
+<link href="../capitulos/19_asignacion_memoria_contigua.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-00cb48ef4f8381ff23467c959274e61b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-663c59e08f2ec96d6b2ddc79a12e8e5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No se han encontrado resultados",
+    "search-matching-documents-text": "documentos encontrados",
+    "search-copy-link-title": "Copiar el enlace en la búsqueda",
+    "search-hide-matches-text": "Ocultar resultados adicionales",
+    "search-more-match-text": "resultado adicional en este documento",
+    "search-more-matches-text": "resultados adicionales en este documento",
+    "search-clear-button-title": "Borrar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Buscar"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../capitulos/20_asignacion_memoria_no_contigua.html"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Asignación de Memoria No Contigua</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Buscar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Sistemas Operativos I</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Buscar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">index.html</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/01_introduccion_sistemas_operativos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Presentación de la clase</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/02_administracion_sistema_archivos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Administración del sistema de archivos desde la línea de comandos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/03_sistemas_operativos_red.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Clase 3. Sistemas Operativos de Red</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/04_administracion_procesos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Clase 4. Administración de Procesos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/05_control_procesos_concurrencia.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Clase 5. Control de Procesos y Concurrencia</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/06_algoritmos_de_planificacion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Capítulo 6. ¿Cómo decide el Sistema Operativo quién utiliza el procesador?</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/07_capas_del_sistema_operativo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/08_interbloqueos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/09_prevencion_deteccion_interbloqueos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Capítulo 9. Prevención, detección y recuperación de interbloqueos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/10_actividad_diagnostico_sistema_operativo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Actividad - Diagnóstico de un Sistema Operativo</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Actividad - Diagnóstico de un Sistema Operativo</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/12_virtualizacion_sistemas_operativos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Capítulo 12. Virtualización de Sistemas Operativos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/13_manejo_memoria_paginacion_particiones.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Capítulo 13. Manejo de memoria: particiones y paginación</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/14_administracion_memoria_en_ejecucion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Capítulo 14. Administración de memoria en ejecución</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/15_metodos_ajuste_memoria_con_solucion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Capítulo 15. Métodos de ajuste de memoria</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/15_metodos_ajuste_memoria.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Capítulo 15. Métodos de ajuste de memoria</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/16_actividad_reto_administracion_memoria.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Actividad en clase: Reto de Administración de Memoria</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/17_gestion_memoria_sistemas_monoprogramados.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Gestión de Memoria en Sistemas Monoprogramados</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/18_gestion_memoria_sistemas_multiprogramados.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Gestión de Memoria en Sistemas Multiprogramados</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/19_asignacion_memoria_contigua.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Asignación de Memoria Contigua</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/20_asignacion_memoria_no_contigua.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Asignación de Memoria No Contigua</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/99_cierre.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cierre de la clase</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Tabla de contenidos</h2>
+   
+  <ul>
+  <li><a href="#clase-20-asignación-de-memoria-no-contigua" id="toc-clase-20-asignación-de-memoria-no-contigua" class="nav-link active" data-scroll-target="#clase-20-asignación-de-memoria-no-contigua"><span class="header-section-number">23</span> Clase 20 — Asignación de Memoria No Contigua</a>
+  <ul class="collapse">
+  <li><a href="#de-dónde-venimos" id="toc-de-dónde-venimos" class="nav-link" data-scroll-target="#de-dónde-venimos"><span class="header-section-number">23.1</span> De dónde venimos</a></li>
+  </ul></li>
+  <li><a href="#objetivos-de-aprendizaje" id="toc-objetivos-de-aprendizaje" class="nav-link" data-scroll-target="#objetivos-de-aprendizaje"><span class="header-section-number">24</span> Objetivos de aprendizaje</a></li>
+  <li><a href="#rompiendo-una-restricción" id="toc-rompiendo-una-restricción" class="nav-link" data-scroll-target="#rompiendo-una-restricción"><span class="header-section-number">25</span> 1. Rompiendo una restricción</a></li>
+  <li><a href="#paginación" id="toc-paginación" class="nav-link" data-scroll-target="#paginación"><span class="header-section-number">26</span> 2. Paginación</a></li>
+  <li><a href="#página-y-marco-no-son-lo-mismo" id="toc-página-y-marco-no-son-lo-mismo" class="nav-link" data-scroll-target="#página-y-marco-no-son-lo-mismo"><span class="header-section-number">27</span> 3. Página y marco no son lo mismo</a></li>
+  <li><a href="#un-proceso-ya-no-necesita-estar-junto" id="toc-un-proceso-ya-no-necesita-estar-junto" class="nav-link" data-scroll-target="#un-proceso-ya-no-necesita-estar-junto"><span class="header-section-number">28</span> 4. Un proceso ya no necesita estar junto</a></li>
+  <li><a href="#entonces-aparece-un-nuevo-problema" id="toc-entonces-aparece-un-nuevo-problema" class="nav-link" data-scroll-target="#entonces-aparece-un-nuevo-problema"><span class="header-section-number">29</span> 5. Entonces aparece un nuevo problema</a></li>
+  <li><a href="#tabla-de-páginas" id="toc-tabla-de-páginas" class="nav-link" data-scroll-target="#tabla-de-páginas"><span class="header-section-number">30</span> 6. Tabla de páginas</a></li>
+  <li><a href="#dirección-lógica" id="toc-dirección-lógica" class="nav-link" data-scroll-target="#dirección-lógica"><span class="header-section-number">31</span> 7. Dirección lógica</a></li>
+  <li><a href="#traducción-de-dirección" id="toc-traducción-de-dirección" class="nav-link" data-scroll-target="#traducción-de-dirección"><span class="header-section-number">32</span> 8. Traducción de dirección</a></li>
+  <li><a href="#dirección-física-numérica" id="toc-dirección-física-numérica" class="nav-link" data-scroll-target="#dirección-física-numérica"><span class="header-section-number">33</span> 9. Dirección física numérica</a></li>
+  <li><a href="#ejemplo-completo" id="toc-ejemplo-completo" class="nav-link" data-scroll-target="#ejemplo-completo"><span class="header-section-number">34</span> 10. Ejemplo completo</a>
+  <ul class="collapse">
+  <li><a href="#paso-1-consultar-la-tabla" id="toc-paso-1-consultar-la-tabla" class="nav-link" data-scroll-target="#paso-1-consultar-la-tabla"><span class="header-section-number">34.0.1</span> Paso 1 — Consultar la tabla</a></li>
+  <li><a href="#paso-2-mantener-el-desplazamiento" id="toc-paso-2-mantener-el-desplazamiento" class="nav-link" data-scroll-target="#paso-2-mantener-el-desplazamiento"><span class="header-section-number">34.0.2</span> Paso 2 — Mantener el desplazamiento</a></li>
+  <li><a href="#paso-3-calcular" id="toc-paso-3-calcular" class="nav-link" data-scroll-target="#paso-3-calcular"><span class="header-section-number">34.0.3</span> Paso 3 — Calcular</a></li>
+  </ul></li>
+  <li><a href="#y-si-nos-dan-una-dirección-lógica-completa" id="toc-y-si-nos-dan-una-dirección-lógica-completa" class="nav-link" data-scroll-target="#y-si-nos-dan-una-dirección-lógica-completa"><span class="header-section-number">35</span> 11. ¿Y si nos dan una dirección lógica completa?</a></li>
+  <li><a href="#hagamos-la-traducción-completa" id="toc-hagamos-la-traducción-completa" class="nav-link" data-scroll-target="#hagamos-la-traducción-completa"><span class="header-section-number">36</span> 12. Hagamos la traducción completa</a></li>
+  <li><a href="#quién-realiza-esta-traducción" id="toc-quién-realiza-esta-traducción" class="nav-link" data-scroll-target="#quién-realiza-esta-traducción"><span class="header-section-number">37</span> 13. ¿Quién realiza esta traducción?</a></li>
+  <li><a href="#una-ventaja-importante" id="toc-una-ventaja-importante" class="nav-link" data-scroll-target="#una-ventaja-importante"><span class="header-section-number">38</span> 14. Una ventaja importante</a></li>
+  <li><a href="#desaparece-la-fragmentación" id="toc-desaparece-la-fragmentación" class="nav-link" data-scroll-target="#desaparece-la-fragmentación"><span class="header-section-number">39</span> 15. ¿Desaparece la fragmentación?</a></li>
+  <li><a href="#fragmentación-interna-en-paginación" id="toc-fragmentación-interna-en-paginación" class="nav-link" data-scroll-target="#fragmentación-interna-en-paginación"><span class="header-section-number">40</span> 16. Fragmentación interna en paginación</a></li>
+  <li><a href="#cuántas-páginas-necesita-un-proceso" id="toc-cuántas-páginas-necesita-un-proceso" class="nav-link" data-scroll-target="#cuántas-páginas-necesita-un-proceso"><span class="header-section-number">41</span> 17. ¿Cuántas páginas necesita un proceso?</a></li>
+  <li><a href="#ejercicio-guiado" id="toc-ejercicio-guiado" class="nav-link" data-scroll-target="#ejercicio-guiado"><span class="header-section-number">42</span> 18. Ejercicio guiado</a></li>
+  <li><a href="#ahora-usted-traduce" id="toc-ahora-usted-traduce" class="nav-link" data-scroll-target="#ahora-usted-traduce"><span class="header-section-number">43</span> 19. Ahora usted traduce</a></li>
+  <li><a href="#dibujemos-el-proceso" id="toc-dibujemos-el-proceso" class="nav-link" data-scroll-target="#dibujemos-el-proceso"><span class="header-section-number">44</span> 20. Dibujemos el proceso</a></li>
+  <li><a href="#lo-que-ganamos-y-lo-que-cuesta" id="toc-lo-que-ganamos-y-lo-que-cuesta" class="nav-link" data-scroll-target="#lo-que-ganamos-y-lo-que-cuesta"><span class="header-section-number">45</span> 21. Lo que ganamos y lo que cuesta</a>
+  <ul class="collapse">
+  <li><a href="#ventajas" id="toc-ventajas" class="nav-link" data-scroll-target="#ventajas"><span class="header-section-number">45.1</span> Ventajas</a></li>
+  <li><a href="#costos" id="toc-costos" class="nav-link" data-scroll-target="#costos"><span class="header-section-number">45.2</span> Costos</a></li>
+  </ul></li>
+  <li><a href="#contigua-vs.-no-contigua" id="toc-contigua-vs.-no-contigua" class="nav-link" data-scroll-target="#contigua-vs.-no-contigua"><span class="header-section-number">46</span> 22. Contigua vs.&nbsp;No Contigua</a></li>
+  <li><a href="#un-caso-para-pensar-como-ingeniero" id="toc-un-caso-para-pensar-como-ingeniero" class="nav-link" data-scroll-target="#un-caso-para-pensar-como-ingeniero"><span class="header-section-number">47</span> 23. Un caso para pensar como ingeniero</a></li>
+  <li><a href="#qué-sucedería-si" id="toc-qué-sucedería-si" class="nav-link" data-scroll-target="#qué-sucedería-si"><span class="header-section-number">48</span> 24. ¿Qué sucedería si…?</a>
+  <ul class="collapse">
+  <li><a href="#situación-a" id="toc-situación-a" class="nav-link" data-scroll-target="#situación-a"><span class="header-section-number">48.0.1</span> Situación A</a></li>
+  <li><a href="#situación-b" id="toc-situación-b" class="nav-link" data-scroll-target="#situación-b"><span class="header-section-number">48.0.2</span> Situación B</a></li>
+  <li><a href="#situación-c" id="toc-situación-c" class="nav-link" data-scroll-target="#situación-c"><span class="header-section-number">48.0.3</span> Situación C</a></li>
+  </ul></li>
+  <li><a href="#el-viaje-completo-de-una-dirección" id="toc-el-viaje-completo-de-una-dirección" class="nav-link" data-scroll-target="#el-viaje-completo-de-una-dirección"><span class="header-section-number">49</span> 25. El viaje completo de una dirección</a></li>
+  <li><a href="#actividad-corta-de-clase" id="toc-actividad-corta-de-clase" class="nav-link" data-scroll-target="#actividad-corta-de-clase"><span class="header-section-number">50</span> 26. Actividad corta de clase</a></li>
+  <li><a href="#de-la-asignación-al-diseño" id="toc-de-la-asignación-al-diseño" class="nav-link" data-scroll-target="#de-la-asignación-al-diseño"><span class="header-section-number">51</span> 27. De la asignación al diseño</a>
+  <ul class="collapse">
+  <li><a href="#asignación-contigua" id="toc-asignación-contigua" class="nav-link" data-scroll-target="#asignación-contigua"><span class="header-section-number">51.0.1</span> Asignación contigua</a></li>
+  <li><a href="#asignación-no-contigua" id="toc-asignación-no-contigua" class="nav-link" data-scroll-target="#asignación-no-contigua"><span class="header-section-number">51.0.2</span> Asignación no contigua</a></li>
+  </ul></li>
+  <li><a href="#cierre-de-clase" id="toc-cierre-de-clase" class="nav-link" data-scroll-target="#cierre-de-clase"><span class="header-section-number">52</span> Cierre de clase</a></li>
+  <li><a href="#sección-para-el-docente" id="toc-sección-para-el-docente" class="nav-link" data-scroll-target="#sección-para-el-docente"><span class="header-section-number">53</span> Sección para el docente</a>
+  <ul class="collapse">
+  <li><a href="#respuestas-del-cierre" id="toc-respuestas-del-cierre" class="nav-link" data-scroll-target="#respuestas-del-cierre"><span class="header-section-number">53.1</span> Respuestas del cierre</a></li>
+  <li><a href="#respuestas-de-la-actividad-corta" id="toc-respuestas-de-la-actividad-corta" class="nav-link" data-scroll-target="#respuestas-de-la-actividad-corta"><span class="header-section-number">53.2</span> Respuestas de la actividad corta</a>
+  <ul class="collapse">
+  <li><a href="#a-450" id="toc-a-450" class="nav-link" data-scroll-target="#a-450"><span class="header-section-number">53.2.1</span> A = 450</a></li>
+  <li><a href="#b-1750" id="toc-b-1750" class="nav-link" data-scroll-target="#b-1750"><span class="header-section-number">53.2.2</span> B = 1750</a></li>
+  <li><a href="#c-3200" id="toc-c-3200" class="nav-link" data-scroll-target="#c-3200"><span class="header-section-number">53.2.3</span> C = 3200</a></li>
+  <li><a href="#d-4090" id="toc-d-4090" class="nav-link" data-scroll-target="#d-4090"><span class="header-section-number">53.2.4</span> D = 4090</a></li>
+  </ul></li>
+  <li><a href="#punto-de-discusión-final" id="toc-punto-de-discusión-final" class="nav-link" data-scroll-target="#punto-de-discusión-final"><span class="header-section-number">53.3</span> Punto de discusión final</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Asignación de Memoria No Contigua</span></h1>
+<p class="subtitle lead">Paginación, páginas, marcos y traducción de direcciones</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Autor/a</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ing. Jorge L. García </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Fecha de publicación</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">9 de septiembre de 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="clase-20-asignación-de-memoria-no-contigua" class="level1" data-number="23">
+<h1 data-number="23"><span class="header-section-number">23</span> Clase 20 — Asignación de Memoria No Contigua</h1>
+<section id="de-dónde-venimos" class="level2" data-number="23.1">
+<h2 data-number="23.1" class="anchored" data-anchor-id="de-dónde-venimos"><span class="header-section-number">23.1</span> De dónde venimos</h2>
+<p>En la clase anterior estudiamos la <strong>asignación de memoria contigua</strong>.</p>
+<p>Encontramos una limitación importante:</p>
+<blockquote class="blockquote">
+<p>Un proceso puede tener suficiente memoria libre disponible y, aun así, no poder cargarse si no existe un único hueco contiguo suficientemente grande.</p>
+</blockquote>
+<p>Por ejemplo:</p>
+<pre class="text"><code>Huecos libres:
+[90 KB, 70 KB, 60 KB, 80 KB]
+
+Memoria libre total = 300 KB
+Proceso P           = 150 KB
+Mayor hueco         = 90 KB</code></pre>
+<p>Aunque existen 300 KB libres:</p>
+<pre class="text"><code>P → NO puede asignarse de forma contigua</code></pre>
+<p>La pregunta con la que cerramos fue:</p>
+<blockquote class="blockquote">
+<p><strong>¿Qué cambiaría si pudiéramos dividir un proceso y colocar sus partes en diferentes regiones de memoria física?</strong></p>
+</blockquote>
+<p>Ese es nuestro punto de partida.</p>
+</section>
+</section>
+<section id="objetivos-de-aprendizaje" class="level1" data-number="24">
+<h1 data-number="24"><span class="header-section-number">24</span> Objetivos de aprendizaje</h1>
+<p>Al finalizar la clase, el estudiante podrá:</p>
+<ol type="1">
+<li>explicar qué significa asignar memoria de forma no contigua;</li>
+<li>diferenciar una <strong>página</strong> de un <strong>marco</strong>;</li>
+<li>explicar el funcionamiento básico de la paginación;</li>
+<li>interpretar una tabla de páginas;</li>
+<li>traducir una dirección lógica sencilla a una dirección física;</li>
+<li>identificar ventajas y costos de la paginación;</li>
+<li>comparar asignación contigua y no contigua;</li>
+<li>representar gráficamente la ubicación de un proceso paginado.</li>
+</ol>
+</section>
+<section id="rompiendo-una-restricción" class="level1" data-number="25">
+<h1 data-number="25"><span class="header-section-number">25</span> 1. Rompiendo una restricción</h1>
+<p>En asignación contigua teníamos:</p>
+<pre class="text"><code>Proceso P = 12 KB</code></pre>
+<p>y necesitábamos:</p>
+<pre class="text"><code>┌──────────────────────────┐
+│ P = 12 KB continuos      │
+└──────────────────────────┘</code></pre>
+<p>Pero imaginemos que la memoria física disponible se encuentra así:</p>
+<pre class="text"><code>┌──────────────┐
+│ Ocupado      │
+├──────────────┤
+│ Libre 4 KB   │
+├──────────────┤
+│ Ocupado      │
+├──────────────┤
+│ Libre 4 KB   │
+├──────────────┤
+│ Ocupado      │
+├──────────────┤
+│ Libre 4 KB   │
+└──────────────┘</code></pre>
+<p>Tenemos exactamente:</p>
+<pre class="text"><code>4 + 4 + 4 = 12 KB</code></pre>
+<p>Pero no existe un hueco continuo de 12 KB.</p>
+<p>¿Y si pudiéramos hacer esto?</p>
+<pre class="text"><code>Proceso P
+┌──────────┐
+│ Parte 0  │ ──────────► Libre 4 KB
+├──────────┤
+│ Parte 1  │ ──────────► Libre 4 KB
+├──────────┤
+│ Parte 2  │ ──────────► Libre 4 KB
+└──────────┘</code></pre>
+<p>Ahora sí podemos utilizar los tres espacios.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Idea central">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Idea central
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>En la <strong>asignación no contigua</strong>, un proceso puede estar dividido en partes que se almacenan en diferentes regiones de la memoria física.</p>
+</div>
+</div>
+</section>
+<section id="paginación" class="level1" data-number="26">
+<h1 data-number="26"><span class="header-section-number">26</span> 2. Paginación</h1>
+<p>Una de las técnicas fundamentales de asignación no contigua es la <strong>paginación</strong>.</p>
+<p>La idea consiste en dividir:</p>
+<ul>
+<li>el espacio de memoria del proceso en bloques de tamaño fijo llamados <strong>páginas</strong>;</li>
+<li>la memoria física en bloques del mismo tamaño llamados <strong>marcos</strong>.</li>
+</ul>
+<pre class="text"><code>PROCESO                     MEMORIA FÍSICA
+
+┌──────────┐                ┌──────────┐
+│ Página 0 │                │ Marco 0  │
+├──────────┤                ├──────────┤
+│ Página 1 │                │ Marco 1  │
+├──────────┤                ├──────────┤
+│ Página 2 │                │ Marco 2  │
+├──────────┤                ├──────────┤
+│ Página 3 │                │ Marco 3  │
+└──────────┘                ├──────────┤
+                            │ Marco 4  │
+                            ├──────────┤
+                            │ Marco 5  │
+                            └──────────┘</code></pre>
+</section>
+<section id="página-y-marco-no-son-lo-mismo" class="level1" data-number="27">
+<h1 data-number="27"><span class="header-section-number">27</span> 3. Página y marco no son lo mismo</h1>
+<div class="callout callout-style-default callout-important callout-titled" title="No confundir">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Importante</span>No confundir
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Página:</strong> bloque del espacio lógico del proceso.</p>
+<p><strong>Marco:</strong> bloque de la memoria física.</p>
+</div>
+</div>
+<p>Si el tamaño de página es:</p>
+<pre class="text"><code>4 KB</code></pre>
+<p>entonces cada marco también mide:</p>
+<pre class="text"><code>4 KB</code></pre>
+<p>Esto permite colocar cualquier página en cualquier marco libre.</p>
+</section>
+<section id="un-proceso-ya-no-necesita-estar-junto" class="level1" data-number="28">
+<h1 data-number="28"><span class="header-section-number">28</span> 4. Un proceso ya no necesita estar junto</h1>
+<p>Supongamos:</p>
+<pre class="text"><code>Proceso P = 16 KB
+Tamaño de página = 4 KB</code></pre>
+<p>Entonces:</p>
+<pre class="text"><code>Número de páginas = 16 / 4 = 4</code></pre>
+<p>El proceso se divide así:</p>
+<pre class="text"><code>P0 = Página 0
+P1 = Página 1
+P2 = Página 2
+P3 = Página 3</code></pre>
+<p>Podrían ubicarse físicamente así:</p>
+<pre class="text"><code>MEMORIA FÍSICA
+
+Marco 0   → Otro proceso
+Marco 1   → Página 2 de P
+Marco 2   → Libre
+Marco 3   → Página 0 de P
+Marco 4   → Otro proceso
+Marco 5   → Página 3 de P
+Marco 6   → Página 1 de P
+Marco 7   → Libre</code></pre>
+<p>Observe algo importante:</p>
+<pre class="text"><code>Página 0 → Marco 3
+Página 1 → Marco 6
+Página 2 → Marco 1
+Página 3 → Marco 5</code></pre>
+<p>Las páginas <strong>no necesitan estar en orden físico</strong>.</p>
+</section>
+<section id="entonces-aparece-un-nuevo-problema" class="level1" data-number="29">
+<h1 data-number="29"><span class="header-section-number">29</span> 5. Entonces aparece un nuevo problema</h1>
+<p>El programa trabaja con su propio espacio lógico.</p>
+<p>Por ejemplo, puede solicitar información que se encuentra en:</p>
+<pre class="text"><code>Página 2</code></pre>
+<p>Pero físicamente esa página está en:</p>
+<pre class="text"><code>Marco 1</code></pre>
+<p>¿Cómo sabe el sistema dónde encontrarla?</p>
+<p>Necesitamos una estructura que mantenga esa correspondencia.</p>
+</section>
+<section id="tabla-de-páginas" class="level1" data-number="30">
+<h1 data-number="30"><span class="header-section-number">30</span> 6. Tabla de páginas</h1>
+<p>La <strong>tabla de páginas</strong> relaciona cada página lógica con el marco físico donde se encuentra.</p>
+<p>Para nuestro ejemplo:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">Página</th>
+<th style="text-align: right;">Marco</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+</tr>
+</tbody>
+</table>
+<p>Podemos leerla así:</p>
+<pre class="text"><code>Página 0 → Marco 3
+Página 1 → Marco 6
+Página 2 → Marco 1
+Página 3 → Marco 5</code></pre>
+<div class="callout callout-style-default callout-tip callout-titled" title="La tabla es el mapa">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>La tabla es el mapa
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>El proceso conoce sus <strong>páginas</strong>.</p>
+<p>La memoria física contiene <strong>marcos</strong>.</p>
+<p>La tabla de páginas permite relacionar ambos mundos.</p>
+</div>
+</div>
+</section>
+<section id="dirección-lógica" class="level1" data-number="31">
+<h1 data-number="31"><span class="header-section-number">31</span> 7. Dirección lógica</h1>
+<p>Una dirección generada por el proceso puede separarse conceptualmente en:</p>
+<pre class="text"><code>┌──────────────┬────────────────┐
+│   Página     │ Desplazamiento │
+└──────────────┴────────────────┘</code></pre>
+<p>La <strong>página</strong> indica qué bloque lógico contiene el dato.</p>
+<p>El <strong>desplazamiento</strong> indica la posición del dato dentro de esa página.</p>
+<p>Por ejemplo:</p>
+<pre class="text"><code>Página = 2
+Desplazamiento = 500 bytes</code></pre>
+<p>Significa:</p>
+<blockquote class="blockquote">
+<p>El dato se encuentra 500 bytes después del inicio de la página 2.</p>
+</blockquote>
+</section>
+<section id="traducción-de-dirección" class="level1" data-number="32">
+<h1 data-number="32"><span class="header-section-number">32</span> 8. Traducción de dirección</h1>
+<p>Supongamos:</p>
+<pre class="text"><code>Página lógica = 2
+Desplazamiento = 500 bytes</code></pre>
+<p>La tabla indica:</p>
+<pre class="text"><code>Página 2 → Marco 1</code></pre>
+<p>Por lo tanto:</p>
+<pre class="text"><code>Dirección lógica:
+[ Página 2 | desplazamiento 500 ]
+
+                  ↓ tabla de páginas
+
+Dirección física:
+[ Marco 1  | desplazamiento 500 ]</code></pre>
+<p>Observe:</p>
+<blockquote class="blockquote">
+<p><strong>El desplazamiento no cambia.</strong></p>
+</blockquote>
+<p>Lo que cambia es la página lógica por el marco físico correspondiente.</p>
+</section>
+<section id="dirección-física-numérica" class="level1" data-number="33">
+<h1 data-number="33"><span class="header-section-number">33</span> 9. Dirección física numérica</h1>
+<p>Ahora podemos calcular la dirección física.</p>
+<p>Si:</p>
+<pre class="text"><code>Tamaño de marco = 4096 bytes
+Marco = 1
+Desplazamiento = 500 bytes</code></pre>
+<p>Entonces:</p>
+<pre class="text"><code>Dirección física
+= (marco × tamaño del marco) + desplazamiento
+
+= (1 × 4096) + 500
+
+= 4596</code></pre>
+<p>Por tanto:</p>
+<pre class="text"><code>Dirección física = 4596</code></pre>
+</section>
+<section id="ejemplo-completo" class="level1" data-number="34">
+<h1 data-number="34"><span class="header-section-number">34</span> 10. Ejemplo completo</h1>
+<p>Tenemos:</p>
+<pre class="text"><code>Tamaño de página = 1 KB = 1024 bytes</code></pre>
+<p>Tabla:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">Página</th>
+<th style="text-align: right;">Marco</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+<p>El proceso genera:</p>
+<pre class="text"><code>Página = 2
+Desplazamiento = 300</code></pre>
+<section id="paso-1-consultar-la-tabla" class="level3" data-number="34.0.1">
+<h3 data-number="34.0.1" class="anchored" data-anchor-id="paso-1-consultar-la-tabla"><span class="header-section-number">34.0.1</span> Paso 1 — Consultar la tabla</h3>
+<pre class="text"><code>Página 2 → Marco 7</code></pre>
+</section>
+<section id="paso-2-mantener-el-desplazamiento" class="level3" data-number="34.0.2">
+<h3 data-number="34.0.2" class="anchored" data-anchor-id="paso-2-mantener-el-desplazamiento"><span class="header-section-number">34.0.2</span> Paso 2 — Mantener el desplazamiento</h3>
+<pre class="text"><code>Desplazamiento = 300</code></pre>
+</section>
+<section id="paso-3-calcular" class="level3" data-number="34.0.3">
+<h3 data-number="34.0.3" class="anchored" data-anchor-id="paso-3-calcular"><span class="header-section-number">34.0.3</span> Paso 3 — Calcular</h3>
+<pre class="text"><code>Dirección física
+= (7 × 1024) + 300
+= 7168 + 300
+= 7468</code></pre>
+<p>Resultado:</p>
+<pre class="text"><code>Dirección física = 7468</code></pre>
+</section>
+</section>
+<section id="y-si-nos-dan-una-dirección-lógica-completa" class="level1" data-number="35">
+<h1 data-number="35"><span class="header-section-number">35</span> 11. ¿Y si nos dan una dirección lógica completa?</h1>
+<p>Supongamos:</p>
+<pre class="text"><code>Tamaño de página = 1000 bytes
+Dirección lógica = 2350</code></pre>
+<p>Tenemos que descubrir:</p>
+<pre class="text"><code>¿En qué página está?
+¿A qué distancia del inicio de esa página?</code></pre>
+<p>Calculamos:</p>
+<pre class="text"><code>Página = dirección lógica / tamaño de página
+
+Página = 2350 / 1000
+Página = 2</code></pre>
+<p>Usamos la parte entera.</p>
+<p>El desplazamiento es:</p>
+<pre class="text"><code>Desplazamiento = 2350 % 1000
+Desplazamiento = 350</code></pre>
+<p>Entonces:</p>
+<pre class="text"><code>2350 → Página 2 + desplazamiento 350</code></pre>
+<div class="callout callout-style-default callout-note callout-titled" title="Regla práctica">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Regla práctica
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Para una dirección lógica:</p>
+<pre class="text"><code>página = dirección / tamaño_página
+desplazamiento = dirección % tamaño_página</code></pre>
+<p>Se utiliza división entera para obtener la página.</p>
+</div>
+</div>
+</section>
+<section id="hagamos-la-traducción-completa" class="level1" data-number="36">
+<h1 data-number="36"><span class="header-section-number">36</span> 12. Hagamos la traducción completa</h1>
+<p>Tabla:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">Página</th>
+<th style="text-align: right;">Marco</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+</tr>
+</tbody>
+</table>
+<p>Datos:</p>
+<pre class="text"><code>Tamaño de página = 1000 bytes
+Dirección lógica = 2350</code></pre>
+<p>Ya sabemos:</p>
+<pre class="text"><code>Página = 2
+Desplazamiento = 350</code></pre>
+<p>Consultamos:</p>
+<pre class="text"><code>Página 2 → Marco 1</code></pre>
+<p>Finalmente:</p>
+<pre class="text"><code>Dirección física
+= (1 × 1000) + 350
+= 1350</code></pre>
+<p>Por tanto:</p>
+<pre class="text"><code>Dirección lógica 2350
+          ↓
+Página 2 | desplazamiento 350
+          ↓
+Tabla de páginas
+          ↓
+Marco 1  | desplazamiento 350
+          ↓
+Dirección física 1350</code></pre>
+</section>
+<section id="quién-realiza-esta-traducción" class="level1" data-number="37">
+<h1 data-number="37"><span class="header-section-number">37</span> 13. ¿Quién realiza esta traducción?</h1>
+<p>En los sistemas modernos, la traducción de direcciones se apoya en hardware especializado.</p>
+<p>Ya conocimos este componente:</p>
+<blockquote class="blockquote">
+<p><strong>MMU — Memory Management Unit</strong></p>
+</blockquote>
+<p>Conceptualmente:</p>
+<pre class="text"><code>CPU
+ │
+ │ Dirección lógica
+ ▼
+┌──────────────┐
+│     MMU      │
+└──────────────┘
+ │
+ │ Traducción
+ ▼
+Tabla de páginas
+ │
+ ▼
+Dirección física
+ │
+ ▼
+Memoria RAM</code></pre>
+<div class="callout callout-style-default callout-note callout-titled" title="Conexión con clases anteriores">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Conexión con clases anteriores
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>En multiprogramación vimos que la MMU participa en la traducción de direcciones lógicas a físicas durante la ejecución.</p>
+<p>Ahora podemos comprender <strong>cómo una tabla de páginas forma parte de ese proceso de traducción</strong>.</p>
+</div>
+</div>
+</section>
+<section id="una-ventaja-importante" class="level1" data-number="38">
+<h1 data-number="38"><span class="header-section-number">38</span> 14. Una ventaja importante</h1>
+<p>Regresemos al problema inicial:</p>
+<pre class="text"><code>Huecos:
+[4 KB, 4 KB, 4 KB]
+
+Proceso:
+12 KB</code></pre>
+<p>Con asignación contigua:</p>
+<pre class="text"><code>NO cabe.</code></pre>
+<p>Con páginas de 4 KB:</p>
+<pre class="text"><code>Proceso = 3 páginas</code></pre>
+<p>Podemos utilizar tres marcos libres separados:</p>
+<pre class="text"><code>Página 0 → Marco libre A
+Página 1 → Marco libre F
+Página 2 → Marco libre C</code></pre>
+<p>Por lo tanto:</p>
+<pre class="text"><code>SÍ puede asignarse.</code></pre>
+<p>Esta es una de las grandes ventajas de la asignación no contigua.</p>
+</section>
+<section id="desaparece-la-fragmentación" class="level1" data-number="39">
+<h1 data-number="39"><span class="header-section-number">39</span> 15. ¿Desaparece la fragmentación?</h1>
+<p>Una conclusión apresurada sería:</p>
+<blockquote class="blockquote">
+<p>“Si utilizamos paginación ya no existe fragmentación.”</p>
+</blockquote>
+<p>Eso sería incorrecto.</p>
+<p>La paginación evita el problema clásico de <strong>fragmentación externa</strong> asociado con la necesidad de grandes huecos contiguos.</p>
+<p>Pero todavía puede existir <strong>fragmentación interna</strong>.</p>
+</section>
+<section id="fragmentación-interna-en-paginación" class="level1" data-number="40">
+<h1 data-number="40"><span class="header-section-number">40</span> 16. Fragmentación interna en paginación</h1>
+<p>Supongamos:</p>
+<pre class="text"><code>Tamaño de página = 4 KB
+Proceso = 10 KB</code></pre>
+<p>Necesitamos:</p>
+<pre class="text"><code>Página 0 = 4 KB
+Página 1 = 4 KB
+Página 2 = 2 KB utilizados</code></pre>
+<p>Pero la última página ocupa un marco completo de 4 KB.</p>
+<pre class="text"><code>Último marco:
+
+┌─────────────────┐
+│ Usado      2 KB │
+├─────────────────┤
+│ Sin usar   2 KB │
+└─────────────────┘</code></pre>
+<p>Entonces:</p>
+<pre class="text"><code>Fragmentación interna = 2 KB</code></pre>
+<div class="callout callout-style-default callout-important callout-titled" title="Conclusión">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Importante</span>Conclusión
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La paginación reduce el problema de la <strong>fragmentación externa</strong>, pero puede producir <strong>fragmentación interna</strong>, especialmente en la última página de un proceso.</p>
+</div>
+</div>
+</section>
+<section id="cuántas-páginas-necesita-un-proceso" class="level1" data-number="41">
+<h1 data-number="41"><span class="header-section-number">41</span> 17. ¿Cuántas páginas necesita un proceso?</h1>
+<p>Supongamos:</p>
+<pre class="text"><code>Proceso = 18 KB
+Página = 4 KB</code></pre>
+<p>Dividimos:</p>
+<pre class="text"><code>18 / 4 = 4.5</code></pre>
+<p>No podemos utilizar media página física.</p>
+<p>Necesitamos:</p>
+<pre class="text"><code>5 páginas</code></pre>
+<p>Capacidad reservada:</p>
+<pre class="text"><code>5 × 4 = 20 KB</code></pre>
+<p>Espacio no utilizado:</p>
+<pre class="text"><code>20 - 18 = 2 KB</code></pre>
+</section>
+<section id="ejercicio-guiado" class="level1" data-number="42">
+<h1 data-number="42"><span class="header-section-number">42</span> 18. Ejercicio guiado</h1>
+<p>Datos:</p>
+<pre class="text"><code>Proceso = 13 KB
+Tamaño de página = 4 KB</code></pre>
+<p>Determine:</p>
+<ol type="1">
+<li>número de páginas necesarias;</li>
+<li>memoria física reservada;</li>
+<li>espacio no utilizado en la última página.</li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled" title="Respuesta">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Respuesta
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<pre class="text"><code>13 / 4 = 3.25</code></pre>
+<p>Se necesitan:</p>
+<pre class="text"><code>4 páginas</code></pre>
+<p>Memoria reservada:</p>
+<pre class="text"><code>4 × 4 = 16 KB</code></pre>
+<p>Fragmentación interna:</p>
+<pre class="text"><code>16 - 13 = 3 KB</code></pre>
+</div>
+</div>
+</section>
+<section id="ahora-usted-traduce" class="level1" data-number="43">
+<h1 data-number="43"><span class="header-section-number">43</span> 19. Ahora usted traduce</h1>
+<p>Tabla:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">Página</th>
+<th style="text-align: right;">Marco</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4</td>
+</tr>
+</tbody>
+</table>
+<p>Datos:</p>
+<pre class="text"><code>Tamaño de página = 1000 bytes
+Dirección lógica = 2750</code></pre>
+<p>Responda:</p>
+<ol type="1">
+<li>¿Qué página contiene la dirección?</li>
+<li>¿Cuál es el desplazamiento?</li>
+<li>¿En qué marco está esa página?</li>
+<li>¿Cuál es la dirección física?</li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled" title="Respuesta">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Respuesta
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<pre class="text"><code>Página = 2750 / 1000 = 2
+Desplazamiento = 2750 % 1000 = 750
+Página 2 → Marco 8
+Dirección física = (8 × 1000) + 750
+Dirección física = 8750</code></pre>
+</div>
+</div>
+</section>
+<section id="dibujemos-el-proceso" class="level1" data-number="44">
+<h1 data-number="44"><span class="header-section-number">44</span> 20. Dibujemos el proceso</h1>
+<p>Tenemos:</p>
+<pre class="text"><code>Proceso P = 16 KB
+Página = 4 KB</code></pre>
+<p>Tabla:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">Página</th>
+<th style="text-align: right;">Marco</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">3</td>
+</tr>
+</tbody>
+</table>
+<p>Complete el mapa:</p>
+<pre class="text"><code>MEMORIA FÍSICA
+
+Marco 0 → __________________
+Marco 1 → __________________
+Marco 2 → __________________
+Marco 3 → __________________
+Marco 4 → __________________
+Marco 5 → __________________
+Marco 6 → __________________
+Marco 7 → __________________</code></pre>
+<p>Una posible representación:</p>
+<pre class="text"><code>Marco 0 → Libre / otro proceso
+Marco 1 → Página 1 de P
+Marco 2 → Libre / otro proceso
+Marco 3 → Página 3 de P
+Marco 4 → Libre / otro proceso
+Marco 5 → Página 0 de P
+Marco 6 → Libre / otro proceso
+Marco 7 → Página 2 de P</code></pre>
+</section>
+<section id="lo-que-ganamos-y-lo-que-cuesta" class="level1" data-number="45">
+<h1 data-number="45"><span class="header-section-number">45</span> 21. Lo que ganamos y lo que cuesta</h1>
+<section id="ventajas" class="level2" data-number="45.1">
+<h2 data-number="45.1" class="anchored" data-anchor-id="ventajas"><span class="header-section-number">45.1</span> Ventajas</h2>
+<ul>
+<li>Un proceso no necesita ocupar un único bloque contiguo.</li>
+<li>Se aprovechan marcos libres distribuidos en memoria.</li>
+<li>Se reduce el problema de fragmentación externa.</li>
+<li>Facilita una administración más flexible de la memoria.</li>
+</ul>
+</section>
+<section id="costos" class="level2" data-number="45.2">
+<h2 data-number="45.2" class="anchored" data-anchor-id="costos"><span class="header-section-number">45.2</span> Costos</h2>
+<ul>
+<li>Debemos mantener tablas de páginas.</li>
+<li>Cada acceso requiere traducir una dirección lógica a física.</li>
+<li>Las estructuras de traducción también consumen memoria.</li>
+<li>Puede existir fragmentación interna.</li>
+<li>La administración es más compleja que en un modelo contiguo.</li>
+</ul>
+</section>
+</section>
+<section id="contigua-vs.-no-contigua" class="level1" data-number="46">
+<h1 data-number="46"><span class="header-section-number">46</span> 22. Contigua vs.&nbsp;No Contigua</h1>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Característica</th>
+<th>Contigua</th>
+<th>No contigua / paginación</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Ubicación del proceso</td>
+<td>Un bloque continuo</td>
+<td>Varios marcos</td>
+</tr>
+<tr class="even">
+<td>División del proceso</td>
+<td>No necesaria</td>
+<td>Páginas</td>
+</tr>
+<tr class="odd">
+<td>Unidad física</td>
+<td>Bloque/partición</td>
+<td>Marco</td>
+</tr>
+<tr class="even">
+<td>Fragmentación externa</td>
+<td>Puede ocurrir</td>
+<td>Se reduce significativamente</td>
+</tr>
+<tr class="odd">
+<td>Fragmentación interna</td>
+<td>Puede ocurrir</td>
+<td>Puede ocurrir</td>
+</tr>
+<tr class="even">
+<td>Traducción</td>
+<td>Más sencilla</td>
+<td>Requiere correspondencia página-marco</td>
+</tr>
+<tr class="odd">
+<td>Estructura adicional</td>
+<td>Menor</td>
+<td>Tabla de páginas</td>
+</tr>
+<tr class="even">
+<td>Flexibilidad</td>
+<td>Menor</td>
+<td>Mayor</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="un-caso-para-pensar-como-ingeniero" class="level1" data-number="47">
+<h1 data-number="47"><span class="header-section-number">47</span> 23. Un caso para pensar como ingeniero</h1>
+<p>Un sistema tiene marcos libres:</p>
+<pre class="text"><code>Marco 1
+Marco 4
+Marco 7
+Marco 9</code></pre>
+<p>Cada marco mide:</p>
+<pre class="text"><code>4 KB</code></pre>
+<p>Llega un proceso:</p>
+<pre class="text"><code>P = 14 KB</code></pre>
+<p>Preguntas:</p>
+<ol type="1">
+<li>¿Cuántas páginas necesita?</li>
+<li>¿Puede cargarse utilizando esos cuatro marcos?</li>
+<li>Proponga una tabla de páginas.</li>
+<li>¿Cuánta fragmentación interna queda?</li>
+<li>Dibuje el resultado.</li>
+</ol>
+<p>Una solución posible:</p>
+<pre class="text"><code>P necesita 4 páginas.
+
+Página 0 → Marco 1
+Página 1 → Marco 4
+Página 2 → Marco 7
+Página 3 → Marco 9</code></pre>
+<p>Memoria reservada:</p>
+<pre class="text"><code>4 × 4 = 16 KB</code></pre>
+<p>Fragmentación interna:</p>
+<pre class="text"><code>16 - 14 = 2 KB</code></pre>
+</section>
+<section id="qué-sucedería-si" class="level1" data-number="48">
+<h1 data-number="48"><span class="header-section-number">48</span> 24. ¿Qué sucedería si…?</h1>
+<p>Analice cada situación.</p>
+<section id="situación-a" class="level3" data-number="48.0.1">
+<h3 data-number="48.0.1" class="anchored" data-anchor-id="situación-a"><span class="header-section-number">48.0.1</span> Situación A</h3>
+<p>Hay suficiente memoria libre total, pero ningún hueco contiguo es suficientemente grande.</p>
+<p><strong>¿Qué modelo tiene ventaja?</strong></p>
+<p>La asignación no contigua.</p>
+</section>
+<section id="situación-b" class="level3" data-number="48.0.2">
+<h3 data-number="48.0.2" class="anchored" data-anchor-id="situación-b"><span class="header-section-number">48.0.2</span> Situación B</h3>
+<p>Una página lógica cambia de marco físico.</p>
+<p><strong>¿Debe cambiar la dirección lógica utilizada por el proceso?</strong></p>
+<p>Conceptualmente, no. La correspondencia de la tabla permite mantener separado el espacio lógico de la ubicación física.</p>
+</section>
+<section id="situación-c" class="level3" data-number="48.0.3">
+<h3 data-number="48.0.3" class="anchored" data-anchor-id="situación-c"><span class="header-section-number">48.0.3</span> Situación C</h3>
+<p>Un proceso utiliza solamente una pequeña parte de su última página.</p>
+<p><strong>¿Qué tipo de desperdicio aparece?</strong></p>
+<p>Fragmentación interna.</p>
+</section>
+</section>
+<section id="el-viaje-completo-de-una-dirección" class="level1" data-number="49">
+<h1 data-number="49"><span class="header-section-number">49</span> 25. El viaje completo de una dirección</h1>
+<p>Podemos resumir el proceso así:</p>
+<pre class="text"><code>             PROCESO
+                │
+                ▼
+       Dirección lógica
+                │
+                ▼
+     ┌─────────────────────┐
+     │ Página | Desplazam. │
+     └─────────────────────┘
+                │
+                ▼
+        Tabla de páginas
+                │
+       Página → Marco
+                │
+                ▼
+     ┌─────────────────────┐
+     │ Marco  | Desplazam. │
+     └─────────────────────┘
+                │
+                ▼
+       Dirección física
+                │
+                ▼
+              RAM</code></pre>
+<p>Este esquema debe quedar claro antes de avanzar.</p>
+</section>
+<section id="actividad-corta-de-clase" class="level1" data-number="50">
+<h1 data-number="50"><span class="header-section-number">50</span> 26. Actividad corta de clase</h1>
+<p>Trabajen en parejas.</p>
+<p>Datos:</p>
+<pre class="text"><code>Tamaño de página = 1 KB
+
+Tabla:
+Página 0 → Marco 3
+Página 1 → Marco 8
+Página 2 → Marco 2
+Página 3 → Marco 6
+Página 4 → Marco 1</code></pre>
+<p>Traduzcan:</p>
+<pre class="text"><code>Dirección lógica A = 450
+Dirección lógica B = 1750
+Dirección lógica C = 3200
+Dirección lógica D = 4090</code></pre>
+<p>Para cada una escriban:</p>
+<pre class="text"><code>Dirección lógica
+      ↓
+Página + desplazamiento
+      ↓
+Marco
+      ↓
+Dirección física</code></pre>
+</section>
+<section id="de-la-asignación-al-diseño" class="level1" data-number="51">
+<h1 data-number="51"><span class="header-section-number">51</span> 27. De la asignación al diseño</h1>
+<p>Hasta este punto hemos visto dos formas diferentes de enfrentar el mismo problema:</p>
+<pre class="text"><code>¿Cómo colocar procesos en memoria?</code></pre>
+<section id="asignación-contigua" class="level3" data-number="51.0.1">
+<h3 data-number="51.0.1" class="anchored" data-anchor-id="asignación-contigua"><span class="header-section-number">51.0.1</span> Asignación contigua</h3>
+<pre class="text"><code>Buscar un bloque suficientemente grande.</code></pre>
+</section>
+<section id="asignación-no-contigua" class="level3" data-number="51.0.2">
+<h3 data-number="51.0.2" class="anchored" data-anchor-id="asignación-no-contigua"><span class="header-section-number">51.0.2</span> Asignación no contigua</h3>
+<pre class="text"><code>Dividir el proceso y utilizar diferentes marcos.</code></pre>
+<p>Pero esto introduce nuevas preguntas:</p>
+<ul>
+<li>¿Cómo administrar tablas de páginas grandes?</li>
+<li>¿Qué sucede si una página necesaria no está actualmente en RAM?</li>
+<li>¿Podemos ejecutar un proceso aunque no todas sus páginas estén cargadas?</li>
+<li>¿Qué relación existe entre paginación y memoria virtual?</li>
+</ul>
+<p>Estas preguntas abren el siguiente nivel de la administración de memoria.</p>
+</section>
+</section>
+<section id="cierre-de-clase" class="level1" data-number="52">
+<h1 data-number="52"><span class="header-section-number">52</span> Cierre de clase</h1>
+<p>Responda de forma concreta:</p>
+<ol type="1">
+<li>¿Qué significa asignación no contigua?</li>
+<li>¿Qué diferencia existe entre página y marco?</li>
+<li>¿Para qué sirve una tabla de páginas?</li>
+<li>¿Qué partes forman una dirección lógica paginada?</li>
+<li>¿Qué parte de la dirección permanece igual durante la traducción?</li>
+<li>¿Qué función cumple la MMU?</li>
+<li>¿Por qué la paginación reduce la fragmentación externa?</li>
+<li>¿Por qué todavía puede existir fragmentación interna?</li>
+<li>¿Qué ventaja tiene la paginación frente a la asignación contigua?</li>
+<li>¿Qué costo adicional introduce?</li>
+</ol>
+<div class="callout-success" title="Idea para llevarse hoy">
+<p>La paginación cambia una pregunta:</p>
+<p><strong>“¿Dónde encuentro un bloque suficientemente grande?”</strong></p>
+<p>por otra:</p>
+<p><strong>“¿Qué marcos libres puedo utilizar y cómo relaciono cada página con ellos?”</strong></p>
+<p>Ese cambio permite que un proceso ya no dependa de un único espacio físico contiguo.</p>
+</div>
+<hr>
+</section>
+<section id="sección-para-el-docente" class="level1" data-number="53">
+<h1 data-number="53"><span class="header-section-number">53</span> Sección para el docente</h1>
+<div class="callout callout-style-default callout-warning callout-titled" title="NO PUBLICAR ANTES DE LA CLASE">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Advertencia</span>NO PUBLICAR ANTES DE LA CLASE
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Esta sección contiene respuestas y puntos de discusión para el docente.</p>
+</div>
+</div>
+<section id="respuestas-del-cierre" class="level2" data-number="53.1">
+<h2 data-number="53.1" class="anchored" data-anchor-id="respuestas-del-cierre"><span class="header-section-number">53.1</span> Respuestas del cierre</h2>
+<ol type="1">
+<li>Permite almacenar las diferentes partes de un proceso en regiones físicas separadas.</li>
+<li>Una página pertenece al espacio lógico del proceso; un marco pertenece a la memoria física.</li>
+<li>Mantiene la correspondencia entre páginas lógicas y marcos físicos.</li>
+<li>Número de página y desplazamiento.</li>
+<li>El desplazamiento.</li>
+<li>Participa en la traducción de direcciones lógicas a físicas durante la ejecución.</li>
+<li>Porque no exige un único hueco físico continuo para almacenar todo el proceso.</li>
+<li>Porque la última página puede no utilizar completamente el marco que tiene asignado.</li>
+<li>Puede aprovechar marcos libres dispersos en la memoria.</li>
+<li>Tablas de páginas, traducción de direcciones, consumo adicional de memoria y mayor complejidad de administración.</li>
+</ol>
+</section>
+<section id="respuestas-de-la-actividad-corta" class="level2" data-number="53.2">
+<h2 data-number="53.2" class="anchored" data-anchor-id="respuestas-de-la-actividad-corta"><span class="header-section-number">53.2</span> Respuestas de la actividad corta</h2>
+<p>Con páginas de 1 KB = 1024 bytes:</p>
+<section id="a-450" class="level3" data-number="53.2.1">
+<h3 data-number="53.2.1" class="anchored" data-anchor-id="a-450"><span class="header-section-number">53.2.1</span> A = 450</h3>
+<pre class="text"><code>Página 0
+Desplazamiento 450
+Página 0 → Marco 3
+Física = (3 × 1024) + 450 = 3522</code></pre>
+</section>
+<section id="b-1750" class="level3" data-number="53.2.2">
+<h3 data-number="53.2.2" class="anchored" data-anchor-id="b-1750"><span class="header-section-number">53.2.2</span> B = 1750</h3>
+<pre class="text"><code>Página 1
+Desplazamiento = 1750 - 1024 = 726
+Página 1 → Marco 8
+Física = (8 × 1024) + 726 = 8918</code></pre>
+</section>
+<section id="c-3200" class="level3" data-number="53.2.3">
+<h3 data-number="53.2.3" class="anchored" data-anchor-id="c-3200"><span class="header-section-number">53.2.3</span> C = 3200</h3>
+<pre class="text"><code>Página 3
+Desplazamiento = 3200 - 3072 = 128
+Página 3 → Marco 6
+Física = (6 × 1024) + 128 = 6272</code></pre>
+</section>
+<section id="d-4090" class="level3" data-number="53.2.4">
+<h3 data-number="53.2.4" class="anchored" data-anchor-id="d-4090"><span class="header-section-number">53.2.4</span> D = 4090</h3>
+<pre class="text"><code>Página 3
+Desplazamiento = 4090 - 3072 = 1018
+Página 3 → Marco 6
+Física = (6 × 1024) + 1018 = 7162</code></pre>
+</section>
+</section>
+<section id="punto-de-discusión-final" class="level2" data-number="53.3">
+<h2 data-number="53.3" class="anchored" data-anchor-id="punto-de-discusión-final"><span class="header-section-number">53.3</span> Punto de discusión final</h2>
+<p>Preguntar:</p>
+<blockquote class="blockquote">
+<p>Si paginación permite utilizar marcos separados, ¿necesitamos tener <strong>todas</strong> las páginas del proceso en RAM para comenzar a ejecutarlo?</p>
+</blockquote>
+<p>No desarrollar todavía toda la respuesta si el tema siguiente será memoria virtual.</p>
+<p>Utilizar la pregunta para dejar abierto el siguiente paso conceptual.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiado");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiado");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../capitulos/19_asignacion_memoria_contigua.html" class="pagination-link" aria-label="Asignación de Memoria Contigua">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Asignación de Memoria Contigua</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../capitulos/99_cierre.html" class="pagination-link" aria-label="Cierre de la clase">
+        <span class="nav-page-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cierre de la clase</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Editorial Académica de Ingeniería en Sistemas</p>
+</div>   
+    <div class="nav-footer-center">
+<p>Diseñar una vez. Enseñar toda la vida.</p>
+</div>
+    <div class="nav-footer-right">
+<p>Ing. Jorge Luis García Chacón</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

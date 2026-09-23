@@ -73,5 +73,11 @@
   },
   "capitulos/18_gestion_memoria_sistemas_multiprogramados.qmd": {
     "18_gestion_memoria_sistemas_multiprogramados.html": "9c7baa8b"
+  },
+  "capitulos/20_asignacion_memoria_no_contigua.qmd": {
+    "20_asignacion_memoria_no_contigua.html": "2c83814a"
+  },
+  "capitulos/19_asignacion_memoria_contigua.qmd": {
+    "19_asignacion_memoria_contigua.html": "23e4bd33"
   }
 }

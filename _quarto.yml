@@ -29,6 +29,8 @@ book:
     - capitulos/16_actividad_reto_administracion_memoria.qmd
     - capitulos/17_gestion_memoria_sistemas_monoprogramados.qmd
     - capitulos/18_gestion_memoria_sistemas_multiprogramados.qmd
+    - capitulos/19_asignacion_memoria_contigua.qmd
+    - capitulos/20_asignacion_memoria_no_contigua.qmd
     - capitulos/99_cierre.qmd
   page-footer:
     left: "Editorial Académica de Ingeniería en Sistemas"

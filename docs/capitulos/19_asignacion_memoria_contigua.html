@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ing. Jorge L. García">
+
+<title>21&nbsp; Asignación de Memoria Contigua – Sistemas Operativos I</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../capitulos/20_asignacion_memoria_no_contigua.html" rel="next">
+<link href="../capitulos/18_gestion_memoria_sistemas_multiprogramados.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-00cb48ef4f8381ff23467c959274e61b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-663c59e08f2ec96d6b2ddc79a12e8e5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No se han encontrado resultados",
+    "search-matching-documents-text": "documentos encontrados",
+    "search-copy-link-title": "Copiar el enlace en la búsqueda",
+    "search-hide-matches-text": "Ocultar resultados adicionales",
+    "search-more-match-text": "resultado adicional en este documento",
+    "search-more-matches-text": "resultados adicionales en este documento",
+    "search-clear-button-title": "Borrar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Buscar"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../capitulos/19_asignacion_memoria_contigua.html"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Asignación de Memoria Contigua</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Buscar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Sistemas Operativos I</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Buscar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">index.html</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/01_introduccion_sistemas_operativos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Presentación de la clase</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/02_administracion_sistema_archivos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Administración del sistema de archivos desde la línea de comandos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/03_sistemas_operativos_red.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Clase 3. Sistemas Operativos de Red</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/04_administracion_procesos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Clase 4. Administración de Procesos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/05_control_procesos_concurrencia.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Clase 5. Control de Procesos y Concurrencia</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/06_algoritmos_de_planificacion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Capítulo 6. ¿Cómo decide el Sistema Operativo quién utiliza el procesador?</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/07_capas_del_sistema_operativo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/08_interbloqueos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/09_prevencion_deteccion_interbloqueos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Capítulo 9. Prevención, detección y recuperación de interbloqueos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/10_actividad_diagnostico_sistema_operativo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Actividad - Diagnóstico de un Sistema Operativo</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Actividad - Diagnóstico de un Sistema Operativo</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/12_virtualizacion_sistemas_operativos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Capítulo 12. Virtualización de Sistemas Operativos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/13_manejo_memoria_paginacion_particiones.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Capítulo 13. Manejo de memoria: particiones y paginación</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/14_administracion_memoria_en_ejecucion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Capítulo 14. Administración de memoria en ejecución</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/15_metodos_ajuste_memoria_con_solucion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Capítulo 15. Métodos de ajuste de memoria</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/15_metodos_ajuste_memoria.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Capítulo 15. Métodos de ajuste de memoria</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/16_actividad_reto_administracion_memoria.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Actividad en clase: Reto de Administración de Memoria</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/17_gestion_memoria_sistemas_monoprogramados.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Gestión de Memoria en Sistemas Monoprogramados</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/18_gestion_memoria_sistemas_multiprogramados.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Gestión de Memoria en Sistemas Multiprogramados</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/19_asignacion_memoria_contigua.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Asignación de Memoria Contigua</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/20_asignacion_memoria_no_contigua.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Asignación de Memoria No Contigua</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/99_cierre.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cierre de la clase</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Tabla de contenidos</h2>
+   
+  <ul>
+  <li><a href="#clase-19-asignación-de-memoria-contigua" id="toc-clase-19-asignación-de-memoria-contigua" class="nav-link active" data-scroll-target="#clase-19-asignación-de-memoria-contigua"><span class="header-section-number">22</span> Clase 19 — Asignación de Memoria Contigua</a>
+  <ul class="collapse">
+  <li><a href="#dónde-estamos" id="toc-dónde-estamos" class="nav-link" data-scroll-target="#dónde-estamos"><span class="header-section-number">22.1</span> ¿Dónde estamos?</a></li>
+  </ul></li>
+  <li><a href="#objetivos-de-aprendizaje" id="toc-objetivos-de-aprendizaje" class="nav-link" data-scroll-target="#objetivos-de-aprendizaje"><span class="header-section-number">23</span> Objetivos de aprendizaje</a></li>
+  <li><a href="#el-problema-de-colocar-procesos-en-memoria" id="toc-el-problema-de-colocar-procesos-en-memoria" class="nav-link" data-scroll-target="#el-problema-de-colocar-procesos-en-memoria"><span class="header-section-number">24</span> 1. El problema de colocar procesos en memoria</a></li>
+  <li><a href="#qué-significa-contigua" id="toc-qué-significa-contigua" class="nav-link" data-scroll-target="#qué-significa-contigua"><span class="header-section-number">25</span> 2. ¿Qué significa “contigua”?</a></li>
+  <li><a href="#particiones-fijas" id="toc-particiones-fijas" class="nav-link" data-scroll-target="#particiones-fijas"><span class="header-section-number">26</span> 3. Particiones fijas</a>
+  <ul class="collapse">
+  <li><a href="#fragmentación-interna" id="toc-fragmentación-interna" class="nav-link" data-scroll-target="#fragmentación-interna"><span class="header-section-number">26.1</span> Fragmentación interna</a></li>
+  </ul></li>
+  <li><a href="#particiones-dinámicas" id="toc-particiones-dinámicas" class="nav-link" data-scroll-target="#particiones-dinámicas"><span class="header-section-number">27</span> 4. Particiones dinámicas</a></li>
+  <li><a href="#cuando-los-procesos-salen" id="toc-cuando-los-procesos-salen" class="nav-link" data-scroll-target="#cuando-los-procesos-salen"><span class="header-section-number">28</span> 5. Cuando los procesos salen</a>
+  <ul class="collapse">
+  <li><a href="#fragmentación-externa" id="toc-fragmentación-externa" class="nav-link" data-scroll-target="#fragmentación-externa"><span class="header-section-number">28.1</span> Fragmentación externa</a></li>
+  </ul></li>
+  <li><a href="#el-sistema-operativo-debe-elegir" id="toc-el-sistema-operativo-debe-elegir" class="nav-link" data-scroll-target="#el-sistema-operativo-debe-elegir"><span class="header-section-number">29</span> 6. El Sistema Operativo debe elegir</a></li>
+  <li><a href="#first-fit-el-primero-que-funciona" id="toc-first-fit-el-primero-que-funciona" class="nav-link" data-scroll-target="#first-fit-el-primero-que-funciona"><span class="header-section-number">30</span> 7. First Fit — El primero que funciona</a></li>
+  <li><a href="#best-fit-el-hueco-suficiente-más-pequeño" id="toc-best-fit-el-hueco-suficiente-más-pequeño" class="nav-link" data-scroll-target="#best-fit-el-hueco-suficiente-más-pequeño"><span class="header-section-number">31</span> 8. Best Fit — El hueco suficiente más pequeño</a></li>
+  <li><a href="#worst-fit-utilizar-el-hueco-más-grande" id="toc-worst-fit-utilizar-el-hueco-más-grande" class="nav-link" data-scroll-target="#worst-fit-utilizar-el-hueco-más-grande"><span class="header-section-number">32</span> 9. Worst Fit — Utilizar el hueco más grande</a></li>
+  <li><a href="#comparación-inmediata" id="toc-comparación-inmediata" class="nav-link" data-scroll-target="#comparación-inmediata"><span class="header-section-number">33</span> 10. Comparación inmediata</a></li>
+  <li><a href="#ejemplo-completo-la-secuencia-importa" id="toc-ejemplo-completo-la-secuencia-importa" class="nav-link" data-scroll-target="#ejemplo-completo-la-secuencia-importa"><span class="header-section-number">34</span> 11. Ejemplo completo — La secuencia importa</a>
+  <ul class="collapse">
+  <li><a href="#cómo-debemos-resolverlo" id="toc-cómo-debemos-resolverlo" class="nav-link" data-scroll-target="#cómo-debemos-resolverlo"><span class="header-section-number">34.1</span> ¿Cómo debemos resolverlo?</a></li>
+  </ul></li>
+  <li><a href="#simulación-guiada-first-fit" id="toc-simulación-guiada-first-fit" class="nav-link" data-scroll-target="#simulación-guiada-first-fit"><span class="header-section-number">35</span> 12. Simulación guiada — First Fit</a>
+  <ul class="collapse">
+  <li><a href="#p1-175-kb" id="toc-p1-175-kb" class="nav-link" data-scroll-target="#p1-175-kb"><span class="header-section-number">35.0.1</span> P1 = 175 KB</a></li>
+  <li><a href="#p2-230-kb" id="toc-p2-230-kb" class="nav-link" data-scroll-target="#p2-230-kb"><span class="header-section-number">35.0.2</span> P2 = 230 KB</a></li>
+  <li><a href="#p3-390-kb" id="toc-p3-390-kb" class="nav-link" data-scroll-target="#p3-390-kb"><span class="header-section-number">35.0.3</span> P3 = 390 KB</a></li>
+  <li><a href="#p4-110-kb" id="toc-p4-110-kb" class="nav-link" data-scroll-target="#p4-110-kb"><span class="header-section-number">35.0.4</span> P4 = 110 KB</a></li>
+  <li><a href="#p5-280-kb" id="toc-p5-280-kb" class="nav-link" data-scroll-target="#p5-280-kb"><span class="header-section-number">35.0.5</span> P5 = 280 KB</a></li>
+  </ul></li>
+  <li><a href="#compactación" id="toc-compactación" class="nav-link" data-scroll-target="#compactación"><span class="header-section-number">36</span> 13. Compactación</a>
+  <ul class="collapse">
+  <li><a href="#entonces-por-qué-no-compactar-siempre" id="toc-entonces-por-qué-no-compactar-siempre" class="nav-link" data-scroll-target="#entonces-por-qué-no-compactar-siempre"><span class="header-section-number">36.1</span> Entonces… ¿por qué no compactar siempre?</a></li>
+  </ul></li>
+  <li><a href="#fragmentación-interna-vs.-externa" id="toc-fragmentación-interna-vs.-externa" class="nav-link" data-scroll-target="#fragmentación-interna-vs.-externa"><span class="header-section-number">37</span> 14. Fragmentación interna vs.&nbsp;externa</a></li>
+  <li><a href="#no-confundir-memoria-libre-con-memoria-utilizable" id="toc-no-confundir-memoria-libre-con-memoria-utilizable" class="nav-link" data-scroll-target="#no-confundir-memoria-libre-con-memoria-utilizable"><span class="header-section-number">38</span> 15. No confundir memoria libre con memoria utilizable</a></li>
+  <li><a href="#ejercicio-rápido" id="toc-ejercicio-rápido" class="nav-link" data-scroll-target="#ejercicio-rápido"><span class="header-section-number">39</span> 16. Ejercicio rápido</a></li>
+  <li><a href="#ahora-compliquemos-el-escenario" id="toc-ahora-compliquemos-el-escenario" class="nav-link" data-scroll-target="#ahora-compliquemos-el-escenario"><span class="header-section-number">40</span> 17. Ahora compliquemos el escenario</a></li>
+  <li><a href="#cuál-es-el-mejor-método" id="toc-cuál-es-el-mejor-método" class="nav-link" data-scroll-target="#cuál-es-el-mejor-método"><span class="header-section-number">41</span> 18. ¿Cuál es el mejor método?</a></li>
+  <li><a href="#conexión-con-el-reto-de-administración-de-memoria" id="toc-conexión-con-el-reto-de-administración-de-memoria" class="nav-link" data-scroll-target="#conexión-con-el-reto-de-administración-de-memoria"><span class="header-section-number">42</span> 19. Conexión con el reto de Administración de Memoria</a></li>
+  <li><a href="#el-límite-del-modelo-contiguo" id="toc-el-límite-del-modelo-contiguo" class="nav-link" data-scroll-target="#el-límite-del-modelo-contiguo"><span class="header-section-number">43</span> 20. El límite del modelo contiguo</a></li>
+  <li><a href="#próxima-clase" id="toc-próxima-clase" class="nav-link" data-scroll-target="#próxima-clase"><span class="header-section-number">44</span> Próxima clase</a>
+  <ul class="collapse">
+  <li><a href="#clase-20-asignación-de-memoria-no-contigua" id="toc-clase-20-asignación-de-memoria-no-contigua" class="nav-link" data-scroll-target="#clase-20-asignación-de-memoria-no-contigua"><span class="header-section-number">44.1</span> Clase 20 — Asignación de Memoria No Contigua</a></li>
+  </ul></li>
+  <li><a href="#cierre-de-clase" id="toc-cierre-de-clase" class="nav-link" data-scroll-target="#cierre-de-clase"><span class="header-section-number">45</span> Cierre de clase</a></li>
+  <li><a href="#sección-para-el-docente" id="toc-sección-para-el-docente" class="nav-link" data-scroll-target="#sección-para-el-docente"><span class="header-section-number">46</span> Sección para el docente</a>
+  <ul class="collapse">
+  <li><a href="#pregunta-de-cierre-sugerida" id="toc-pregunta-de-cierre-sugerida" class="nav-link" data-scroll-target="#pregunta-de-cierre-sugerida"><span class="header-section-number">46.2</span> Pregunta de cierre sugerida</a></li>
+  <li><a href="#puente-conceptual" id="toc-puente-conceptual" class="nav-link" data-scroll-target="#puente-conceptual"><span class="header-section-number">46.3</span> Puente conceptual</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Asignación de Memoria Contigua</span></h1>
+<p class="subtitle lead">Particiones, métodos de ajuste, fragmentación y compactación</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Autor/a</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ing. Jorge L. García </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Fecha de publicación</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">9 de septiembre de 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="clase-19-asignación-de-memoria-contigua" class="level1" data-number="22">
+<h1 data-number="22"><span class="header-section-number">22</span> Clase 19 — Asignación de Memoria Contigua</h1>
+<section id="dónde-estamos" class="level2" data-number="22.1">
+<h2 data-number="22.1" class="anchored" data-anchor-id="dónde-estamos"><span class="header-section-number">22.1</span> ¿Dónde estamos?</h2>
+<p>Hasta ahora hemos estudiado cómo el Sistema Operativo administra procesos y cómo la memoria permite mantener programas en ejecución.</p>
+<p>En esta clase nos concentraremos en una pregunta concreta:</p>
+<blockquote class="blockquote">
+<p><strong>¿Cómo puede el Sistema Operativo decidir en qué lugar de la memoria colocar un proceso cuando este debe ocupar un bloque continuo?</strong></p>
+</blockquote>
+<p>A esta forma de organización la llamamos <strong>asignación de memoria contigua</strong>.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Idea central">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Idea central
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>En asignación contigua, <strong>cada proceso ocupa una única región continua de memoria física</strong>.</p>
+<p>Si un proceso necesita 200 KB, el Sistema Operativo debe encontrar un bloque libre de al menos 200 KB consecutivos.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="objetivos-de-aprendizaje" class="level1" data-number="23">
+<h1 data-number="23"><span class="header-section-number">23</span> Objetivos de aprendizaje</h1>
+<p>Al finalizar la clase, el estudiante podrá:</p>
+<ol type="1">
+<li>explicar qué significa asignar memoria de forma contigua;</li>
+<li>diferenciar particiones fijas y particiones dinámicas;</li>
+<li>identificar fragmentación interna y externa;</li>
+<li>aplicar <strong>First Fit, Best Fit y Worst Fit</strong> a un mapa de huecos;</li>
+<li>interpretar cómo cada decisión modifica el estado futuro de la memoria;</li>
+<li>explicar cuándo la compactación puede resolver un problema de fragmentación externa;</li>
+<li>justificar técnicamente una decisión de asignación.</li>
+</ol>
+</section>
+<section id="el-problema-de-colocar-procesos-en-memoria" class="level1" data-number="24">
+<h1 data-number="24"><span class="header-section-number">24</span> 1. El problema de colocar procesos en memoria</h1>
+<p>Supongamos una memoria simplificada:</p>
+<pre class="text"><code>┌─────────────────────────┐
+│ Sistema Operativo       │
+├─────────────────────────┤
+│        LIBRE            │
+│        700 KB           │
+└─────────────────────────┘</code></pre>
+<p>Llega un proceso:</p>
+<pre class="text"><code>P1 = 250 KB</code></pre>
+<p>El Sistema Operativo puede reservar 250 KB continuos:</p>
+<pre class="text"><code>┌─────────────────────────┐
+│ Sistema Operativo       │
+├─────────────────────────┤
+│ P1              250 KB  │
+├─────────────────────────┤
+│ Libre           450 KB  │
+└─────────────────────────┘</code></pre>
+<p>Hasta aquí parece sencillo.</p>
+<p>El problema aparece cuando entran y salen muchos procesos.</p>
+</section>
+<section id="qué-significa-contigua" class="level1" data-number="25">
+<h1 data-number="25"><span class="header-section-number">25</span> 2. ¿Qué significa “contigua”?</h1>
+<p>Una región es <strong>contigua</strong> cuando sus posiciones de memoria se encuentran una después de otra.</p>
+<p>Por ejemplo:</p>
+<pre class="text"><code>Direcciones
+1000 ─────────────────────
+      P1
+      P1
+      P1
+      P1
+1499 ─────────────────────</code></pre>
+<p>P1 ocupa un único bloque continuo.</p>
+<p>No sería asignación contigua si P1 estuviera distribuido así:</p>
+<pre class="text"><code>┌───────────────┐
+│ Parte de P1   │
+├───────────────┤
+│ P2            │
+├───────────────┤
+│ Parte de P1   │
+└───────────────┘</code></pre>
+<p>Ese segundo escenario nos conducirá después a la <strong>asignación no contigua</strong>.</p>
+</section>
+<section id="particiones-fijas" class="level1" data-number="26">
+<h1 data-number="26"><span class="header-section-number">26</span> 3. Particiones fijas</h1>
+<p>Una primera estrategia consiste en dividir previamente la memoria en bloques de tamaño establecido.</p>
+<pre class="text"><code>┌─────────────────────────┐
+│ Sistema Operativo       │
+├─────────────────────────┤
+│ Partición 1     200 KB  │
+├─────────────────────────┤
+│ Partición 2     200 KB  │
+├─────────────────────────┤
+│ Partición 3     200 KB  │
+├─────────────────────────┤
+│ Partición 4     200 KB  │
+└─────────────────────────┘</code></pre>
+<p>Cada proceso ocupa una partición.</p>
+<p>Supongamos:</p>
+<pre class="text"><code>P1 = 180 KB
+P2 = 120 KB
+P3 = 195 KB</code></pre>
+<p>El resultado podría ser:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Partición</th>
+<th style="text-align: right;">Tamaño</th>
+<th style="text-align: right;">Proceso</th>
+<th style="text-align: right;">Espacio sin utilizar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td style="text-align: right;">200 KB</td>
+<td style="text-align: right;">P1 = 180 KB</td>
+<td style="text-align: right;">20 KB</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td style="text-align: right;">200 KB</td>
+<td style="text-align: right;">P2 = 120 KB</td>
+<td style="text-align: right;">80 KB</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td style="text-align: right;">200 KB</td>
+<td style="text-align: right;">P3 = 195 KB</td>
+<td style="text-align: right;">5 KB</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td style="text-align: right;">200 KB</td>
+<td style="text-align: right;">Libre</td>
+<td style="text-align: right;">200 KB</td>
+</tr>
+</tbody>
+</table>
+<p>Los 20 + 80 + 5 KB que quedan dentro de particiones ocupadas no pueden entregarse fácilmente a otro proceso.</p>
+<section id="fragmentación-interna" class="level2" data-number="26.1">
+<h2 data-number="26.1" class="anchored" data-anchor-id="fragmentación-interna"><span class="header-section-number">26.1</span> Fragmentación interna</h2>
+<div class="callout callout-style-default callout-important callout-titled" title="Fragmentación interna">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Importante</span>Fragmentación interna
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Es el espacio desperdiciado <strong>dentro de una región ya asignada</strong> porque el proceso utiliza menos memoria que el tamaño reservado.</p>
+</div>
+</div>
+<p>En nuestro ejemplo:</p>
+<pre class="text"><code>Fragmentación interna = 20 + 80 + 5
+                       = 105 KB</code></pre>
+</section>
+</section>
+<section id="particiones-dinámicas" class="level1" data-number="27">
+<h1 data-number="27"><span class="header-section-number">27</span> 4. Particiones dinámicas</h1>
+<p>En lugar de establecer todos los tamaños con anticipación, podemos crear una partición de acuerdo con el tamaño requerido por cada proceso.</p>
+<p>Partimos de:</p>
+<pre class="text"><code>┌─────────────────────────┐
+│ Libre            800 KB │
+└─────────────────────────┘</code></pre>
+<p>Llegan:</p>
+<pre class="text"><code>P1 = 180 KB
+P2 = 250 KB
+P3 = 120 KB</code></pre>
+<p>Podríamos obtener:</p>
+<pre class="text"><code>┌─────────────────────────┐
+│ P1               180 KB │
+├─────────────────────────┤
+│ P2               250 KB │
+├─────────────────────────┤
+│ P3               120 KB │
+├─────────────────────────┤
+│ Libre            250 KB │
+└─────────────────────────┘</code></pre>
+<p>Las particiones dinámicas se adaptan mejor al tamaño solicitado.</p>
+<p>Pero aparece otro problema cuando los procesos terminan.</p>
+</section>
+<section id="cuando-los-procesos-salen" class="level1" data-number="28">
+<h1 data-number="28"><span class="header-section-number">28</span> 5. Cuando los procesos salen</h1>
+<p>Supongamos que termina <code>P2</code>.</p>
+<pre class="text"><code>┌─────────────────────────┐
+│ P1               180 KB │
+├─────────────────────────┤
+│ LIBRE            250 KB │
+├─────────────────────────┤
+│ P3               120 KB │
+├─────────────────────────┤
+│ LIBRE            250 KB │
+└─────────────────────────┘</code></pre>
+<p>Tenemos:</p>
+<pre class="text"><code>Memoria libre total = 500 KB</code></pre>
+<p>Ahora llega:</p>
+<pre class="text"><code>P4 = 400 KB</code></pre>
+<p>Pregunta:</p>
+<blockquote class="blockquote">
+<p><strong>¿Puede cargarse P4?</strong></p>
+</blockquote>
+<p>No.</p>
+<p>Aunque existen <strong>500 KB libres en total</strong>, no existe un único bloque contiguo de 400 KB.</p>
+<section id="fragmentación-externa" class="level2" data-number="28.1">
+<h2 data-number="28.1" class="anchored" data-anchor-id="fragmentación-externa"><span class="header-section-number">28.1</span> Fragmentación externa</h2>
+<div class="callout callout-style-default callout-important callout-titled" title="Fragmentación externa">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Importante</span>Fragmentación externa
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Existe memoria libre suficiente en total, pero se encuentra distribuida en <strong>huecos separados</strong> y ninguno es suficientemente grande para satisfacer una solicitud contigua.</p>
+</div>
+</div>
+<p>Este concepto será fundamental durante toda la clase.</p>
+</section>
+</section>
+<section id="el-sistema-operativo-debe-elegir" class="level1" data-number="29">
+<h1 data-number="29"><span class="header-section-number">29</span> 6. El Sistema Operativo debe elegir</h1>
+<p>Cuando existen varios huecos suficientemente grandes para un proceso, surge otra pregunta:</p>
+<blockquote class="blockquote">
+<p><strong>¿Cuál hueco debemos utilizar?</strong></p>
+</blockquote>
+<p>Supongamos:</p>
+<pre class="text"><code>Huecos libres:
+[100 KB, 500 KB, 200 KB, 300 KB, 600 KB]</code></pre>
+<p>Llega:</p>
+<pre class="text"><code>P1 = 212 KB</code></pre>
+<p>Hay tres candidatos:</p>
+<pre class="text"><code>500 KB
+300 KB
+600 KB</code></pre>
+<p>¿Qué bloque elegimos?</p>
+<p>Aquí aparecen los <strong>métodos de ajuste</strong>.</p>
+</section>
+<section id="first-fit-el-primero-que-funciona" class="level1" data-number="30">
+<h1 data-number="30"><span class="header-section-number">30</span> 7. First Fit — El primero que funciona</h1>
+<p><strong>First Fit</strong> recorre los huecos y selecciona el <strong>primer bloque suficientemente grande</strong>.</p>
+<pre class="text"><code>Huecos:
+[100, 500, 200, 300, 600]
+
+Proceso:
+P1 = 212</code></pre>
+<p>Recorrido:</p>
+<pre class="text"><code>100  → no cabe
+500  → sí cabe  ← DETENER BÚSQUEDA</code></pre>
+<p>Después de asignar:</p>
+<pre class="text"><code>500 - 212 = 288 KB</code></pre>
+<p>Nuevo estado:</p>
+<pre class="text"><code>[100, 288, 200, 300, 600]</code></pre>
+<div class="callout callout-style-default callout-tip callout-titled" title="Ventaja conceptual">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Ventaja conceptual
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>First Fit puede tomar una decisión rápidamente porque no necesita encontrar el mejor hueco: <strong>se detiene al encontrar el primero válido</strong>.</p>
+</div>
+</div>
+<p>Pero rapidez de búsqueda no significa necesariamente mejor aprovechamiento futuro.</p>
+</section>
+<section id="best-fit-el-hueco-suficiente-más-pequeño" class="level1" data-number="31">
+<h1 data-number="31"><span class="header-section-number">31</span> 8. Best Fit — El hueco suficiente más pequeño</h1>
+<p><strong>Best Fit</strong> busca entre los huecos válidos y selecciona el <strong>menor que pueda contener el proceso</strong>.</p>
+<p>Mismo escenario:</p>
+<pre class="text"><code>Huecos:
+[100, 500, 200, 300, 600]
+
+P1 = 212 KB</code></pre>
+<p>Candidatos:</p>
+<pre class="text"><code>500 KB
+300 KB  ← menor candidato válido
+600 KB</code></pre>
+<p>Asignación:</p>
+<pre class="text"><code>300 - 212 = 88 KB</code></pre>
+<p>Nuevo estado:</p>
+<pre class="text"><code>[100, 500, 200, 88, 600]</code></pre>
+<p>La decisión minimizó el sobrante <strong>de esta asignación</strong>.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="Cuidado">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Advertencia</span>Cuidado
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Que Best Fit produzca el menor sobrante inmediato <strong>no garantiza</strong> que al finalizar toda una secuencia produzca menos fragmentación.</p>
+<p>Puede terminar creando muchos huecos pequeños.</p>
+</div>
+</div>
+</section>
+<section id="worst-fit-utilizar-el-hueco-más-grande" class="level1" data-number="32">
+<h1 data-number="32"><span class="header-section-number">32</span> 9. Worst Fit — Utilizar el hueco más grande</h1>
+<p><strong>Worst Fit</strong> selecciona el <strong>mayor hueco disponible</strong>.</p>
+<p>Con los mismos datos:</p>
+<pre class="text"><code>Huecos:
+[100, 500, 200, 300, 600]
+
+P1 = 212 KB</code></pre>
+<p>Selecciona:</p>
+<pre class="text"><code>600 KB</code></pre>
+<p>Sobrante:</p>
+<pre class="text"><code>600 - 212 = 388 KB</code></pre>
+<p>Nuevo estado:</p>
+<pre class="text"><code>[100, 500, 200, 300, 388]</code></pre>
+<p>La idea es dejar un sobrante que todavía pueda ser útil.</p>
+<p>Pero tampoco existe garantía de que sea la mejor decisión para las solicitudes futuras.</p>
+</section>
+<section id="comparación-inmediata" class="level1" data-number="33">
+<h1 data-number="33"><span class="header-section-number">33</span> 10. Comparación inmediata</h1>
+<p>Para una misma solicitud:</p>
+<pre class="text"><code>Huecos iniciales = [100, 500, 200, 300, 600]
+P1 = 212 KB</code></pre>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Método</th>
+<th style="text-align: right;">Hueco seleccionado</th>
+<th style="text-align: right;">Sobrante</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>First Fit</td>
+<td style="text-align: right;">500 KB</td>
+<td style="text-align: right;">288 KB</td>
+</tr>
+<tr class="even">
+<td>Best Fit</td>
+<td style="text-align: right;">300 KB</td>
+<td style="text-align: right;">88 KB</td>
+</tr>
+<tr class="odd">
+<td>Worst Fit</td>
+<td style="text-align: right;">600 KB</td>
+<td style="text-align: right;">388 KB</td>
+</tr>
+</tbody>
+</table>
+<p>Los tres pudieron asignar el proceso.</p>
+<p>Sin embargo, <strong>el mapa de memoria futuro ya es diferente</strong>.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Pregunta de ingeniería">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Pregunta de ingeniería
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Si todos lograron colocar P1, ¿podemos afirmar que los tres métodos son equivalentes?</p>
+<p><strong>No.</strong> La decisión actual modifica las opciones disponibles para los procesos que lleguen después.</p>
+</div>
+</div>
+</section>
+<section id="ejemplo-completo-la-secuencia-importa" class="level1" data-number="34">
+<h1 data-number="34"><span class="header-section-number">34</span> 11. Ejemplo completo — La secuencia importa</h1>
+<p>Tenemos:</p>
+<pre class="text"><code>Huecos iniciales:
+[120 KB, 400 KB, 250 KB, 600 KB, 180 KB]
+
+Procesos:
+P1 = 175 KB
+P2 = 230 KB
+P3 = 390 KB
+P4 = 110 KB
+P5 = 280 KB</code></pre>
+<p>Este será nuestro escenario de trabajo.</p>
+<section id="cómo-debemos-resolverlo" class="level2" data-number="34.1">
+<h2 data-number="34.1" class="anchored" data-anchor-id="cómo-debemos-resolverlo"><span class="header-section-number">34.1</span> ¿Cómo debemos resolverlo?</h2>
+<p>Para <strong>cada proceso</strong>:</p>
+<ol type="1">
+<li>observar el mapa actual;</li>
+<li>identificar los huecos candidatos;</li>
+<li>aplicar la política correspondiente;</li>
+<li>restar el tamaño asignado;</li>
+<li>actualizar el mapa;</li>
+<li>continuar con el siguiente proceso.</li>
+</ol>
+<div class="callout callout-style-default callout-important callout-titled" title="Regla">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Importante</span>Regla
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>No resuelva todos los procesos utilizando el mapa inicial.</p>
+<p><strong>Cada asignación cambia el problema que recibe el siguiente proceso.</strong></p>
+</div>
+</div>
+</section>
+</section>
+<section id="simulación-guiada-first-fit" class="level1" data-number="35">
+<h1 data-number="35"><span class="header-section-number">35</span> 12. Simulación guiada — First Fit</h1>
+<p>Estado inicial:</p>
+<pre class="text"><code>[120, 400, 250, 600, 180]</code></pre>
+<section id="p1-175-kb" class="level3" data-number="35.0.1">
+<h3 data-number="35.0.1" class="anchored" data-anchor-id="p1-175-kb"><span class="header-section-number">35.0.1</span> P1 = 175 KB</h3>
+<pre class="text"><code>120 → no
+400 → sí</code></pre>
+<p>Nuevo mapa:</p>
+<pre class="text"><code>[120, 225, 250, 600, 180]</code></pre>
+</section>
+<section id="p2-230-kb" class="level3" data-number="35.0.2">
+<h3 data-number="35.0.2" class="anchored" data-anchor-id="p2-230-kb"><span class="header-section-number">35.0.2</span> P2 = 230 KB</h3>
+<pre class="text"><code>120 → no
+225 → no
+250 → sí</code></pre>
+<p>Nuevo mapa:</p>
+<pre class="text"><code>[120, 225, 20, 600, 180]</code></pre>
+</section>
+<section id="p3-390-kb" class="level3" data-number="35.0.3">
+<h3 data-number="35.0.3" class="anchored" data-anchor-id="p3-390-kb"><span class="header-section-number">35.0.3</span> P3 = 390 KB</h3>
+<p>El primer hueco suficiente es 600 KB:</p>
+<pre class="text"><code>600 - 390 = 210</code></pre>
+<p>Nuevo mapa:</p>
+<pre class="text"><code>[120, 225, 20, 210, 180]</code></pre>
+</section>
+<section id="p4-110-kb" class="level3" data-number="35.0.4">
+<h3 data-number="35.0.4" class="anchored" data-anchor-id="p4-110-kb"><span class="header-section-number">35.0.4</span> P4 = 110 KB</h3>
+<p>El primer hueco suficiente es 120 KB:</p>
+<pre class="text"><code>120 - 110 = 10</code></pre>
+<p>Nuevo mapa:</p>
+<pre class="text"><code>[10, 225, 20, 210, 180]</code></pre>
+</section>
+<section id="p5-280-kb" class="level3" data-number="35.0.5">
+<h3 data-number="35.0.5" class="anchored" data-anchor-id="p5-280-kb"><span class="header-section-number">35.0.5</span> P5 = 280 KB</h3>
+<p>Ningún hueco tiene 280 KB.</p>
+<pre class="text"><code>P5 → NO SE ASIGNA</code></pre>
+<p>Pero observemos:</p>
+<pre class="text"><code>Memoria libre total
+= 10 + 225 + 20 + 210 + 180
+= 645 KB</code></pre>
+<p>Tenemos <strong>645 KB libres</strong>, pero no podemos colocar un proceso de 280 KB.</p>
+<p>¿Por qué?</p>
+<blockquote class="blockquote">
+<p><strong>Fragmentación externa.</strong></p>
+</blockquote>
+</section>
+</section>
+<section id="compactación" class="level1" data-number="36">
+<h1 data-number="36"><span class="header-section-number">36</span> 13. Compactación</h1>
+<p>Una posible respuesta frente a la fragmentación externa es mover procesos para reunir los espacios libres.</p>
+<p>Antes:</p>
+<pre class="text"><code>┌──────────────┐
+│ P1           │
+├──────────────┤
+│ Libre 100 KB │
+├──────────────┤
+│ P2           │
+├──────────────┤
+│ Libre 80 KB  │
+├──────────────┤
+│ P3           │
+├──────────────┤
+│ Libre 120 KB │
+└──────────────┘</code></pre>
+<p>Después de compactar:</p>
+<pre class="text"><code>┌──────────────┐
+│ P1           │
+├──────────────┤
+│ P2           │
+├──────────────┤
+│ P3           │
+├──────────────┤
+│ Libre 300 KB │
+└──────────────┘</code></pre>
+<p>Ahora existe un hueco contiguo de 300 KB.</p>
+<section id="entonces-por-qué-no-compactar-siempre" class="level2" data-number="36.1">
+<h2 data-number="36.1" class="anchored" data-anchor-id="entonces-por-qué-no-compactar-siempre"><span class="header-section-number">36.1</span> Entonces… ¿por qué no compactar siempre?</h2>
+<p>Porque compactar implica:</p>
+<ul>
+<li>mover procesos y datos;</li>
+<li>copiar contenido en memoria;</li>
+<li>ajustar información relacionada con sus ubicaciones;</li>
+<li>consumir CPU y tiempo;</li>
+<li>afectar temporalmente el rendimiento.</li>
+</ul>
+<div class="callout callout-style-default callout-warning callout-titled" title="Compactar tiene costo">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Advertencia</span>Compactar tiene costo
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La compactación puede solucionar un problema de espacio contiguo, pero <strong>no es una operación gratuita</strong>.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="fragmentación-interna-vs.-externa" class="level1" data-number="37">
+<h1 data-number="37"><span class="header-section-number">37</span> 14. Fragmentación interna vs.&nbsp;externa</h1>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Característica</th>
+<th>Interna</th>
+<th>Externa</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>¿Dónde está el espacio desperdiciado?</td>
+<td>Dentro del bloque asignado</td>
+<td>Entre bloques ocupados</td>
+</tr>
+<tr class="even">
+<td>Ejemplo típico</td>
+<td>Particiones fijas</td>
+<td>Particiones dinámicas</td>
+</tr>
+<tr class="odd">
+<td>¿Existe memoria libre?</td>
+<td>Sí, dentro de una asignación</td>
+<td>Sí, distribuida en huecos</td>
+</tr>
+<tr class="even">
+<td>Problema</td>
+<td>Se reservó más de lo necesario</td>
+<td>No existe un hueco contiguo suficiente</td>
+</tr>
+<tr class="odd">
+<td>Posible respuesta</td>
+<td>Cambiar estrategia/tamaño de asignación</td>
+<td>Compactación u otro modelo de memoria</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="no-confundir-memoria-libre-con-memoria-utilizable" class="level1" data-number="38">
+<h1 data-number="38"><span class="header-section-number">38</span> 15. No confundir memoria libre con memoria utilizable</h1>
+<p>Considere:</p>
+<pre class="text"><code>Huecos:
+[90 KB, 70 KB, 60 KB, 80 KB]</code></pre>
+<p>Memoria libre total:</p>
+<pre class="text"><code>90 + 70 + 60 + 80 = 300 KB</code></pre>
+<p>Llega:</p>
+<pre class="text"><code>P = 150 KB</code></pre>
+<p>Hay 300 KB libres.</p>
+<p>Pero:</p>
+<pre class="text"><code>Mayor hueco = 90 KB</code></pre>
+<p>Por lo tanto:</p>
+<pre class="text"><code>P NO puede asignarse de forma contigua.</code></pre>
+<p>Esta diferencia entre <strong>cantidad total libre</strong> y <strong>tamaño del mayor hueco</strong> es una de las ideas más importantes de esta clase.</p>
+</section>
+<section id="ejercicio-rápido" class="level1" data-number="39">
+<h1 data-number="39"><span class="header-section-number">39</span> 16. Ejercicio rápido</h1>
+<p>Huecos:</p>
+<pre class="text"><code>[80, 240, 130, 350, 200] KB</code></pre>
+<p>Llega:</p>
+<pre class="text"><code>P = 125 KB</code></pre>
+<p>Determine:</p>
+<ol type="1">
+<li>¿Qué hueco selecciona First Fit?</li>
+<li>¿Qué hueco selecciona Best Fit?</li>
+<li>¿Qué hueco selecciona Worst Fit?</li>
+<li>¿Cuánto queda libre en el bloque seleccionado en cada caso?</li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled" title="Respuesta">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Respuesta
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>First Fit → 240 KB → sobran 115 KB.</li>
+<li>Best Fit → 130 KB → sobran 5 KB.</li>
+<li>Worst Fit → 350 KB → sobran 225 KB.</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="ahora-compliquemos-el-escenario" class="level1" data-number="40">
+<h1 data-number="40"><span class="header-section-number">40</span> 17. Ahora compliquemos el escenario</h1>
+<p>Estado:</p>
+<pre class="text"><code>[100, 300, 170, 420, 210] KB</code></pre>
+<p>Llegan, en orden:</p>
+<pre class="text"><code>P1 = 160 KB
+P2 = 205 KB
+P3 = 290 KB</code></pre>
+<p>Trabaje con uno de los tres métodos.</p>
+<p>Al finalizar indique:</p>
+<ul>
+<li>mapa de huecos;</li>
+<li>memoria libre total;</li>
+<li>mayor hueco libre;</li>
+<li>procesos asignados;</li>
+<li>procesos rechazados.</li>
+</ul>
+<p>Después compare su resultado con otro equipo que haya utilizado una política diferente.</p>
+</section>
+<section id="cuál-es-el-mejor-método" class="level1" data-number="41">
+<h1 data-number="41"><span class="header-section-number">41</span> 18. ¿Cuál es el mejor método?</h1>
+<p>La respuesta correcta no es simplemente:</p>
+<pre class="text"><code>First Fit
+Best Fit
+Worst Fit</code></pre>
+<p>Debemos considerar:</p>
+<ul>
+<li>orden de los huecos;</li>
+<li>tamaño de las solicitudes;</li>
+<li>secuencia de llegada;</li>
+<li>costo de búsqueda;</li>
+<li>huecos residuales;</li>
+<li>solicitudes futuras;</li>
+<li>fragmentación producida.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled" title="Pensamiento de ingeniero">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Pensamiento de ingeniero
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Una política no debe evaluarse únicamente por <strong>la decisión que acaba de tomar</strong>.</p>
+<p>También debemos preguntarnos:</p>
+<blockquote class="blockquote">
+<p><strong>¿Qué estado del sistema deja para la siguiente decisión?</strong></p>
+</blockquote>
+</div>
+</div>
+</section>
+<section id="conexión-con-el-reto-de-administración-de-memoria" class="level1" data-number="42">
+<h1 data-number="42"><span class="header-section-number">42</span> 19. Conexión con el reto de Administración de Memoria</h1>
+<p>En la actividad de clase trabajaremos exactamente este tipo de decisiones.</p>
+<p>Cada equipo analizará el mismo escenario desde una perspectiva diferente:</p>
+<pre class="text"><code>First Fit
+Best Fit
+Worst Fit
+Fragmentación + Compactación
+Arquitectura de memoria moderna</code></pre>
+<p>La intención no será memorizar cuál método “gana”.</p>
+<p>Será demostrar:</p>
+<pre class="text"><code>investigar
+    ↓
+analizar
+    ↓
+aplicar
+    ↓
+representar
+    ↓
+explicar
+    ↓
+cuestionar
+    ↓
+defender</code></pre>
+</section>
+<section id="el-límite-del-modelo-contiguo" class="level1" data-number="43">
+<h1 data-number="43"><span class="header-section-number">43</span> 20. El límite del modelo contiguo</h1>
+<p>Volvamos al problema:</p>
+<pre class="text"><code>Memoria libre total = 645 KB
+Proceso solicitado  = 280 KB
+Mayor hueco libre   = 225 KB</code></pre>
+<p>El proceso no puede cargarse porque necesita <strong>un único espacio continuo</strong>.</p>
+<p>Entonces aparece una pregunta natural:</p>
+<blockquote class="blockquote">
+<p><strong>¿Y si un proceso pudiera dividirse y colocarse en diferentes regiones físicas de memoria?</strong></p>
+</blockquote>
+<p>Por ejemplo:</p>
+<pre class="text"><code>Proceso P
+┌───────────┐
+│ Parte 1   │ ───────► Marco físico A
+├───────────┤
+│ Parte 2   │ ───────► Marco físico F
+├───────────┤
+│ Parte 3   │ ───────► Marco físico C
+└───────────┘</code></pre>
+<p>Ya no necesitaríamos encontrar un único hueco del tamaño completo del proceso.</p>
+<p>Ese será nuestro siguiente paso.</p>
+</section>
+<section id="próxima-clase" class="level1" data-number="44">
+<h1 data-number="44"><span class="header-section-number">44</span> Próxima clase</h1>
+<section id="clase-20-asignación-de-memoria-no-contigua" class="level2" data-number="44.1">
+<h2 data-number="44.1" class="anchored" data-anchor-id="clase-20-asignación-de-memoria-no-contigua"><span class="header-section-number">44.1</span> Clase 20 — Asignación de Memoria No Contigua</h2>
+<p>Estudiaremos:</p>
+<ul>
+<li>por qué surge la asignación no contigua;</li>
+<li>páginas;</li>
+<li>marcos;</li>
+<li>paginación;</li>
+<li>tabla de páginas;</li>
+<li>direcciones lógicas y físicas;</li>
+<li>traducción de direcciones;</li>
+<li>ventajas y costos del nuevo modelo.</li>
+</ul>
+<div class="callout-success" title="Idea para llevarse hoy">
+<p>En asignación contigua, el problema no consiste únicamente en preguntar:</p>
+<p><strong>¿Cuánta memoria queda libre?</strong></p>
+<p>También debemos preguntar:</p>
+<p><strong>¿Dónde está esa memoria y cuál es el mayor bloque continuo disponible?</strong></p>
+</div>
+</section>
+</section>
+<section id="cierre-de-clase" class="level1" data-number="45">
+<h1 data-number="45"><span class="header-section-number">45</span> Cierre de clase</h1>
+<p>Responda sin consultar sus apuntes:</p>
+<ol type="1">
+<li>¿Qué diferencia existe entre particiones fijas y dinámicas?</li>
+<li>¿Qué diferencia existe entre fragmentación interna y externa?</li>
+<li>¿Qué criterio utiliza First Fit?</li>
+<li>¿Qué criterio utiliza Best Fit?</li>
+<li>¿Qué criterio utiliza Worst Fit?</li>
+<li>¿Por qué 500 KB libres no garantizan que pueda cargarse un proceso de 300 KB?</li>
+<li>¿Qué hace la compactación?</li>
+<li>¿Qué costo tiene compactar?</li>
+<li>¿Por qué diferentes políticas producen diferentes estados finales de memoria?</li>
+<li>¿Qué limitación fundamental de la asignación contigua intentaremos resolver en la próxima clase?</li>
+</ol>
+<hr>
+</section>
+<section id="sección-para-el-docente" class="level1" data-number="46">
+<h1 data-number="46"><span class="header-section-number">46</span> Sección para el docente</h1>
+<details>
+<summary>
+<strong>🔐 Sección para el docente — Mostrar respuestas</strong>
+</summary>
+<div style="margin-top: 20px;">
+<div class="callout callout-style-default callout-warning callout-titled" title="NO PUBLICAR ANTES DE LA CLASE">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Advertencia</span>NO PUBLICAR ANTES DE LA CLASE
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Esta sección contiene respuestas y puntos de discusión para el docente.</p>
+</div>
+</div>
+<section id="respuestas-del-cierre" class="level2" data-number="46.1">
+<h2 data-number="46.1" class="anchored" data-anchor-id="respuestas-del-cierre"><span class="header-section-number">46.1</span> Respuestas del cierre</h2>
+<ol type="1">
+<li><strong>Particiones fijas:</strong> tamaños definidos previamente. <strong>Dinámicas:</strong> se crean según las necesidades de los procesos.</li>
+<li><strong>Interna:</strong> espacio desperdiciado dentro de una región asignada. <strong>Externa:</strong> memoria libre separada en huecos entre regiones ocupadas.</li>
+<li>First Fit selecciona el primer hueco suficientemente grande.</li>
+<li>Best Fit selecciona el menor hueco suficientemente grande.</li>
+<li>Worst Fit selecciona el mayor hueco disponible que pueda contener el proceso.</li>
+<li>Porque la memoria libre puede encontrarse fragmentada y no existir un bloque contiguo de 300 KB.</li>
+<li>Reorganiza/mueve regiones ocupadas para reunir huecos libres.</li>
+<li>Movimiento y copia de memoria, ajustes de ubicación y consumo de recursos.</li>
+<li>Porque cada política selecciona huecos diferentes y cada decisión modifica el estado que recibe la siguiente solicitud.</li>
+<li>La obligación de encontrar un único bloque físico contiguo del tamaño requerido por el proceso.</li>
+</ol>
+</section>
+</div>
+</details>
+<section id="pregunta-de-cierre-sugerida" class="level2" data-number="46.2">
+<h2 data-number="46.2" class="anchored" data-anchor-id="pregunta-de-cierre-sugerida"><span class="header-section-number">46.2</span> Pregunta de cierre sugerida</h2>
+<blockquote class="blockquote">
+<p>Tenemos suficiente memoria libre para un proceso, pero no existe un hueco contiguo suficientemente grande. ¿El problema es falta de memoria?</p>
+</blockquote>
+<p><strong>Respuesta esperada:</strong> No necesariamente. El problema puede ser la distribución de la memoria libre, específicamente fragmentación externa.</p>
+</section>
+<section id="puente-conceptual" class="level2" data-number="46.3">
+<h2 data-number="46.3" class="anchored" data-anchor-id="puente-conceptual"><span class="header-section-number">46.3</span> Puente conceptual</h2>
+<p>No explicar todavía toda la paginación.</p>
+<p>Terminar con la pregunta:</p>
+<blockquote class="blockquote">
+<p><strong>¿Qué cambiaría si pudiéramos dividir un proceso y colocar sus partes en diferentes regiones de memoria física?</strong></p>
+</blockquote>
+<p>La respuesta formal se desarrolla en la <strong>Clase 18 — Asignación de Memoria No Contigua</strong>.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiado");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiado");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../capitulos/18_gestion_memoria_sistemas_multiprogramados.html" class="pagination-link" aria-label="Gestión de Memoria en Sistemas Multiprogramados">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Gestión de Memoria en Sistemas Multiprogramados</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../capitulos/20_asignacion_memoria_no_contigua.html" class="pagination-link" aria-label="Asignación de Memoria No Contigua">
+        <span class="nav-page-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Asignación de Memoria No Contigua</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Editorial Académica de Ingeniería en Sistemas</p>
+</div>   
+    <div class="nav-footer-center">
+<p>Diseñar una vez. Enseñar toda la vida.</p>
+</div>
+    <div class="nav-footer-right">
+<p>Ing. Jorge Luis García Chacón</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
