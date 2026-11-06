@@ -36,6 +36,8 @@ book:
     - capitulos/24_apache_mysql_docker.qmd
     - capitulos/25_crud_php_mysql_docker.qmd
     - capitulos/26_oracle_docker_cierre_proyecto.qmd
+    - capitulos/27_cierre_integrador_sistemas_operativos.qmd
+    
     - capitulos/99_cierre.qmd
   page-footer:
     left: "Editorial Académica de Ingeniería en Sistemas"
