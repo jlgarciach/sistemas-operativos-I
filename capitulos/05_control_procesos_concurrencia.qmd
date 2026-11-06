@@ -3,7 +3,8 @@ title: "Clase 5. Control de Procesos y Concurrencia"
 
 format:
   html:
-    theme: ../../editorial/assets/scss/editorial.scss
+    toc: true
+    number-sections: true
 
   pdf:
     documentclass: scrreprt

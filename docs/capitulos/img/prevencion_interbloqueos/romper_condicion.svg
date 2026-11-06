@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="560" viewBox="0 0 1100 560">
+<style>
+text{font-family:Arial,sans-serif;fill:#263238}.t{font-size:34px;font-weight:700;fill:#1f4e79}.s{font-size:22px}.b{font-size:24px;font-weight:700}
+.box{fill:#f7fafc;stroke:#319f90;stroke-width:3;rx:18}.cond{fill:#fff;stroke:#646464;stroke-width:2;rx:14}
+.arrow{stroke:#646464;stroke-width:4;fill:none;marker-end:url(#a)}.x{fill:#d35400;font-size:40px;font-weight:700}
+</style>
+<defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#646464"/></marker></defs>
+<text x="550" y="48" text-anchor="middle" class="t">Prevención: romper al menos una condición necesaria</text>
+<rect x="50" y="95" width="1000" height="400" class="box"/>
+<rect x="90" y="145" width="210" height="115" class="cond"/><text x="195" y="185" text-anchor="middle" class="b">Exclusión</text><text x="195" y="220" text-anchor="middle" class="s">mutua</text>
+<rect x="330" y="145" width="210" height="115" class="cond"/><text x="435" y="185" text-anchor="middle" class="b">Retención</text><text x="435" y="220" text-anchor="middle" class="s">y espera</text>
+<rect x="570" y="145" width="210" height="115" class="cond"/><text x="675" y="185" text-anchor="middle" class="b">No</text><text x="675" y="220" text-anchor="middle" class="s">expropiación</text>
+<rect x="810" y="145" width="210" height="115" class="cond"/><text x="915" y="185" text-anchor="middle" class="b">Espera</text><text x="915" y="220" text-anchor="middle" class="s">circular</text>
+<path d="M195 280 C195 390, 435 390, 435 280" class="arrow"/><path d="M435 280 C435 390,675 390,675 280" class="arrow"/><path d="M675 280 C675 390,915 390,915 280" class="arrow"/>
+<text x="550" y="445" text-anchor="middle" class="b">Si una de las cuatro deja de cumplirse → el deadlock no puede formarse por ese ciclo</text>
+<text x="915" y="340" text-anchor="middle" class="x">✕</text>
+</svg>

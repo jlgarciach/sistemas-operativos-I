@@ -31,6 +31,11 @@ book:
     - capitulos/18_gestion_memoria_sistemas_multiprogramados.qmd
     - capitulos/19_asignacion_memoria_contigua.qmd
     - capitulos/20_asignacion_memoria_no_contigua.qmd
+    - capitulos/22_introduccion_docker.qmd
+    - capitulos/23_linux_kernel_procesos_servicios.qmd
+    - capitulos/24_apache_mysql_docker.qmd
+    - capitulos/25_crud_php_mysql_docker.qmd
+    - capitulos/26_oracle_docker_cierre_proyecto.qmd
     - capitulos/99_cierre.qmd
   page-footer:
     left: "Editorial Académica de Ingeniería en Sistemas"

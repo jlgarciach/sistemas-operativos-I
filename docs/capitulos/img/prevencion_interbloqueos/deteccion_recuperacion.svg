@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="500" viewBox="0 0 1100 500">
+<style>
+text{font-family:Arial,sans-serif;fill:#263238}.t{font-size:32px;font-weight:700;fill:#1f4e79}.h{font-size:24px;font-weight:700}.s{font-size:20px}
+.box{fill:#f7fafc;stroke:#319f90;stroke-width:3;rx:18}.act{fill:#fff3e0;stroke:#d35400;stroke-width:3;rx:18}.a{stroke:#646464;stroke-width:4;fill:none;marker-end:url(#m)}
+</style><defs><marker id="m" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#646464"/></marker></defs>
+<text x="550" y="45" text-anchor="middle" class="t">Detección y recuperación: permitir, observar, actuar</text>
+<rect x="60" y="150" width="220" height="130" class="box"/><text x="170" y="195" text-anchor="middle" class="h">1. Ejecutar</text><text x="170" y="230" text-anchor="middle" class="s">Se permite la</text><text x="170" y="258" text-anchor="middle" class="s">asignación normal</text>
+<rect x="330" y="150" width="220" height="130" class="box"/><text x="440" y="195" text-anchor="middle" class="h">2. Detectar</text><text x="440" y="230" text-anchor="middle" class="s">Grafo / matrices</text><text x="440" y="258" text-anchor="middle" class="s">buscan bloqueo</text>
+<rect x="600" y="150" width="220" height="130" class="act"/><text x="710" y="195" text-anchor="middle" class="h">3. Recuperar</text><text x="710" y="230" text-anchor="middle" class="s">Terminar proceso</text><text x="710" y="258" text-anchor="middle" class="s">o expropiar recurso</text>
+<rect x="870" y="150" width="170" height="130" class="box"/><text x="955" y="195" text-anchor="middle" class="h">4. Continuar</text><text x="955" y="230" text-anchor="middle" class="s">Recursos</text><text x="955" y="258" text-anchor="middle" class="s">liberados</text>
+<path d="M280 215 L320 215" class="a"/><path d="M550 215 L590 215" class="a"/><path d="M820 215 L860 215" class="a"/>
+<text x="550" y="370" text-anchor="middle" class="h">La detección no impide el interbloqueo: lo identifica cuando ya puede estar presente.</text>
+</svg>

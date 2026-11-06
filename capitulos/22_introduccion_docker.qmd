@@ -1,0 +1,297 @@
+---
+title: "Clase 22. Introducción a Docker: instalación y primeros contenedores"
+subtitle: "Sistemas Operativos I · Proyecto integrador (1 de 5)"
+lang: es
+number-sections: true
+execute:
+  eval: false
+---
+
+::: {.callout-tip title="La pregunta de hoy"}
+**¿Cómo ejecutar y administrar un entorno Linux sin reemplazar el sistema operativo de nuestra computadora?**
+:::
+
+## Propósito de la clase
+
+En este primer laboratorio comenzaremos el **proyecto integrador final**: construir una infraestructura de servicios mediante contenedores. Hoy prepararemos Docker, descargaremos una imagen de Ubuntu y aprenderemos a administrar su ciclo de vida. En las siguientes clases estudiaremos procesos y servicios Linux, Apache, MySQL, un CRUD web y Oracle Database.
+
+**Duración sugerida:** 90 minutos. **Requisito:** computadora con permisos de instalación, conexión a Internet y virtualización disponible.
+
+### Resultados de aprendizaje
+
+Al terminar, el estudiante podrá:
+
+1. Diferenciar sistema operativo, máquina virtual, imagen y contenedor.
+2. Explicar qué papel cumple el kernel en la ejecución de contenedores Linux.
+3. Instalar y comprobar Docker en su computadora.
+4. Descargar una imagen, crear un contenedor, inspeccionarlo, detenerlo y volverlo a iniciar.
+5. Interpretar los mensajes y errores básicos de la terminal.
+
+## 1. ¿Qué es Docker y por qué lo estudiaremos?
+
+**Docker** es una plataforma para empaquetar, distribuir y ejecutar aplicaciones en **contenedores**. Un contenedor ejecuta procesos aislados junto con sus dependencias. Esto facilita reproducir entornos de trabajo sin instalar todos los servicios directamente en el sistema anfitrión.
+
+Pensemos en una computadora donde queremos probar Apache, MySQL y Oracle. Instalarlos directamente puede ocasionar conflictos de versiones, puertos o configuraciones. Los contenedores permiten separar estos entornos y administrarlos individualmente.
+
+::: {.callout-note title="Conceptos esenciales"}
+- **Sistema anfitrión (host):** computadora y sistema operativo donde utilizamos Docker.
+- **Imagen:** plantilla inmutable que contiene el sistema de archivos y la configuración necesaria para crear contenedores.
+- **Contenedor:** instancia ejecutable de una imagen; contiene procesos y una capa de escritura propia.
+- **Docker Engine:** motor que administra imágenes, redes, volúmenes y contenedores.
+- **Docker Desktop:** aplicación que facilita utilizar Docker, especialmente en Windows y macOS.
+- **Registro de imágenes:** repositorio desde el cual se distribuyen imágenes, como Docker Hub.
+:::
+
+### 1.1 Imagen, contenedor y volumen
+
+| Elemento | Analogía | Ejemplo |
+|---|---|---|
+| Imagen | Plano de construcción | `ubuntu:24.04` |
+| Contenedor | Construcción en funcionamiento | `so1-ubuntu` |
+| Volumen | Almacén independiente | Datos de MySQL que deben sobrevivir a la recreación del contenedor |
+
+**Una imagen puede originar varios contenedores independientes.** Eliminar un contenedor no elimina necesariamente su imagen; eliminar un contenedor sin volumen sí puede hacer perder los datos guardados solo en su capa de escritura.
+
+### 1.2 Contenedor versus máquina virtual
+
+| Característica | Máquina virtual | Contenedor Linux |
+|---|---|---|
+| Sistema operativo invitado | Tiene su propio kernel | Comparte el kernel del entorno Linux que lo ejecuta |
+| Aislamiento | Mediante hipervisor y hardware virtualizado | Mediante mecanismos del kernel, como namespaces y cgroups |
+| Arranque | Generalmente más lento | Generalmente más rápido |
+| Uso típico | Ejecutar sistemas operativos completos | Ejecutar aplicaciones y servicios aislados |
+
+::: {.callout-warning title="Precisión importante para Sistemas Operativos I"}
+Un contenedor Ubuntu **no equivale a instalar Ubuntu como máquina virtual**. En un anfitrión Linux, comparte el kernel del anfitrión. En Windows, Docker Desktop suele usar WSL 2; en macOS, una máquina virtual Linux. En estos dos últimos casos, el contenedor comparte el kernel del entorno Linux virtualizado, **no** el kernel de Windows o macOS.
+:::
+
+```{mermaid}
+flowchart TB
+    A[Computadora del estudiante] --> B[Docker Desktop / Docker Engine]
+    B --> C[Entorno con kernel Linux]
+    C --> D[Contenedor Ubuntu]
+    C --> E[Contenedor Apache - próxima clase]
+    C --> F[Contenedor MySQL - próxima clase]
+```
+
+## 2. Preparación e instalación
+
+### 2.1 Verificación previa
+
+Antes de instalar, identificar:
+
+- Sistema operativo y arquitectura del procesador (`x86_64` o `ARM64`).
+- Memoria RAM y espacio libre; consultar los requisitos oficiales de la versión a instalar.
+- Disponibilidad de virtualización y permisos de administrador.
+- Conexión a Internet para descargar imágenes.
+
+**Windows:** comprobar los requisitos de Docker Desktop y WSL 2. **macOS:** elegir la descarga correspondiente a Apple Silicon o Intel. **Linux:** se puede usar Docker Engine directamente; Docker Desktop es opcional. Las rutas y pantallas pueden variar según la versión.
+
+Documentación oficial: <https://docs.docker.com/get-started/get-docker/>.
+
+### 2.2 Instalación guiada
+
+1. Ingresar a la página oficial de instalación de Docker.
+2. Elegir el sistema operativo correcto y descargar el instalador.
+3. Ejecutar la instalación y aceptar los componentes requeridos.
+4. En Windows, completar la configuración de WSL 2 si el instalador lo solicita; reiniciar cuando sea necesario.
+5. Abrir Docker Desktop y esperar a que el motor indique que está en ejecución. En Linux con Docker Engine, verificar que el servicio esté activo.
+6. Abrir **PowerShell**, **Terminal** o la terminal de Linux.
+
+::: {.callout-caution title="Seguridad"}
+Descargue Docker únicamente de sus canales oficiales. Evite ejecutar comandos desconocidos con privilegios de administrador y no comparta contraseñas ni claves en capturas de pantalla.
+:::
+
+### 2.3 Comprobar la instalación
+
+```bash
+# Versión del cliente Docker
+docker --version
+
+# Información del cliente y del servidor
+docker version
+
+# Estado y características del motor
+docker info
+```
+
+**¿Qué observar?** `docker version` debe mostrar información de **Client** y **Server**. Si solo aparece el cliente y hay un error de conexión, el motor no está listo o no se puede alcanzar.
+
+**Prueba inicial:**
+
+```bash
+docker run --rm hello-world
+```
+
+El motor descargará la imagen si hace falta, creará un contenedor de prueba, mostrará un mensaje y lo eliminará al finalizar (`--rm`).
+
+## 3. Laboratorio: nuestro primer Linux
+
+### 3.1 Descargar la imagen
+
+```bash
+docker pull ubuntu:24.04
+```
+
+**Desglose:** `pull` descarga una imagen; `ubuntu` identifica el repositorio; `24.04` selecciona la etiqueta de versión.
+
+```bash
+docker images
+```
+
+**Verificación:** encontrar `ubuntu` con etiqueta `24.04` en el listado.
+
+### 3.2 Crear un contenedor persistente para el laboratorio
+
+```bash
+docker run -dit --name so1-ubuntu ubuntu:24.04 sleep infinity
+```
+
+| Fragmento | Significado |
+|---|---|
+| `docker run` | Crea e inicia un contenedor |
+| `-d` | Lo deja ejecutándose en segundo plano |
+| `-i` | Mantiene abierta la entrada estándar |
+| `-t` | Asigna una terminal virtual |
+| `--name so1-ubuntu` | Asigna un nombre identificable |
+| `ubuntu:24.04` | Imagen que se utilizará |
+| `sleep infinity` | Mantiene activo un proceso principal para el laboratorio |
+
+**¿Por qué usamos `sleep infinity`?** Un contenedor suele detenerse cuando finaliza su proceso principal. Así mantenemos este entorno disponible para practicar. En producción, lo normal es que el proceso principal sea el servicio real.
+
+### 3.3 Consultar y entrar al contenedor
+
+```bash
+# Mostrar contenedores en ejecución
+docker ps
+
+# Mostrar todos, incluso los detenidos
+docker ps -a
+
+# Abrir una terminal bash dentro del contenedor
+docker exec -it so1-ubuntu bash
+```
+
+Ahora estamos **dentro del contenedor Ubuntu**. Ejecutar:
+
+```bash
+whoami
+pwd
+ls -la
+cat /etc/os-release
+uname -r
+```
+
+**Interpretación:** `cat /etc/os-release` muestra la distribución del espacio de usuario (Ubuntu); `uname -r` muestra la versión del kernel del entorno Linux que ejecuta el contenedor. No son la misma información.
+
+### 3.4 Crear nuestro primer archivo
+
+Dentro del contenedor:
+
+```bash
+mkdir -p /opt/laboratorio
+printf 'Hola desde Sistemas Operativos I\n' > /opt/laboratorio/bienvenida.txt
+cat /opt/laboratorio/bienvenida.txt
+exit
+```
+
+`exit` cierra la terminal interactiva; **no detiene** el contenedor mientras continúe ejecutándose su proceso principal.
+
+### 3.5 Detener, iniciar y recuperar el archivo
+
+En la terminal de la computadora:
+
+```bash
+docker stop so1-ubuntu
+docker ps -a
+docker start so1-ubuntu
+docker exec -it so1-ubuntu cat /opt/laboratorio/bienvenida.txt
+```
+
+**Discusión:** el archivo permanece después de detener y reiniciar el mismo contenedor. Eso **no** garantiza que sobreviva a la eliminación y recreación: para datos importantes usaremos volúmenes en próximas clases.
+
+### 3.6 Observar recursos e información
+
+```bash
+docker stats --no-stream
+docker inspect so1-ubuntu
+```
+
+`stats` presenta consumo de recursos; `inspect` devuelve detalles técnicos en JSON. No es necesario comprender todos los campos hoy.
+
+## 4. Experimentemos: aprender haciendo
+
+### Experimento A. ¿Qué sucede si intentamos repetir un nombre?
+
+Ejecutar nuevamente el comando de creación del contenedor `so1-ubuntu`. Registrar el mensaje de error. **Pregunta:** ¿qué diferencia existe entre crear otro contenedor y volver a iniciar uno existente?
+
+### Experimento B. ¿Dónde se ejecuta el comando?
+
+Comparar los resultados de `cat /etc/os-release` en el contenedor y la información del sistema anfitrión. En Windows, ejecutar el comando Linux dentro del contenedor; en macOS, hacerlo dentro del contenedor, no en la terminal del anfitrión.
+
+### Experimento C. El proceso principal
+
+```bash
+docker run --name so1-prueba ubuntu:24.04 echo "Proceso terminado"
+docker ps -a
+```
+
+**Pregunta:** ¿por qué `so1-prueba` aparece detenido? El comando `echo` termina inmediatamente; por eso finaliza el contenedor.
+
+Limpieza del contenedor de prueba:
+
+```bash
+docker rm so1-prueba
+```
+
+**Conservar `so1-ubuntu` para la siguiente clase.**
+
+## 5. Problemas frecuentes
+
+| Síntoma | Causa probable | Qué revisar |
+|---|---|---|
+| `docker: command not found` | Cliente no instalado o no disponible en `PATH` | Instalación y nueva terminal |
+| No conecta con Docker Engine | Motor detenido o contexto incorrecto | Docker Desktop / servicio Docker / `docker context ls` |
+| Error al descargar imagen | Red, DNS o registro inaccesible | Internet y reintentar `docker pull` |
+| `Conflict. The container name ... is already in use` | Ya existe un contenedor con ese nombre | `docker ps -a`; reutilizarlo o elegir otro nombre |
+| `container is not running` | El contenedor está detenido | `docker start so1-ubuntu` |
+| Error de permisos en Linux | Usuario sin acceso al socket Docker | Consultar configuración oficial; no aplicar permisos inseguros |
+
+## 6. Comprobación del aprendizaje
+
+Responder con palabras propias:
+
+1. ¿Qué diferencia existe entre una imagen y un contenedor?
+2. ¿Por qué `ubuntu:24.04` no representa un sistema operativo completo con kernel independiente?
+3. ¿Qué diferencia hay entre `docker ps` y `docker ps -a`?
+4. ¿Por qué el contenedor `so1-prueba` se detuvo, pero `so1-ubuntu` permanece activo?
+5. ¿Qué ocurre con un archivo si detenemos y reiniciamos el mismo contenedor? ¿Qué riesgo existe si lo eliminamos?
+6. En una computadora Windows, ¿el contenedor Linux comparte directamente el kernel de Windows? Explicar.
+
+## 7. Evidencia del laboratorio y proyecto integrador
+
+**Entregable de hoy:** un archivo PDF breve con capturas legibles de: (a) versión de Docker y motor operativo, (b) `docker images`, (c) `docker ps`, (d) Ubuntu identificado con `/etc/os-release` y (e) archivo `bienvenida.txt` recuperado después de reiniciar el contenedor. Acompañar las capturas con respuestas a las preguntas 2 y 5.
+
+::: {.callout-success title="Punto de control del proyecto final"}
+**Infraestructura construida:** Docker operativo + imagen Ubuntu + contenedor `so1-ubuntu` administrable. **Próximo paso:** estudiar procesos, kernel y servicios Linux con este mismo entorno.
+:::
+
+## 8. Guía para el docente: distribución sugerida (90 minutos)
+
+| Minutos | Actividad |
+|---:|---|
+| 0–15 | Problema inicial, conceptos y comparación VM/contenedor |
+| 15–35 | Instalación y comprobación de Docker |
+| 35–55 | Imagen Ubuntu, creación y acceso al contenedor |
+| 55–70 | Archivos, detención y reinicio |
+| 70–80 | Experimentos y resolución de errores |
+| 80–90 | Preguntas, evidencias y conexión con el proyecto final |
+
+**Plan de contingencia:** si varias instalaciones toman demasiado tiempo, realizar una demostración proyectada y dejar la finalización de la instalación como actividad posterior. No acelerar los conceptos fundamentales por resolver fallas individuales.
+
+## Referencias y consulta
+
+- Docker Docs. *Get Docker*: <https://docs.docker.com/get-started/get-docker/>
+- Docker Docs. *Docker overview*: <https://docs.docker.com/get-started/docker-overview/>
+- Docker Docs. *Docker CLI reference*: <https://docs.docker.com/reference/cli/docker/>
+- Docker Docs. *Docker Engine security*: <https://docs.docker.com/engine/security/>

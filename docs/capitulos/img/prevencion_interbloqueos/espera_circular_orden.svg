@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="600" viewBox="0 0 1100 600">
+<style>
+text{font-family:Arial,sans-serif;fill:#263238}.t{font-size:32px;font-weight:700;fill:#1f4e79}.h{font-size:25px;font-weight:700}.s{font-size:21px}
+.p{fill:#e8f5e9;stroke:#319f90;stroke-width:3}.r{fill:#fff3e0;stroke:#d35400;stroke-width:3}.a{stroke:#646464;stroke-width:4;fill:none;marker-end:url(#m)}
+</style><defs><marker id="m" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#646464"/></marker></defs>
+<text x="550" y="45" text-anchor="middle" class="t">Espera circular: sin orden vs. con orden global de recursos</text>
+<text x="275" y="95" text-anchor="middle" class="h">Sin prevención: puede cerrarse un ciclo</text>
+<circle cx="170" cy="210" r="48" class="p"/><text x="170" y="218" text-anchor="middle" class="h">P1</text>
+<rect x="350" y="165" width="95" height="90" class="r"/><text x="397" y="220" text-anchor="middle" class="h">R2</text>
+<circle cx="395" cy="390" r="48" class="p"/><text x="395" y="398" text-anchor="middle" class="h">P2</text>
+<rect x="125" y="345" width="95" height="90" class="r"/><text x="172" y="400" text-anchor="middle" class="h">R1</text>
+<path d="M218 210 L340 210" class="a"/><path d="M397 255 L397 332" class="a"/><path d="M347 390 L230 390" class="a"/><path d="M172 345 L172 270" class="a"/>
+<text x="275" y="500" text-anchor="middle" class="s">P1 espera R2; P2 espera R1.</text>
+
+<text x="825" y="95" text-anchor="middle" class="h">Con prevención: R1 → R2 → R3</text>
+<rect x="610" y="175" width="110" height="85" class="r"/><text x="665" y="228" text-anchor="middle" class="h">R1</text>
+<rect x="770" y="175" width="110" height="85" class="r"/><text x="825" y="228" text-anchor="middle" class="h">R2</text>
+<rect x="930" y="175" width="110" height="85" class="r"/><text x="985" y="228" text-anchor="middle" class="h">R3</text>
+<path d="M720 218 L760 218" class="a"/><path d="M880 218 L920 218" class="a"/>
+<circle cx="665" cy="380" r="45" class="p"/><text x="665" y="388" text-anchor="middle" class="h">P1</text>
+<circle cx="825" cy="380" r="45" class="p"/><text x="825" y="388" text-anchor="middle" class="h">P2</text>
+<circle cx="985" cy="380" r="45" class="p"/><text x="985" y="388" text-anchor="middle" class="h">P3</text>
+<path d="M665 335 L665 270" class="a"/><path d="M825 335 L825 270" class="a"/><path d="M985 335 L985 270" class="a"/>
+<text x="825" y="500" text-anchor="middle" class="s">Todos solicitan recursos en el mismo orden.</text>
+</svg>

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650">
+<style>
+text { font-family: Arial, Helvetica, sans-serif; fill:#243447; }
+.title { font-size:32px; font-weight:700; fill:#1f4e79; }
+.label { font-size:24px; font-weight:700; }
+.small { font-size:19px; }
+.box { fill:#ffffff; stroke:#319f90; stroke-width:3; rx:18; }
+.accent { fill:#fbeae5; stroke:#d35400; stroke-width:3; rx:18; }
+.line { stroke:#646464; stroke-width:4; fill:none; }
+.arrow { stroke:#646464; stroke-width:4; fill:none; marker-end:url(#arrow); }
+</style>
+<defs><marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#646464"/></marker></defs>
+<rect width="100%" height="100%" fill="#f8fafb"/>
+<text x="60" y="60" class="title">Usuarios, grupos y permisos</text>
+
+<rect x="70" y="230" width="260" height="180" class="box"/><text x="145" y="290" class="label">Usuarios</text><text x="110" y="335" class="small">Identidades individuales</text><text x="125" y="370" class="small">Jorge · Ana · Luis</text>
+<rect x="470" y="230" width="260" height="180" class="accent"/><text x="550" y="290" class="label">Grupos</text><text x="505" y="335" class="small">Docentes · Estudiantes</text><text x="535" y="370" class="small">Administrativos</text>
+<rect x="870" y="230" width="260" height="180" class="box"/><text x="940" y="290" class="label">Permisos</text><text x="915" y="335" class="small">Leer · escribir · ejecutar</text><text x="930" y="370" class="small">Modificar · eliminar</text>
+<line x1="330" y1="320" x2="470" y2="320" class="arrow"/><line x1="730" y1="320" x2="870" y2="320" class="arrow"/>
+
+</svg>

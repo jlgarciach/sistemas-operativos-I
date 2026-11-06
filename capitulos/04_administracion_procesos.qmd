@@ -1,4 +1,3 @@
-
 ---
 title: "Clase 4. Administración de Procesos"
 author: "Editorial Académica de Ingeniería en Sistemas"

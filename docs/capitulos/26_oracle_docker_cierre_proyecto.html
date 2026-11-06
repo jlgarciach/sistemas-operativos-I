@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es" xml:lang="es"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>27&nbsp; Clase 26. Oracle Database Free y defensa del proyecto integrador – Sistemas Operativos I</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../capitulos/99_cierre.html" rel="next">
+<link href="../capitulos/25_crud_php_mysql_docker.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-00cb48ef4f8381ff23467c959274e61b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-663c59e08f2ec96d6b2ddc79a12e8e5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No se han encontrado resultados",
+    "search-matching-documents-text": "documentos encontrados",
+    "search-copy-link-title": "Copiar el enlace en la búsqueda",
+    "search-hide-matches-text": "Ocultar resultados adicionales",
+    "search-more-match-text": "resultado adicional en este documento",
+    "search-more-matches-text": "resultados adicionales en este documento",
+    "search-clear-button-title": "Borrar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Buscar"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../capitulos/26_oracle_docker_cierre_proyecto.html"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Clase 26. Oracle Database Free y defensa del proyecto integrador</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Buscar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Sistemas Operativos I</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Buscar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">index.html</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/01_introduccion_sistemas_operativos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Presentación de la clase</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/02_administracion_sistema_archivos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Administración del sistema de archivos desde la línea de comandos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/03_sistemas_operativos_red.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Clase 3. Sistemas Operativos de Red</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/04_administracion_procesos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Clase 4. Administración de Procesos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/05_control_procesos_concurrencia.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Clase 5. Control de Procesos y Concurrencia</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/06_algoritmos_de_planificacion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Capítulo 6. ¿Cómo decide el Sistema Operativo quién utiliza el procesador?</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/07_capas_del_sistema_operativo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Capítulo 7. Del hardware al usuario: comprendiendo las capas del Sistema Operativo</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/08_interbloqueos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Capítulo 8. Cuando nadie puede avanzar: introducción a los interbloqueos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/09_prevencion_deteccion_interbloqueos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Capítulo 9. Prevención, detección y recuperación de interbloqueos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/10_actividad_diagnostico_sistema_operativo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Actividad - Diagnóstico de un Sistema Operativo</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/11_actividad_diagnostico_sistema_operativo_respuestas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Actividad - Diagnóstico de un Sistema Operativo</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/12_virtualizacion_sistemas_operativos.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Capítulo 12. Virtualización de Sistemas Operativos</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/13_manejo_memoria_paginacion_particiones.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Capítulo 13. Manejo de memoria: particiones y paginación</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/14_administracion_memoria_en_ejecucion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Capítulo 14. Administración de memoria en ejecución</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/15_metodos_ajuste_memoria_con_solucion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Capítulo 15. Métodos de ajuste de memoria</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/15_metodos_ajuste_memoria.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Capítulo 15. Métodos de ajuste de memoria</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/16_actividad_reto_administracion_memoria.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Actividad en clase: Reto de Administración de Memoria</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/17_gestion_memoria_sistemas_monoprogramados.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Gestión de Memoria en Sistemas Monoprogramados</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/18_gestion_memoria_sistemas_multiprogramados.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Gestión de Memoria en Sistemas Multiprogramados</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/19_asignacion_memoria_contigua.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Asignación de Memoria Contigua</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/20_asignacion_memoria_no_contigua.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Asignación de Memoria No Contigua</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/22_introduccion_docker.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Clase 22. Introducción a Docker: instalación y primeros contenedores</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/23_linux_kernel_procesos_servicios.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Clase 23. Linux, kernel, procesos y administración de servicios en Docker</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/24_apache_mysql_docker.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Clase 24. Servicios Apache y MySQL con Docker Compose</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/25_crud_php_mysql_docker.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Clase 25. CRUD web con PHP, Apache y MySQL</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/26_oracle_docker_cierre_proyecto.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Clase 26. Oracle Database Free y defensa del proyecto integrador</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/99_cierre.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Cierre de la clase</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Tabla de contenidos</h2>
+   
+  <ul>
+  <li><a href="#propósito-y-preparación" id="toc-propósito-y-preparación" class="nav-link active" data-scroll-target="#propósito-y-preparación"><span class="header-section-number">27.1</span> Propósito y preparación</a></li>
+  <li><a href="#repaso-mysql-frente-a-oracle" id="toc-repaso-mysql-frente-a-oracle" class="nav-link" data-scroll-target="#repaso-mysql-frente-a-oracle"><span class="header-section-number">27.2</span> Repaso: MySQL frente a Oracle</a></li>
+  <li><a href="#imagen-oficial-y-requisitos" id="toc-imagen-oficial-y-requisitos" class="nav-link" data-scroll-target="#imagen-oficial-y-requisitos"><span class="header-section-number">27.3</span> Imagen oficial y requisitos</a></li>
+  <li><a href="#laboratorio-iniciar-oracle-en-equipo-compatible" id="toc-laboratorio-iniciar-oracle-en-equipo-compatible" class="nav-link" data-scroll-target="#laboratorio-iniciar-oracle-en-equipo-compatible"><span class="header-section-number">27.4</span> Laboratorio: iniciar Oracle (en equipo compatible)</a>
+  <ul class="collapse">
+  <li><a href="#verificar-la-compatibilidad-de-la-imagen-paso-obligatorio" id="toc-verificar-la-compatibilidad-de-la-imagen-paso-obligatorio" class="nav-link" data-scroll-target="#verificar-la-compatibilidad-de-la-imagen-paso-obligatorio"><span class="header-section-number">27.4.1</span> Verificar la compatibilidad de la imagen (paso obligatorio)</a></li>
+  </ul></li>
+  <li><a href="#acceso-a-oracle-sql-developer-o-terminal" id="toc-acceso-a-oracle-sql-developer-o-terminal" class="nav-link" data-scroll-target="#acceso-a-oracle-sql-developer-o-terminal"><span class="header-section-number">27.5</span> Acceso a Oracle: SQL Developer o terminal</a>
+  <ul class="collapse">
+  <li><a href="#elegir-una-herramienta-de-conexión" id="toc-elegir-una-herramienta-de-conexión" class="nav-link" data-scroll-target="#elegir-una-herramienta-de-conexión"><span class="header-section-number">27.5.1</span> Elegir una herramienta de conexión</a></li>
+  <li><a href="#preparar-sqlplus-y-comprobar-el-entorno" id="toc-preparar-sqlplus-y-comprobar-el-entorno" class="nav-link" data-scroll-target="#preparar-sqlplus-y-comprobar-el-entorno"><span class="header-section-number">27.5.2</span> Preparar SQL*Plus y comprobar el entorno</a></li>
+  <li><a href="#crear-el-usuario-de-prácticas" id="toc-crear-el-usuario-de-prácticas" class="nav-link" data-scroll-target="#crear-el-usuario-de-prácticas"><span class="header-section-number">27.5.3</span> Crear el usuario de prácticas</a></li>
+  <li><a href="#conectarse-como-biblioteca_umg" id="toc-conectarse-como-biblioteca_umg" class="nav-link" data-scroll-target="#conectarse-como-biblioteca_umg"><span class="header-section-number">27.5.4</span> Conectarse como <code>biblioteca_umg</code></a></li>
+  </ul></li>
+  <li><a href="#dos-tablas-y-consultas-en-oracle" id="toc-dos-tablas-y-consultas-en-oracle" class="nav-link" data-scroll-target="#dos-tablas-y-consultas-en-oracle"><span class="header-section-number">27.6</span> Dos tablas y consultas en Oracle</a></li>
+  <li><a href="#experimento-de-persistencia" id="toc-experimento-de-persistencia" class="nav-link" data-scroll-target="#experimento-de-persistencia"><span class="header-section-number">27.7</span> Experimento de persistencia</a></li>
+  <li><a href="#proyecto-final-defensa-práctica-individual" id="toc-proyecto-final-defensa-práctica-individual" class="nav-link" data-scroll-target="#proyecto-final-defensa-práctica-individual"><span class="header-section-number">27.8</span> Proyecto final: defensa práctica individual</a>
+  <ul class="collapse">
+  <li><a href="#preguntas-sorpresa-para-cada-integrante" id="toc-preguntas-sorpresa-para-cada-integrante" class="nav-link" data-scroll-target="#preguntas-sorpresa-para-cada-integrante"><span class="header-section-number">27.8.1</span> Preguntas sorpresa para cada integrante</a></li>
+  </ul></li>
+  <li><a href="#rúbrica-del-proyecto-integrador-100-puntos" id="toc-rúbrica-del-proyecto-integrador-100-puntos" class="nav-link" data-scroll-target="#rúbrica-del-proyecto-integrador-100-puntos"><span class="header-section-number">27.9</span> Rúbrica del proyecto integrador (100 puntos)</a></li>
+  <li><a href="#entregables" id="toc-entregables" class="nav-link" data-scroll-target="#entregables"><span class="header-section-number">27.10</span> Entregables</a></li>
+  <li><a href="#reflexión-final" id="toc-reflexión-final" class="nav-link" data-scroll-target="#reflexión-final"><span class="header-section-number">27.11</span> Reflexión final</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Clase 26. Oracle Database Free y defensa del proyecto integrador</span></h1>
+<p class="subtitle lead">Sistemas Operativos I · Proyecto integrador (5 de 5)</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout callout-style-default callout-tip callout-titled" title="Tres preguntas fundamentales">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Tres preguntas fundamentales
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>¿Qué cambia al desplegar Oracle en lugar de MySQL y qué permanece igual en Docker?</li>
+<li>¿Cómo verificamos que una base de datos está disponible y conserva sus datos?</li>
+<li>¿Puede cada integrante explicar y operar la infraestructura del equipo?</li>
+</ol>
+</div>
+</div>
+<section id="propósito-y-preparación" class="level2" data-number="27.1">
+<h2 data-number="27.1" class="anchored" data-anchor-id="propósito-y-preparación"><span class="header-section-number">27.1</span> Propósito y preparación</h2>
+<p><strong>Duración sugerida:</strong> 90 minutos para demostración y defensa; la descarga e inicialización de Oracle pueden requerir tiempo adicional. <strong>Producto:</strong> Oracle Database Free desplegado, conexión SQL funcional, dos tablas relacionadas y defensa individual del proyecto final.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="Compatibilidad antes de la clase">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Advertencia</span>Compatibilidad antes de la clase
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Las imágenes oficiales de Oracle Database Free, sus etiquetas y arquitecturas admitidas pueden cambiar. <strong>Verificar la etiqueta vigente, los requisitos de memoria y CPU y la disponibilidad para <code>linux/amd64</code> o <code>linux/arm64</code> antes del laboratorio.</strong> En equipos ARM o con memoria insuficiente, utilizar una computadora de demostración o servidor del docente; no forzar emulación pesada como requisito universal.</p>
+</div>
+</div>
+</section>
+<section id="repaso-mysql-frente-a-oracle" class="level2" data-number="27.2">
+<h2 data-number="27.2" class="anchored" data-anchor-id="repaso-mysql-frente-a-oracle"><span class="header-section-number">27.2</span> Repaso: MySQL frente a Oracle</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Concepto</th>
+<th>MySQL</th>
+<th>Oracle Database Free</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Motor</td>
+<td>Relacional</td>
+<td>Relacional</td>
+</tr>
+<tr class="even">
+<td>Puerto habitual</td>
+<td>3306</td>
+<td>1521 (listener)</td>
+</tr>
+<tr class="odd">
+<td>Cliente</td>
+<td>MySQL Workbench</td>
+<td>Oracle SQL Developer o SQLcl</td>
+</tr>
+<tr class="even">
+<td>Lenguaje</td>
+<td>SQL con particularidades MySQL</td>
+<td>SQL con particularidades Oracle</td>
+</tr>
+<tr class="odd">
+<td>Persistencia</td>
+<td>Volumen Docker</td>
+<td>Volumen Docker</td>
+</tr>
+<tr class="even">
+<td>Identificación</td>
+<td>Base de datos / esquema</td>
+<td>Servicio, usuario y esquema</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Oracle Database Free</strong> es una edición gratuita con límites de recursos y uso definidos por Oracle. Un <strong>listener</strong> recibe conexiones de clientes; el <strong>servicio</strong> identifica la base o PDB a la que se conecta el cliente. En instalaciones habituales de Oracle Free, <code>FREEPDB1</code> identifica la base pluggable de trabajo; confirmar en la imagen utilizada.</p>
+</section>
+<section id="imagen-oficial-y-requisitos" class="level2" data-number="27.3">
+<h2 data-number="27.3" class="anchored" data-anchor-id="imagen-oficial-y-requisitos"><span class="header-section-number">27.3</span> Imagen oficial y requisitos</h2>
+<p>Consultar la documentación oficial y el repositorio de imágenes de Oracle antes de la sesión:</p>
+<ul>
+<li>Oracle Container Registry: <code>https://container-registry.oracle.com/</code></li>
+<li>Repositorio oficial de imágenes: <code>https://github.com/oracle/docker-images</code></li>
+<li>Documentación de Oracle Database Free: consultar la versión que se desplegará.</li>
+</ul>
+<p>La ruta de imagen de referencia utilizada frecuentemente es <code>container-registry.oracle.com/database/free:latest</code>, <strong>sujeta a disponibilidad, licencia y compatibilidad</strong>. Si el registro solicita aceptar términos, hacerlo desde el portal oficial. Evitar imágenes de terceros no verificadas.</p>
+</section>
+<section id="laboratorio-iniciar-oracle-en-equipo-compatible" class="level2" data-number="27.4">
+<h2 data-number="27.4" class="anchored" data-anchor-id="laboratorio-iniciar-oracle-en-equipo-compatible"><span class="header-section-number">27.4</span> Laboratorio: iniciar Oracle (en equipo compatible)</h2>
+<p>En la terminal del anfitrión, primero confirmar recursos y arquitectura:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> info</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> version</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="verificar-la-compatibilidad-de-la-imagen-paso-obligatorio" class="level3" data-number="27.4.1">
+<h3 data-number="27.4.1" class="anchored" data-anchor-id="verificar-la-compatibilidad-de-la-imagen-paso-obligatorio"><span class="header-section-number">27.4.1</span> Verificar la compatibilidad de la imagen (paso obligatorio)</h3>
+<p>Una <strong>imagen</strong> es la plantilla descargada; de ella pueden crearse varios <strong>contenedores independientes</strong> sin volver a descargarla. Los contenedores comparten las capas de solo lectura de la imagen, pero tienen procesos y capas de escritura propios. Para ejecutar varias bases de datos, utilizar nombres, puertos y volúmenes distintos.</p>
+<p>Docker Desktop en Mac con Apple Silicon utiliza <code>linux/arm64</code>; muchos equipos Windows y Linux con Intel/AMD utilizan <code>linux/amd64</code>. <strong>No basta con que Docker funcione: la imagen también debe admitir la arquitectura del equipo.</strong> Consultar las plataformas publicadas:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> manifest inspect container-registry.oracle.com/database/free:latest</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Buscar dentro de <code>manifests</code> un objeto <code>platform</code> con <code>os: linux</code> y <code>architecture: arm64</code> o <code>amd64</code>, según corresponda. <strong>Comprobación realizada el 5 de noviembre de 2026:</strong> la etiqueta <code>latest</code> devolvió ambas arquitecturas (<code>linux/amd64</code> y <code>linux/arm64</code>). Esta disponibilidad puede cambiar; volver a verificarla antes de cada curso. La presencia de la plataforma confirma compatibilidad de arquitectura, <strong>no garantiza por sí sola el arranque ni los recursos suficientes</strong>.</p>
+<p><strong>Solo si la etiqueta es compatible y está disponible:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> pull container-registry.oracle.com/database/free:latest</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> volume create oracle_datos_umg</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="at">--name</span> umg-oracle <span class="dt">\</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">-p</span> 127.0.0.1:1521:1521 <span class="dt">\</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-e</span> ORACLE_PWD=<span class="st">'OracleLab_2026!'</span> <span class="dt">\</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-v</span> oracle_datos_umg:/opt/oracle/oradata <span class="dt">\</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  container-registry.oracle.com/database/free:latest</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="callout callout-style-default callout-note callout-titled" title="Windows CMD y PowerShell">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Windows CMD y PowerShell
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Los comandos multilínea anteriores usan <code>\</code> para Bash. En <strong>PowerShell</strong>, escribir todo el <code>docker run</code> en una sola línea o usar el acento grave <code>`</code> como continuador; en <strong>CMD</strong>, usar una sola línea o <code>^</code>. Ejemplo en una línea:</p>
+<p><code>docker run -d --name umg-oracle -p 127.0.0.1:1521:1521 -e ORACLE_PWD=OracleLab_2026! -v oracle_datos_umg:/opt/oracle/oradata container-registry.oracle.com/database/free:latest</code></p>
+</div>
+</div>
+<p>Revisar el arranque:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> ps <span class="at">-a</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> logs <span class="at">-f</span> umg-oracle</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Esperar el mensaje de disponibilidad de la base de datos</strong>; el primer inicio puede tardar varios minutos. Interrumpir <code>docker logs -f</code> con Ctrl+C <strong>no detiene</strong> el contenedor. En <code>docker ps -a</code>, verificar que <code>umg-oracle</code> aparezca como <code>Up ... (healthy)</code>; el estado saludable indica que pasó su comprobación interna.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Si el contenedor ya existe">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Si el contenedor ya existe
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>No repetir <code>docker run --name umg-oracle</code>: produciría un conflicto de nombre. Para volver a utilizarlo, ejecutar <code>docker start umg-oracle</code>. La imagen descargada permanece disponible localmente.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="acceso-a-oracle-sql-developer-o-terminal" class="level2" data-number="27.5">
+<h2 data-number="27.5" class="anchored" data-anchor-id="acceso-a-oracle-sql-developer-o-terminal"><span class="header-section-number">27.5</span> Acceso a Oracle: SQL Developer o terminal</h2>
+<p><strong>Objetivo:</strong> conectarse a la base Oracle que ya está ejecutándose en Docker, crear un usuario de prácticas y entrar con él. <strong>No se ejecuta <code>CREATE USER</code> directamente en la terminal de macOS o Windows</strong>: son instrucciones SQL y requieren un cliente conectado a Oracle.</p>
+<section id="elegir-una-herramienta-de-conexión" class="level3" data-number="27.5.1">
+<h3 data-number="27.5.1" class="anchored" data-anchor-id="elegir-una-herramienta-de-conexión"><span class="header-section-number">27.5.1</span> Elegir una herramienta de conexión</h3>
+<p><strong>Opción A — Oracle SQL Developer (interfaz gráfica).</strong> Descargarlo desde la <a href="https://www.oracle.com/database/sqldeveloper/technologies/download/">página oficial de Oracle SQL Developer</a>, elegir la distribución adecuada al sistema operativo y seguir las instrucciones del instalador. En macOS, comprobar los requisitos de Java y compatibilidad de la versión descargada; en Windows, seleccionar la edición apropiada. <strong>SQL Developer se ejecuta en el equipo anfitrión, no dentro del contenedor.</strong> Si el estudiante ya dispone de SQL Developer, omitir la instalación.</p>
+<ol type="1">
+<li>Abrir <strong>Oracle SQL Developer</strong>.</li>
+<li>En el panel <strong>Conexiones</strong>, pulsar el signo <strong>+</strong> o <strong>Nueva conexión</strong>.</li>
+<li>Asignar el nombre <code>Oracle-UMG-Admin</code> y completar los campos siguientes.</li>
+<li>Seleccionar <strong>Nombre de servicio</strong> (no SID) e ingresar <code>FREEPDB1</code>.</li>
+<li>Pulsar <strong>Probar</strong>. Si indica conexión correcta, pulsar <strong>Conectar</strong>.</li>
+<li>Abrir una <strong>hoja de trabajo SQL</strong> para esa conexión y ejecutar el bloque de creación del usuario (con <strong>F5 / Ejecutar script</strong>, según la versión).</li>
+</ol>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Campo</th>
+<th>Valor de ejemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Nombre de conexión</td>
+<td><code>Oracle-UMG-Admin</code></td>
+</tr>
+<tr class="even">
+<td>Host</td>
+<td><code>127.0.0.1</code></td>
+</tr>
+<tr class="odd">
+<td>Puerto</td>
+<td><code>1521</code></td>
+</tr>
+<tr class="even">
+<td>Tipo de conexión</td>
+<td>Basic / Básica</td>
+</tr>
+<tr class="odd">
+<td>Service name / Nombre del servicio</td>
+<td><code>FREEPDB1</code></td>
+</tr>
+<tr class="even">
+<td>Usuario administrador</td>
+<td><code>SYSTEM</code></td>
+</tr>
+<tr class="odd">
+<td>Contraseña</td>
+<td><code>OracleLab_2026!</code> (la indicada en <code>ORACLE_PWD</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>**Opción B — SQL*Plus desde Docker (sin instalar una aplicación gráfica).** Abrir la terminal del anfitrión y ejecutar:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec <span class="at">-it</span> <span class="at">-e</span> NLS_LANG=AMERICAN_AMERICA.AL32UTF8 umg-oracle sqlplus system@//localhost:1521/FREEPDB1</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ingresar la contraseña de <code>SYSTEM</code> cuando la solicite. <strong>No se mostrará mientras se escribe.</strong> Al aparecer <code>SQL&gt;</code>, ejecutar el mismo bloque SQL de la sección siguiente. Para salir, escribir <code>EXIT;</code>. Si el comando <code>sqlplus</code> no se encuentra en la imagen concreta, utilizar la opción gráfica o verificar las herramientas cliente disponibles en esa versión.</p>
+<div class="callout callout-style-default callout-important callout-titled" title="No confundir las contraseñas">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Importante</span>No confundir las contraseñas
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>OracleLab_2026!</code> corresponde a la cuenta administradora <code>SYSTEM</code> configurada con <code>ORACLE_PWD</code>; <code>BibliotecaLab_2026!</code> será la contraseña <strong>distinta</strong> del usuario de prácticas <code>biblioteca_umg</code>. Son credenciales exclusivamente didácticas: no reutilizarlas en servicios públicos o producción.</p>
+</div>
+</div>
+</section>
+<section id="preparar-sqlplus-y-comprobar-el-entorno" class="level3" data-number="27.5.2">
+<h3 data-number="27.5.2" class="anchored" data-anchor-id="preparar-sqlplus-y-comprobar-el-entorno"><span class="header-section-number">27.5.2</span> Preparar SQL*Plus y comprobar el entorno</h3>
+<div class="callout callout-style-default callout-warning callout-titled" title="Ejecutar una instrucción a la vez">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Advertencia</span>Ejecutar una instrucción a la vez
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>En **SQL*Plus<strong>, copiar </strong>un solo comando**, pulsar Enter y esperar el resultado antes de continuar. Los comandos <code>SHOW</code>, <code>SET</code> y <code>COLUMN</code> se ejecutan en líneas independientes (sin necesidad de <code>;</code>). Las instrucciones SQL (<code>SELECT</code>, <code>CREATE</code>, <code>GRANT</code>, <code>INSERT</code>, etc.) terminan en <code>;</code>. Al pegar varias líneas pueden aparecer <code>2</code>, <code>3</code>, <code>4</code> o varios <code>SQL&gt;</code>: son indicadores de continuación, no texto añadido al código. No intentar borrarlos. Para simplificar, ejecutar <code>SET SQLNUMBER OFF</code> en una línea independiente.</p>
+</div>
+</div>
+<p>Si la conexión como <code>SYSTEM</code> falla por contraseña (<code>ORA-01017</code>), no escribir el nombre del contenedor ni la contraseña en <code>Enter user-name</code>. Salir de SQL*Plus y, <strong>solo en este laboratorio local bajo control del estudiante</strong>, abrir una sesión administrativa desde la terminal del anfitrión:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec <span class="at">-it</span> <span class="at">-u</span> oracle umg-oracle sqlplus / as sysdba</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Dentro de SQL*Plus, ejecutar <strong>cada uno de estos comandos por separado</strong>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>SHOW <span class="fu">USER</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">SESSION</span> <span class="kw">SET</span> <span class="kw">CONTAINER</span> <span class="op">=</span> FREEPDB1;</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>SHOW CON_NAME</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Verificar que el usuario sea <code>SYS</code>, que aparezca <code>Session altered.</code> y que el contenedor de Oracle sea <code>FREEPDB1</code>. <strong>No confundir</strong> el contenedor Docker <code>umg-oracle</code> con la base de datos conectable (PDB) <code>FREEPDB1</code>. <code>ALTER SESSION</code> cambia la PDB, pero no eleva privilegios. Si se utiliza <code>SYSTEM</code> conectado directamente al servicio <code>FREEPDB1</code>, no es necesario cambiar de PDB.</p>
+</section>
+<section id="crear-el-usuario-de-prácticas" class="level3" data-number="27.5.3">
+<h3 data-number="27.5.3" class="anchored" data-anchor-id="crear-el-usuario-de-prácticas"><span class="header-section-number">27.5.3</span> Crear el usuario de prácticas</h3>
+<p><strong>Nunca utilizar <code>SYSTEM</code> como cuenta de la aplicación.</strong> Conectarse con <code>SYSTEM</code> <strong>al servicio <code>FREEPDB1</code></strong> y ejecutar:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="fu">USER</span> biblioteca_umg <span class="kw">IDENTIFIED</span> <span class="kw">BY</span> <span class="ot">"BibliotecaLab_2026!"</span>;</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">CREATE</span> <span class="kw">SESSION</span>, <span class="kw">CREATE</span> <span class="kw">TABLE</span>, <span class="kw">CREATE</span> <span class="kw">SEQUENCE</span> <span class="kw">TO</span> biblioteca_umg;</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="fu">USER</span> biblioteca_umg <span class="kw">QUOTA</span> <span class="dv">100</span>M <span class="kw">ON</span> USERS;</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ejecutar <strong>cada sentencia por separado</strong>: esperar <code>User created.</code>, <code>Grant succeeded.</code> y <code>User altered.</code>. El privilegio <code>CREATE SEQUENCE</code> se incluye para las columnas <code>GENERATED ... AS IDENTITY</code> del ejemplo. Si se accedió como <code>SYSDBA</code>, comprobar primero <code>SHOW CON_NAME</code> = <code>FREEPDB1</code>. Si el usuario ya existe porque se ejecutó previamente el laboratorio, no repetir <code>CREATE USER</code>: comprobar su existencia y continuar con la conexión. Si el tablespace predeterminado no es <code>USERS</code>, el docente deberá ajustar la cuota al tablespace asignado.</p>
+</section>
+<section id="conectarse-como-biblioteca_umg" class="level3" data-number="27.5.4">
+<h3 data-number="27.5.4" class="anchored" data-anchor-id="conectarse-como-biblioteca_umg"><span class="header-section-number">27.5.4</span> Conectarse como <code>biblioteca_umg</code></h3>
+<p>En SQL Developer, crear <strong>otra conexión</strong>, por ejemplo <code>Oracle-UMG-Practica</code>, con host <code>127.0.0.1</code>, puerto <code>1521</code>, servicio <code>FREEPDB1</code>, usuario <code>biblioteca_umg</code> y contraseña <code>BibliotecaLab_2026!</code>. Pulsar <strong>Probar</strong> y luego <strong>Conectar</strong>. Abrir la hoja SQL de <strong>esta segunda conexión</strong>; las tablas se crearán en el esquema de prácticas, no en <code>SYSTEM</code>.</p>
+<p>Si se usa terminal, salir de la sesión administrativa con <code>EXIT</code> y ejecutar <strong>directamente con UTF-8 habilitado</strong>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec <span class="at">-it</span> <span class="at">-e</span> NLS_LANG=AMERICAN_AMERICA.AL32UTF8 umg-oracle sqlplus biblioteca_umg@//localhost:1521/FREEPDB1</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Introducir <code>BibliotecaLab_2026!</code> cuando se solicite. La opción <code>-e NLS_LANG=AMERICAN_AMERICA.AL32UTF8</code> configura la codificación del cliente desde el inicio para que los nombres y títulos en español se almacenen y muestren correctamente. No hace falta abrir una segunda terminal ni modificar los registros posteriormente. Comprobar la conexión:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">USER</span> <span class="kw">FROM</span> dual;</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>El resultado esperado es <code>BIBLIOTECA_UMG</code>. Si falla la conexión, revisar que el contenedor siga <code>healthy</code>, que el servicio sea <code>FREEPDB1</code>, que el puerto sea <code>1521</code> y que la contraseña corresponda al usuario seleccionado.</p>
+</section>
+</section>
+<section id="dos-tablas-y-consultas-en-oracle" class="level2" data-number="27.6">
+<h2 data-number="27.6" class="anchored" data-anchor-id="dos-tablas-y-consultas-en-oracle"><span class="header-section-number">27.6</span> Dos tablas y consultas en Oracle</h2>
+<p>Ejecutar <strong>como <code>biblioteca_umg</code></strong>. La conexión SQL*Plus anterior ya incorpora la configuración UTF-8 necesaria para trabajar con tildes y eñes. En SQL Developer, utilizar una conexión con soporte Unicode.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Lectura cómoda en SQL*Plus">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Lectura cómoda en SQL*Plus
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Ejecutar <strong>uno por uno</strong>: <code>SET SQLNUMBER OFF</code>, <code>SET LINESIZE 150</code>, <code>SET PAGESIZE 50</code>, <code>COLUMN nombre FORMAT A30</code>, <code>COLUMN titulo FORMAT A30</code> y <code>COLUMN pais FORMAT A15</code>. Solo afectan la presentación. Si aparecen varios <code>SQL&gt;</code> al pegar un bloque, no son errores cuando Oracle responde <code>Table created.</code> o <code>1 row created.</code>.</p>
+</div>
+</div>
+<p><strong>Paso 1. Crear la tabla <code>autores</code></strong> (esperar <code>Table created.</code>):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> autores (</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  id_autor <span class="dt">NUMBER</span> <span class="kw">GENERATED</span> <span class="kw">BY</span> <span class="kw">DEFAULT</span> <span class="kw">AS</span> IDENTITY <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  nombre <span class="dt">VARCHAR2</span>(<span class="dv">120</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  pais <span class="dt">VARCHAR2</span>(<span class="dv">80</span>) <span class="kw">NOT</span> <span class="kw">NULL</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Paso 2. Crear la tabla <code>libros</code></strong> (esperar <code>Table created.</code>):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> libros (</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  id_libro <span class="dt">NUMBER</span> <span class="kw">GENERATED</span> <span class="kw">BY</span> <span class="kw">DEFAULT</span> <span class="kw">AS</span> IDENTITY <span class="kw">PRIMARY</span> <span class="kw">KEY</span>,</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  titulo <span class="dt">VARCHAR2</span>(<span class="dv">180</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  id_autor <span class="dt">NUMBER</span> <span class="kw">NOT</span> <span class="kw">NULL</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">CONSTRAINT</span> fk_libros_autores <span class="kw">FOREIGN</span> <span class="kw">KEY</span> (id_autor)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">REFERENCES</span> autores(id_autor)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>);</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Paso 3. Insertar los autores</strong>. Ejecutar <strong>cada <code>INSERT</code> por separado</strong> y esperar <code>1 row created.</code>. Verificar los IDs reales antes de asociar libros:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> autores(nombre,pais) <span class="kw">VALUES</span> (<span class="st">'Miguel Ángel Asturias'</span>,<span class="st">'Guatemala'</span>);</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> autores(nombre,pais) <span class="kw">VALUES</span> (<span class="st">'Gabriel García Márquez'</span>,<span class="st">'Colombia'</span>);</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> id_autor, nombre, pais <span class="kw">FROM</span> autores <span class="kw">ORDER</span> <span class="kw">BY</span> id_autor;</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Paso 4. Insertar los libros</strong>. Los IDs <code>1</code> y <code>2</code> son ejemplos; sustituirlos si Oracle asignó otros valores:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> libros(titulo,id_autor) <span class="kw">VALUES</span> (<span class="st">'El señor presidente'</span>,<span class="dv">1</span>);</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> libros(titulo,id_autor) <span class="kw">VALUES</span> (<span class="st">'Cien años de soledad'</span>,<span class="dv">2</span>);</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Paso 5. Confirmar los cambios</strong>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">COMMIT</span>;</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Paso 6. Consultar la relación entre tablas</strong>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> l.titulo, a.nombre <span class="kw">AS</span> autor</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> libros l <span class="kw">JOIN</span> autores a <span class="kw">ON</span> l.id_autor <span class="op">=</span> a.id_autor;</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Verificación:</strong> después de ejecutar las instrucciones anteriores como <code>biblioteca_umg</code>, el <code>SELECT</code> con <code>JOIN</code> debe mostrar dos filas, una por cada libro con su autor. En SQL Developer ejecutar el bloque como script; en SQL*Plus escribir las sentencias terminadas en <code>;</code>. Los <code>INSERT</code> agregan registros y <code>COMMIT</code> guarda los cambios.</p>
+<p><strong>CRUD individual:</strong> cada estudiante ejecutará una operación sobre registros de prueba:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- CREATE</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> autores(nombre,pais) <span class="kw">VALUES</span> (<span class="st">'Autora de prueba'</span>,<span class="st">'Guatemala'</span>);</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="kw">COMMIT</span>;</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- READ</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> autores <span class="kw">ORDER</span> <span class="kw">BY</span> id_autor;</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="co">-- UPDATE (sustituir N por el ID realmente creado)</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="kw">UPDATE</span> autores <span class="kw">SET</span> pais<span class="op">=</span><span class="st">'Honduras'</span> <span class="kw">WHERE</span> id_autor<span class="op">=</span>N;</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="kw">COMMIT</span>;</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="co">-- DELETE (sustituir N por el ID realmente creado)</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="kw">DELETE</span> <span class="kw">FROM</span> autores <span class="kw">WHERE</span> id_autor<span class="op">=</span>N;</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="kw">COMMIT</span>;</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Atención:</strong> <code>N</code> es un marcador didáctico; <strong>no se ejecuta literalmente</strong>. El estudiante debe consultar el ID generado en el <code>SELECT</code>, sustituir <code>N</code> por ese número y ejecutar primero el <code>UPDATE</code> y después el <code>DELETE</code>. No borrar autores con libros asociados. En Oracle, <code>COMMIT</code> confirma los cambios de DML. Si se vuelve a ejecutar el bloque de creación de tablas, aparecerá un error porque las tablas ya existen; <strong>no repetirlo</strong> sobre una práctica ya creada.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Evidencia mínima para finalizar el laboratorio">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Evidencia mínima para finalizar el laboratorio
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Mostrar (1) el contenedor <code>umg-oracle</code> en estado <code>healthy</code>, (2) una conexión funcional como <code>biblioteca_umg</code>, (3) las tablas <code>AUTORES</code> y <code>LIBROS</code>, (4) dos registros insertados en cada tabla y (5) el resultado del <code>JOIN</code>. Opcionalmente, demostrar una operación de actualización y eliminación sobre un registro de prueba.</p>
+</div>
+</div>
+</section>
+<section id="experimento-de-persistencia" class="level2" data-number="27.7">
+<h2 data-number="27.7" class="anchored" data-anchor-id="experimento-de-persistencia"><span class="header-section-number">27.7</span> Experimento de persistencia</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> stop umg-oracle</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> start umg-oracle</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> logs <span class="at">--tail</span><span class="op">=</span>30 umg-oracle</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Esperar nuevamente la disponibilidad, reconectar y ejecutar <code>SELECT * FROM autores;</code>. Los datos deben mantenerse porque se guardan en <code>oracle_datos_umg</code>. <strong>No eliminar el volumen</strong> durante la evaluación.</p>
+</section>
+<section id="proyecto-final-defensa-práctica-individual" class="level2" data-number="27.8">
+<h2 data-number="27.8" class="anchored" data-anchor-id="proyecto-final-defensa-práctica-individual"><span class="header-section-number">27.8</span> Proyecto final: defensa práctica individual</h2>
+<p><strong>El proyecto es grupal, pero la demostración es individual.</strong> El docente asigna al azar una operación distinta a cada integrante; nadie puede sustituir a otra persona. Cada intervención dura aproximadamente 4–6 minutos, ajustable al número de equipos.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Rol evaluado</th>
+<th>Reto en tiempo real</th>
+<th>Evidencia mínima</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1. Infraestructura</td>
+<td>Mostrar contenedores activos y explicar función de cada uno</td>
+<td><code>docker ps</code>, arquitectura</td>
+</tr>
+<tr class="even">
+<td>2. Servicios web</td>
+<td>Mostrar Apache/PHP y detener/restaurar servicio</td>
+<td>Navegador, <code>docker compose</code></td>
+</tr>
+<tr class="odd">
+<td>3. Redes</td>
+<td>Identificar puerto externo/interno y nombre DNS <code>db</code></td>
+<td><code>compose.yaml</code>, explicación</td>
+</tr>
+<tr class="even">
+<td>4. Datos MySQL</td>
+<td>Insertar/editar registro y comprobar en Workbench</td>
+<td>SQL y página CRUD</td>
+</tr>
+<tr class="odd">
+<td>5. Oracle</td>
+<td>Conectar, ejecutar JOIN y explicar persistencia</td>
+<td>SQL Developer, volumen</td>
+</tr>
+</tbody>
+</table>
+<p>Para grupos de <strong>3 o 4</strong>, distribuir los cinco retos de modo que todos realicen uno y el docente asigne los restantes. Para grupos de más de 5, añadir diagnóstico de logs, revisión de volúmenes o recuperación de un servicio. Rotar responsabilidades para que todos hayan participado durante las clases 24–26.</p>
+<section id="preguntas-sorpresa-para-cada-integrante" class="level3" data-number="27.8.1">
+<h3 data-number="27.8.1" class="anchored" data-anchor-id="preguntas-sorpresa-para-cada-integrante"><span class="header-section-number">27.8.1</span> Preguntas sorpresa para cada integrante</h3>
+<ol type="1">
+<li>¿Qué diferencia hay entre imagen y contenedor?</li>
+<li>¿Qué kernel usa un contenedor Linux en Windows con Docker Desktop?</li>
+<li>¿Qué sucede si el proceso principal del contenedor termina?</li>
+<li>¿Por qué <code>localhost</code> dentro de PHP no es el servidor MySQL?</li>
+<li>¿Por qué necesitamos un volumen para la base de datos?</li>
+<li>¿Cuál es la diferencia entre el puerto publicado y el puerto interno?</li>
+<li>¿Qué ocurre al ejecutar <code>docker compose down</code> sin <code>-v</code>?</li>
+<li>¿Qué cambia al sustituir MySQL por Oracle?</li>
+<li>¿Para qué sirven los logs?</li>
+<li>¿Por qué no debemos conectar una aplicación con el usuario administrador?</li>
+</ol>
+</section>
+</section>
+<section id="rúbrica-del-proyecto-integrador-100-puntos" class="level2" data-number="27.9">
+<h2 data-number="27.9" class="anchored" data-anchor-id="rúbrica-del-proyecto-integrador-100-puntos"><span class="header-section-number">27.9</span> Rúbrica del proyecto integrador (100 puntos)</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 40%">
+<col style="width: 30%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Criterio</th>
+<th style="text-align: right;">Puntos</th>
+<th>Evidencia</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Infraestructura Docker y servicios</td>
+<td style="text-align: right;">20</td>
+<td>Contenedores, estado y comandos</td>
+</tr>
+<tr class="even">
+<td>Apache/PHP y comunicación</td>
+<td style="text-align: right;">15</td>
+<td>Aplicación accesible y explicación de red</td>
+</tr>
+<tr class="odd">
+<td>MySQL, relaciones y CRUD</td>
+<td style="text-align: right;">20</td>
+<td>Dos tablas, JOIN, CRUD funcional</td>
+</tr>
+<tr class="even">
+<td>Oracle y comparación técnica</td>
+<td style="text-align: right;">15</td>
+<td>Conexión, consultas y explicación; demostración docente alternativa si hay incompatibilidad</td>
+</tr>
+<tr class="odd">
+<td>Persistencia, diagnóstico y seguridad básica</td>
+<td style="text-align: right;">10</td>
+<td>Volúmenes, logs y puertos locales</td>
+</tr>
+<tr class="even">
+<td><strong>Defensa individual</strong></td>
+<td style="text-align: right;"><strong>20</strong></td>
+<td>Ejecución personal, explicación y respuesta</td>
+</tr>
+<tr class="odd">
+<td><strong>Total</strong></td>
+<td style="text-align: right;"><strong>100</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Criterio de equidad:</strong> si Oracle no puede instalarse por incompatibilidad comprobada, evaluar a ese estudiante mediante una instancia compartida del docente, con una cuenta propia y operaciones individuales. La nota no debe depender de la potencia del equipo.</p>
+</section>
+<section id="entregables" class="level2" data-number="27.10">
+<h2 data-number="27.10" class="anchored" data-anchor-id="entregables"><span class="header-section-number">27.10</span> Entregables</h2>
+<p><strong>Por grupo:</strong> carpeta del proyecto con <code>compose.yaml</code>, <code>Dockerfile</code>, <code>app/index.php</code>, script SQL de MySQL, script SQL de Oracle, capturas de las conexiones y diagrama de arquitectura. <strong>No entregar contraseñas reales ni directorios de volúmenes.</strong></p>
+<p><strong>Por estudiante:</strong> ficha individual con reto ejecutado, comandos utilizados, evidencia de resultado, explicación de la arquitectura y un problema diagnosticado.</p>
+</section>
+<section id="reflexión-final" class="level2" data-number="27.11">
+<h2 data-number="27.11" class="anchored" data-anchor-id="reflexión-final"><span class="header-section-number">27.11</span> Reflexión final</h2>
+<p>El objetivo de Sistemas Operativos I no es memorizar comandos, sino comprender <strong>cómo un sistema administra procesos, redes, almacenamiento y servicios</strong>. El proyecto demuestra que esas decisiones tienen consecuencias visibles: un servicio que se detiene, un puerto incorrecto, una conexión fallida o un volumen que conserva los datos.</p>
+<p><strong>Cierre editorial:</strong> <em>Comprender es poder.</em></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiado");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiado");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../capitulos/25_crud_php_mysql_docker.html" class="pagination-link" aria-label="Clase 25. CRUD web con PHP, Apache y MySQL">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Clase 25. CRUD web con PHP, Apache y MySQL</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../capitulos/99_cierre.html" class="pagination-link" aria-label="Cierre de la clase">
+        <span class="nav-page-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Cierre de la clase</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Editorial Académica de Ingeniería en Sistemas</p>
+</div>   
+    <div class="nav-footer-center">
+<p>Diseñar una vez. Enseñar toda la vida.</p>
+</div>
+    <div class="nav-footer-right">
+<p>Ing. Jorge Luis García Chacón</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

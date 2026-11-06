@@ -1,0 +1,219 @@
+---
+title: "Clase 25. CRUD web con PHP, Apache y MySQL"
+subtitle: "Sistemas Operativos I · Proyecto integrador (4 de 5)"
+lang: es
+number-sections: true
+execute:
+  eval: false
+---
+
+::: {.callout-tip title="Tres preguntas fundamentales"}
+1. ¿Cómo llega una operación del navegador hasta MySQL?
+2. ¿Por qué la aplicación debe conectarse a `db:3306` y no a `localhost:3307`?
+3. ¿Qué servicios deben estar activos para que funcione un CRUD?
+:::
+
+## Propósito
+
+**Duración:** 90 minutos. **Requisito:** proyecto `biblioteca-umg` de clase 24 funcionando. **Producto:** aplicación web CRUD sencilla para autores y libros, con persistencia MySQL. El objetivo de la materia es **administrar servicios**, no dominar PHP.
+
+## 1. Arquitectura y conceptos
+
+Navegador → puerto 8080 → Apache + PHP → red `red_umg` → MySQL `db:3306` → volumen `datos_mysql`.
+
+CRUD corresponde a **Create, Read, Update, Delete**. En SQL: `INSERT`, `SELECT`, `UPDATE`, `DELETE`. Un formulario HTML envía datos a PHP; PHP prepara y ejecuta una consulta parametrizada; MySQL responde; PHP construye la vista. **No conectamos el navegador directamente a MySQL**.
+
+## 2. Preparación: nueva imagen de Apache con PHP
+
+En la carpeta `biblioteca-umg` de la clase anterior, crear `Dockerfile`:
+
+```dockerfile
+FROM php:8.3-apache
+RUN docker-php-ext-install pdo_mysql
+```
+
+Crear carpeta `app` y archivo `app/index.php`. En `compose.yaml` de la clase 24, **sustituir únicamente el servicio `web`** por:
+
+```yaml
+  web:
+    build: .
+    container_name: umg-web
+    ports:
+      - "127.0.0.1:8080:80"
+    volumes:
+      - ./app:/var/www/html:ro
+    networks:
+      - red_umg
+    depends_on:
+      db:
+        condition: service_healthy
+```
+
+**Mantener sin cambios** el servicio `db`, la sección `networks` y la sección `volumes` de la clase 24. El archivo `web/index.html` de la clase anterior queda como evidencia histórica, pero ahora Apache sirve `app/index.php`.
+
+## 3. Crear dos tablas relacionadas
+
+Conectar mediante Workbench (`127.0.0.1`, puerto `3307`, usuario `biblioteca_app`) o terminal:
+
+```bash
+docker compose exec db mysql -u biblioteca_app -p biblioteca_umg
+```
+
+Ejecutar:
+
+```sql
+USE biblioteca_umg;
+CREATE TABLE IF NOT EXISTS autores (
+  id_autor INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(120) NOT NULL,
+  pais VARCHAR(80) NOT NULL
+);
+CREATE TABLE IF NOT EXISTS libros (
+  id_libro INT AUTO_INCREMENT PRIMARY KEY,
+  titulo VARCHAR(180) NOT NULL,
+  id_autor INT NOT NULL,
+  CONSTRAINT fk_libros_autores FOREIGN KEY (id_autor)
+    REFERENCES autores(id_autor) ON DELETE RESTRICT
+);
+INSERT INTO autores (nombre, pais) VALUES
+  ('Miguel Ángel Asturias', 'Guatemala'),
+  ('Gabriel García Márquez', 'Colombia');
+INSERT INTO libros (titulo, id_autor) VALUES
+  ('El señor presidente', 1),
+  ('Cien años de soledad', 2);
+SELECT l.id_libro, l.titulo, a.nombre AS autor
+FROM libros l INNER JOIN autores a ON l.id_autor = a.id_autor;
+```
+
+::: {.callout-warning title="Evitar duplicaciones"}
+Ejecutar las inserciones iniciales **una sola vez** en una base nueva. Si el grupo ya tiene registros, comprobar primero `SELECT * FROM autores;`. Las claves `1` y `2` del ejemplo suponen tablas recién creadas.
+:::
+
+## 4. Aplicación CRUD lista para estudiar
+
+Crear `app/index.php` con el siguiente contenido. El ejemplo permite **crear, consultar, actualizar y eliminar libros**, y **crear y consultar autores**. Utiliza PDO, consultas preparadas, escape HTML y validación básica; es un laboratorio, no una aplicación de producción.
+
+```php
+<?php
+$dsn = 'mysql:host=db;port=3306;dbname=biblioteca_umg;charset=utf8mb4';
+try {
+    $pdo = new PDO($dsn, 'biblioteca_app', 'AppUMG_2026!', [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+    ]);
+} catch (PDOException $e) {
+    http_response_code(503);
+    exit('Base de datos no disponible. Revisar servicio MySQL.');
+}
+function h($v) { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
+$mensaje = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $accion = $_POST['accion'] ?? '';
+    try {
+        if ($accion === 'crear_autor') {
+            $nombre = trim($_POST['nombre'] ?? '');
+            $pais = trim($_POST['pais'] ?? '');
+            if ($nombre === '' || $pais === '') throw new Exception('Completar autor y país.');
+            $pdo->prepare('INSERT INTO autores(nombre,pais) VALUES (?,?)')
+                ->execute([$nombre, $pais]);
+            $mensaje = 'Autor agregado.';
+        } elseif ($accion === 'crear_libro') {
+            $titulo = trim($_POST['titulo'] ?? '');
+            $autor = filter_input(INPUT_POST, 'id_autor', FILTER_VALIDATE_INT);
+            if ($titulo === '' || !$autor) throw new Exception('Datos del libro inválidos.');
+            $pdo->prepare('INSERT INTO libros(titulo,id_autor) VALUES (?,?)')
+                ->execute([$titulo, $autor]);
+            $mensaje = 'Libro agregado.';
+        } elseif ($accion === 'editar_libro') {
+            $id = filter_input(INPUT_POST, 'id_libro', FILTER_VALIDATE_INT);
+            $titulo = trim($_POST['titulo'] ?? '');
+            if (!$id || $titulo === '') throw new Exception('Datos de edición inválidos.');
+            $pdo->prepare('UPDATE libros SET titulo=? WHERE id_libro=?')
+                ->execute([$titulo, $id]);
+            $mensaje = 'Libro actualizado.';
+        } elseif ($accion === 'eliminar_libro') {
+            $id = filter_input(INPUT_POST, 'id_libro', FILTER_VALIDATE_INT);
+            if (!$id) throw new Exception('ID inválido.');
+            $pdo->prepare('DELETE FROM libros WHERE id_libro=?')->execute([$id]);
+            $mensaje = 'Libro eliminado.';
+        }
+    } catch (Throwable $e) {
+        $mensaje = 'Operación no completada: ' . $e->getMessage();
+    }
+}
+$autores = $pdo->query('SELECT id_autor,nombre,pais FROM autores ORDER BY nombre')->fetchAll();
+$libros = $pdo->query('SELECT l.id_libro,l.titulo,a.nombre AS autor FROM libros l JOIN autores a ON a.id_autor=l.id_autor ORDER BY l.id_libro')->fetchAll();
+?>
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<title>Biblioteca UMG</title>
+<style>body{font-family:Arial;max-width:900px;margin:30px auto;line-height:1.5}input,select,button{padding:7px;margin:4px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #aaa;padding:8px}form{display:inline-block}</style>
+</head><body>
+<h1>Biblioteca Digital UMG</h1><p><?= h($mensaje) ?></p>
+<h2>Crear autor</h2>
+<form method="post"><input type="hidden" name="accion" value="crear_autor">
+<input name="nombre" placeholder="Nombre" required><input name="pais" placeholder="País" required><button>Agregar autor</button></form>
+<h2>Crear libro</h2>
+<form method="post"><input type="hidden" name="accion" value="crear_libro">
+<input name="titulo" placeholder="Título" required>
+<select name="id_autor" required>
+<?php foreach ($autores as $a): ?><option value="<?= h($a['id_autor']) ?>"><?= h($a['nombre']) ?></option><?php endforeach; ?>
+</select><button>Agregar libro</button></form>
+<h2>Libros registrados</h2><table><tr><th>ID</th><th>Título</th><th>Autor</th><th>Acciones</th></tr>
+<?php foreach ($libros as $l): ?><tr>
+<td><?= h($l['id_libro']) ?></td><td><?= h($l['titulo']) ?></td><td><?= h($l['autor']) ?></td>
+<td><form method="post"><input type="hidden" name="accion" value="editar_libro">
+<input type="hidden" name="id_libro" value="<?= h($l['id_libro']) ?>">
+<input name="titulo" value="<?= h($l['titulo']) ?>" required><button>Editar</button></form>
+<form method="post"><input type="hidden" name="accion" value="eliminar_libro">
+<input type="hidden" name="id_libro" value="<?= h($l['id_libro']) ?>">
+<button onclick="return confirm('¿Eliminar libro?')">Eliminar</button></form></td></tr>
+<?php endforeach; ?></table>
+<h2>Autores</h2><ul><?php foreach ($autores as $a): ?><li><?= h($a['nombre']) ?> — <?= h($a['pais']) ?></li><?php endforeach; ?></ul>
+</body></html>
+```
+
+**Nota docente:** Para producción se requieren gestión segura de secretos, autenticación, autorización, protección CSRF, validación adicional y tratamiento seguro de errores. Aquí las credenciales son exclusivamente didácticas.
+
+## 5. Desplegar y verificar
+
+Desde la carpeta `biblioteca-umg`:
+
+```bash
+docker compose up -d --build
+docker compose ps
+docker compose logs --tail=30 web
+```
+
+Abrir **http://localhost:8080**. Agregar un autor y un libro; editar el título; eliminar un libro de prueba; verificar los cambios desde Workbench:
+
+```sql
+SELECT l.id_libro, l.titulo, a.nombre AS autor
+FROM libros l JOIN autores a ON a.id_autor = l.id_autor;
+```
+
+## 6. Diagnóstico guiado
+
+- Si Apache responde pero no muestra la aplicación, revisar montaje `./app:/var/www/html:ro`.
+- Si PHP indica base de datos no disponible, comprobar `docker compose ps` y `docker compose logs db`.
+- Si un alumno usa `localhost` como host de MySQL **dentro de PHP**, explicar por qué debe utilizar el nombre del servicio `db`.
+- Detener MySQL: `docker compose stop db`. Actualizar la página y observar el fallo controlado. Restaurar: `docker compose start db` y esperar que esté listo.
+
+## 7. Ejercicios individuales en vivo
+
+Cada integrante ejecuta **sin ayuda del compañero** una prueba elegida por el docente:
+
+| Integrante | Ejercicio práctico | Explicación obligatoria |
+|---|---|---|
+| A | Crear autor y consultar SQL | ¿Dónde se guardó el registro? |
+| B | Crear libro asociado a autor | ¿Para qué sirve la clave foránea? |
+| C | Editar título y comprobar en Workbench | ¿Qué instrucción SQL representa? |
+| D | Eliminar un libro de prueba | ¿Qué operación CRUD ejecutó? |
+| E (si existe) | Detener/reiniciar MySQL y revisar logs | ¿Qué servicio falló y por qué? |
+
+**Rotación:** asignar los roles al azar; no repetir el rol de la clase 24. **Equipos de 3:** cada integrante realiza un reto y el docente asigna un segundo reto a uno de ellos.
+
+## 8. Cierre y evidencias
+
+Entregar captura de la aplicación, consulta JOIN, estado de los contenedores y registro individual de quién ejecutó cada operación. Preguntas: ¿Qué sucede si se elimina `umg-web` y se reconstruye? ¿Y si se elimina el volumen MySQL? ¿Por qué un `SELECT` no requiere modificar la tabla?
+
+**Próxima clase:** instalar Oracle Database Free, comparar servicios y cerrar el proyecto integrador.

@@ -1,0 +1,208 @@
+---
+title: "Clase 24. Servicios Apache y MySQL con Docker Compose"
+subtitle: "Sistemas Operativos I · Proyecto integrador (3 de 5)"
+lang: es
+number-sections: true
+execute:
+  eval: false
+---
+
+::: {.callout-tip title="Tres preguntas fundamentales"}
+1. ¿Por qué conviene separar el servidor web del servidor de base de datos?
+2. ¿Cómo se comunican dos contenedores y cómo accedemos a ellos desde la computadora?
+3. ¿Qué ocurre con la información cuando eliminamos un contenedor?
+:::
+
+## Propósito y resultados
+
+**Duración:** 90 minutos. **Requisitos:** Docker Desktop/Engine funcionando, terminal, navegador y MySQL Workbench (opcional durante la clase). **Producto:** página Apache, MySQL accesible localmente, red y volumen persistente. Esta infraestructura será la base del proyecto final de cinco clases.
+
+Al terminar, el estudiante podrá explicar servicios, puertos, DNS interno, redes y volúmenes; desplegar dos contenedores mediante Compose; comprobar HTTP y una conexión SQL; y diagnosticar fallos sencillos.
+
+## 1. Fundamentos: servicio, cliente y puerto
+
+Un **servicio** es un proceso que atiende solicitudes. Apache HTTP Server atiende solicitudes HTTP; MySQL Server recibe conexiones y ejecuta consultas SQL. El **cliente** (navegador o Workbench) solicita operaciones. Un **puerto** identifica el punto de entrada de un servicio TCP. El puerto publicado `127.0.0.1:8080:80` significa: puerto 8080 de la computadora local → puerto 80 del contenedor.
+
+| Elemento | Función | Ejemplo |
+|---|---|---|
+| Imagen | Plantilla de ejecución | `httpd:2.4`, `mysql:8.4` |
+| Contenedor | Proceso aislado que ejecuta el servicio | `umg-web`, `umg-mysql` |
+| Red Docker | Permite comunicación entre servicios | `red_umg` |
+| Volumen | Conserva datos fuera del ciclo de vida del contenedor | `datos_mysql` |
+| Docker Compose | Define varios servicios en YAML | `compose.yaml` |
+
+**Arquitectura del laboratorio:** navegador → `localhost:8080` → Apache; Workbench → `127.0.0.1:3307` → MySQL. Apache y MySQL comparten una red Docker, **pero una página HTML estática no consulta automáticamente la base de datos**. La integración dinámica se realizará en la clase 25.
+
+::: {.callout-warning title="Seguridad y puertos"}
+Publicaremos los puertos únicamente en `127.0.0.1` para evitar exponer los servicios a toda la red. Las contraseñas mostradas son **solo de laboratorio**. No reutilizarlas ni publicar el archivo con credenciales reales.
+:::
+
+## 2. Laboratorio guiado: carpeta del proyecto
+
+Desde una terminal del sistema anfitrión (PowerShell, macOS o Linux):
+
+```bash
+mkdir biblioteca-umg
+cd biblioteca-umg
+mkdir web
+```
+
+Crear el archivo `web/index.html`:
+
+```html
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><title>Biblioteca UMG</title></head>
+<body>
+  <h1>Biblioteca Digital UMG</h1>
+  <p>Servidor Apache ejecutándose en Docker.</p>
+  <p>Clase 24: servicios y contenedores.</p>
+</body>
+</html>
+```
+
+## 3. Crear `compose.yaml`
+
+En la raíz `biblioteca-umg/` crear **exactamente** este archivo:
+
+```yaml
+services:
+  web:
+    image: httpd:2.4
+    container_name: umg-web
+    ports:
+      - "127.0.0.1:8080:80"
+    volumes:
+      - ./web:/usr/local/apache2/htdocs/:ro
+    networks:
+      - red_umg
+
+  db:
+    image: mysql:8.4
+    container_name: umg-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "LabUMG_2026!"
+      MYSQL_DATABASE: biblioteca_umg
+      MYSQL_USER: biblioteca_app
+      MYSQL_PASSWORD: "AppUMG_2026!"
+    ports:
+      - "127.0.0.1:3307:3306"
+    volumes:
+      - datos_mysql:/var/lib/mysql
+    networks:
+      - red_umg
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+networks:
+  red_umg:
+
+volumes:
+  datos_mysql:
+```
+
+::: {.callout-note title="¿Por qué usamos 3307?"}
+El puerto **3307 del anfitrión** se dirige al **3306 del contenedor**. Así evitamos conflictos con instalaciones locales de MySQL. Dentro de la red Docker, los demás contenedores acceden a `db:3306`.
+:::
+
+## 4. Iniciar y comprobar
+
+```bash
+docker compose config
+docker compose up -d
+docker compose ps
+docker compose logs --tail=30 db
+```
+
+La primera descarga puede tardar. Esperar hasta que MySQL esté listo. Abrir **http://localhost:8080** en el navegador. Si aparece «Biblioteca Digital UMG», Apache funciona.
+
+Probar MySQL **desde el propio contenedor**:
+
+```bash
+docker compose exec db mysql -u biblioteca_app -p biblioteca_umg
+```
+
+Cuando solicite contraseña, escribir `AppUMG_2026!` (no se verá mientras se escribe). En el cliente SQL:
+
+```sql
+SELECT VERSION();
+SHOW DATABASES;
+EXIT;
+```
+
+### Conexión desde MySQL Workbench
+
+| Campo | Valor |
+|---|---|
+| Connection Method | Standard (TCP/IP) |
+| Hostname | `127.0.0.1` |
+| Port | `3307` |
+| Username | `biblioteca_app` |
+| Password | `AppUMG_2026!` |
+| Default Schema | `biblioteca_umg` |
+
+Seleccionar **Test Connection** y abrir el esquema. Workbench se instala en la computadora local, **no dentro del contenedor**.
+
+## 5. Experimentos de sistemas operativos
+
+**Experimento A: proceso y servicio.** Ejecutar `docker compose ps`, luego `docker compose stop web`; actualizar el navegador y explicar por qué deja de responder. Restaurar con `docker compose start web`.
+
+**Experimento B: persistencia.** Crear una tabla de prueba desde Workbench o el cliente SQL:
+
+```sql
+CREATE TABLE IF NOT EXISTS prueba_persistencia (
+  id INT PRIMARY KEY,
+  nota VARCHAR(100) NOT NULL
+);
+INSERT INTO prueba_persistencia VALUES (1, 'Sobrevive al contenedor');
+SELECT * FROM prueba_persistencia;
+```
+
+Ejecutar `docker compose down` (**sin** `-v`), luego `docker compose up -d`. Consultar de nuevo la tabla. Explicar la función de `datos_mysql`. **No ejecutar `docker compose down -v`**: elimina también el volumen y sus datos.
+
+**Experimento C: aislamiento.** Comparar `docker compose logs web`, `docker compose logs db` y `docker stats --no-stream`. ¿Qué proceso corresponde a cada servicio?
+
+## 6. Motores alternativos
+
+| Motor | Imagen habitual | Cliente | Consideración |
+|---|---|---|---|
+| MySQL | `mysql` | Workbench | Principal del proyecto |
+| PostgreSQL | `postgres` | pgAdmin | Alternativa relacional |
+| MariaDB | `mariadb` | DBeaver | Compatible con muchas herramientas MySQL |
+| Microsoft SQL Server | Imagen oficial de Microsoft | SSMS / VS Code | Revisar compatibilidad de CPU y memoria |
+| Oracle Database Free | Imagen oficial Oracle | SQL Developer | Se utilizará en clase 26; mayores requisitos |
+| MongoDB | `mongo` | Compass | Modelo documental, no SQL relacional |
+
+## 7. Práctica individual en tiempo real (10–15 min)
+
+Cada integrante del equipo realiza **una acción verificable** y explica su resultado; el docente elige aleatoriamente quién presenta:
+
+| Rol rotativo | Reto en vivo | Evidencia |
+|---|---|---|
+| Operador/a de contenedores | Detener y reiniciar Apache | `docker compose ps` antes/después |
+| Administrador/a de red | Explicar `8080:80` y `3307:3306` | Navegador y configuración |
+| Administrador/a de datos | Insertar y consultar registro de persistencia | Consulta SQL |
+| Analista de diagnóstico | Localizar logs y explicar un evento | `docker compose logs` |
+
+**Regla:** cada integrante debe ejecutar personalmente al menos un comando y responder una pregunta; los roles cambian en la clase siguiente. Para grupos de 3, combinar diagnóstico con redes; para grupos de 5, añadir responsable de documentación.
+
+## 8. Errores frecuentes
+
+| Síntoma | Comprobación | Acción |
+|---|---|---|
+| Puerto ocupado | `docker compose ps`, error de bind | Cambiar `8080` o `3307` en el lado izquierdo del mapeo |
+| Página no aparece | `docker compose logs web` | Verificar carpeta `web` y archivo `index.html` |
+| MySQL no conecta | `docker compose ps` | Esperar inicio y usar puerto **3307** |
+| Credenciales no cambian | `docker volume ls` | Las variables de inicialización no reconfiguran un volumen existente |
+| Falta memoria o disco | Docker Desktop / `docker system df` | Liberar recursos sin borrar volúmenes del proyecto |
+
+## 9. Cierre y evaluación
+
+**Preguntas:** ¿Por qué dos contenedores pueden comunicarse por nombre? ¿Qué diferencia hay entre detener y eliminar? ¿Qué protege un volumen? ¿Por qué Apache estático no realiza consultas SQL?
+
+**Entregable del grupo:** captura de la página, estado de los dos contenedores, conexión Workbench, consulta de persistencia y breve explicación de los puertos. **Entregable individual:** comando ejecutado, resultado y explicación de dos oraciones.
+
+**Próxima clase:** convertir la página estática en una aplicación PHP que realice CRUD sobre MySQL.

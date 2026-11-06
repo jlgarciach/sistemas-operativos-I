@@ -1,0 +1,347 @@
+---
+title: "Clase 26. Oracle Database Free y defensa del proyecto integrador"
+subtitle: "Sistemas Operativos I · Proyecto integrador (5 de 5)"
+lang: es
+number-sections: true
+execute:
+  eval: false
+---
+
+::: {.callout-tip title="Tres preguntas fundamentales"}
+1. ¿Qué cambia al desplegar Oracle en lugar de MySQL y qué permanece igual en Docker?
+2. ¿Cómo verificamos que una base de datos está disponible y conserva sus datos?
+3. ¿Puede cada integrante explicar y operar la infraestructura del equipo?
+:::
+
+## Propósito y preparación
+
+**Duración sugerida:** 90 minutos para demostración y defensa; la descarga e inicialización de Oracle pueden requerir tiempo adicional. **Producto:** Oracle Database Free desplegado, conexión SQL funcional, dos tablas relacionadas y defensa individual del proyecto final.
+
+::: {.callout-warning title="Compatibilidad antes de la clase"}
+Las imágenes oficiales de Oracle Database Free, sus etiquetas y arquitecturas admitidas pueden cambiar. **Verificar la etiqueta vigente, los requisitos de memoria y CPU y la disponibilidad para `linux/amd64` o `linux/arm64` antes del laboratorio.** En equipos ARM o con memoria insuficiente, utilizar una computadora de demostración o servidor del docente; no forzar emulación pesada como requisito universal.
+:::
+
+## Repaso: MySQL frente a Oracle
+
+| Concepto | MySQL | Oracle Database Free |
+|---|---|---|
+| Motor | Relacional | Relacional |
+| Puerto habitual | 3306 | 1521 (listener) |
+| Cliente | MySQL Workbench | Oracle SQL Developer o SQLcl |
+| Lenguaje | SQL con particularidades MySQL | SQL con particularidades Oracle |
+| Persistencia | Volumen Docker | Volumen Docker |
+| Identificación | Base de datos / esquema | Servicio, usuario y esquema |
+
+**Oracle Database Free** es una edición gratuita con límites de recursos y uso definidos por Oracle. Un **listener** recibe conexiones de clientes; el **servicio** identifica la base o PDB a la que se conecta el cliente. En instalaciones habituales de Oracle Free, `FREEPDB1` identifica la base pluggable de trabajo; confirmar en la imagen utilizada.
+
+## Imagen oficial y requisitos
+
+Consultar la documentación oficial y el repositorio de imágenes de Oracle antes de la sesión:
+
+- Oracle Container Registry: `https://container-registry.oracle.com/`
+- Repositorio oficial de imágenes: `https://github.com/oracle/docker-images`
+- Documentación de Oracle Database Free: consultar la versión que se desplegará.
+
+La ruta de imagen de referencia utilizada frecuentemente es `container-registry.oracle.com/database/free:latest`, **sujeta a disponibilidad, licencia y compatibilidad**. Si el registro solicita aceptar términos, hacerlo desde el portal oficial. Evitar imágenes de terceros no verificadas.
+
+## Laboratorio: iniciar Oracle (en equipo compatible)
+
+En la terminal del anfitrión, primero confirmar recursos y arquitectura:
+
+```bash
+docker info
+docker version
+```
+
+### Verificar la compatibilidad de la imagen (paso obligatorio)
+
+Una **imagen** es la plantilla descargada; de ella pueden crearse varios **contenedores independientes** sin volver a descargarla. Los contenedores comparten las capas de solo lectura de la imagen, pero tienen procesos y capas de escritura propios. Para ejecutar varias bases de datos, utilizar nombres, puertos y volúmenes distintos.
+
+Docker Desktop en Mac con Apple Silicon utiliza `linux/arm64`; muchos equipos Windows y Linux con Intel/AMD utilizan `linux/amd64`. **No basta con que Docker funcione: la imagen también debe admitir la arquitectura del equipo.** Consultar las plataformas publicadas:
+
+```bash
+docker manifest inspect container-registry.oracle.com/database/free:latest
+```
+
+Buscar dentro de `manifests` un objeto `platform` con `os: linux` y `architecture: arm64` o `amd64`, según corresponda. **Comprobación realizada el 5 de noviembre de 2026:** la etiqueta `latest` devolvió ambas arquitecturas (`linux/amd64` y `linux/arm64`). Esta disponibilidad puede cambiar; volver a verificarla antes de cada curso. La presencia de la plataforma confirma compatibilidad de arquitectura, **no garantiza por sí sola el arranque ni los recursos suficientes**.
+
+**Solo si la etiqueta es compatible y está disponible:**
+
+```bash
+docker pull container-registry.oracle.com/database/free:latest
+```
+
+```bash
+docker volume create oracle_datos_umg
+```
+
+```bash
+docker run -d --name umg-oracle \
+  -p 127.0.0.1:1521:1521 \
+  -e ORACLE_PWD='OracleLab_2026!' \
+  -v oracle_datos_umg:/opt/oracle/oradata \
+  container-registry.oracle.com/database/free:latest
+```
+
+::: {.callout-note title="Windows CMD y PowerShell"}
+Los comandos multilínea anteriores usan `\` para Bash. En **PowerShell**, escribir todo el `docker run` en una sola línea o usar el acento grave `` ` `` como continuador; en **CMD**, usar una sola línea o `^`. Ejemplo en una línea:
+
+`docker run -d --name umg-oracle -p 127.0.0.1:1521:1521 -e ORACLE_PWD=OracleLab_2026! -v oracle_datos_umg:/opt/oracle/oradata container-registry.oracle.com/database/free:latest`
+:::
+
+Revisar el arranque:
+
+```bash
+docker ps -a
+docker logs -f umg-oracle
+```
+
+**Esperar el mensaje de disponibilidad de la base de datos**; el primer inicio puede tardar varios minutos. Interrumpir `docker logs -f` con Ctrl+C **no detiene** el contenedor. En `docker ps -a`, verificar que `umg-oracle` aparezca como `Up ... (healthy)`; el estado saludable indica que pasó su comprobación interna.
+
+::: {.callout-note title="Si el contenedor ya existe"}
+No repetir `docker run --name umg-oracle`: produciría un conflicto de nombre. Para volver a utilizarlo, ejecutar `docker start umg-oracle`. La imagen descargada permanece disponible localmente.
+:::
+
+
+## Acceso a Oracle: SQL Developer o terminal
+
+**Objetivo:** conectarse a la base Oracle que ya está ejecutándose en Docker, crear un usuario de prácticas y entrar con él. **No se ejecuta `CREATE USER` directamente en la terminal de macOS o Windows**: son instrucciones SQL y requieren un cliente conectado a Oracle.
+
+### Elegir una herramienta de conexión
+
+**Opción A — Oracle SQL Developer (interfaz gráfica).** Descargarlo desde la [página oficial de Oracle SQL Developer](https://www.oracle.com/database/sqldeveloper/technologies/download/), elegir la distribución adecuada al sistema operativo y seguir las instrucciones del instalador. En macOS, comprobar los requisitos de Java y compatibilidad de la versión descargada; en Windows, seleccionar la edición apropiada. **SQL Developer se ejecuta en el equipo anfitrión, no dentro del contenedor.** Si el estudiante ya dispone de SQL Developer, omitir la instalación.
+
+1. Abrir **Oracle SQL Developer**.
+2. En el panel **Conexiones**, pulsar el signo **+** o **Nueva conexión**.
+3. Asignar el nombre `Oracle-UMG-Admin` y completar los campos siguientes.
+4. Seleccionar **Nombre de servicio** (no SID) e ingresar `FREEPDB1`.
+5. Pulsar **Probar**. Si indica conexión correcta, pulsar **Conectar**.
+6. Abrir una **hoja de trabajo SQL** para esa conexión y ejecutar el bloque de creación del usuario (con **F5 / Ejecutar script**, según la versión).
+
+| Campo | Valor de ejemplo |
+|---|---|
+| Nombre de conexión | `Oracle-UMG-Admin` |
+| Host | `127.0.0.1` |
+| Puerto | `1521` |
+| Tipo de conexión | Basic / Básica |
+| Service name / Nombre del servicio | `FREEPDB1` |
+| Usuario administrador | `SYSTEM` |
+| Contraseña | `OracleLab_2026!` (la indicada en `ORACLE_PWD`) |
+
+**Opción B — SQL*Plus desde Docker (sin instalar una aplicación gráfica).** Abrir la terminal del anfitrión y ejecutar:
+
+```bash
+docker exec -it -e NLS_LANG=AMERICAN_AMERICA.AL32UTF8 umg-oracle sqlplus system@//localhost:1521/FREEPDB1
+```
+
+Ingresar la contraseña de `SYSTEM` cuando la solicite. **No se mostrará mientras se escribe.** Al aparecer `SQL>`, ejecutar el mismo bloque SQL de la sección siguiente. Para salir, escribir `EXIT;`. Si el comando `sqlplus` no se encuentra en la imagen concreta, utilizar la opción gráfica o verificar las herramientas cliente disponibles en esa versión.
+
+::: {.callout-important title="No confundir las contraseñas"}
+`OracleLab_2026!` corresponde a la cuenta administradora `SYSTEM` configurada con `ORACLE_PWD`; `BibliotecaLab_2026!` será la contraseña **distinta** del usuario de prácticas `biblioteca_umg`. Son credenciales exclusivamente didácticas: no reutilizarlas en servicios públicos o producción.
+:::
+
+### Preparar SQL*Plus y comprobar el entorno
+
+::: {.callout-warning title="Ejecutar una instrucción a la vez"}
+En **SQL*Plus**, copiar **un solo comando**, pulsar Enter y esperar el resultado antes de continuar. Los comandos `SHOW`, `SET` y `COLUMN` se ejecutan en líneas independientes (sin necesidad de `;`). Las instrucciones SQL (`SELECT`, `CREATE`, `GRANT`, `INSERT`, etc.) terminan en `;`. Al pegar varias líneas pueden aparecer `2`, `3`, `4` o varios `SQL>`: son indicadores de continuación, no texto añadido al código. No intentar borrarlos. Para simplificar, ejecutar `SET SQLNUMBER OFF` en una línea independiente.
+:::
+
+Si la conexión como `SYSTEM` falla por contraseña (`ORA-01017`), no escribir el nombre del contenedor ni la contraseña en `Enter user-name`. Salir de SQL*Plus y, **solo en este laboratorio local bajo control del estudiante**, abrir una sesión administrativa desde la terminal del anfitrión:
+
+```bash
+docker exec -it -u oracle umg-oracle sqlplus / as sysdba
+```
+
+Dentro de SQL*Plus, ejecutar **cada uno de estos comandos por separado**:
+
+```sql
+SHOW USER
+```
+
+```sql
+ALTER SESSION SET CONTAINER = FREEPDB1;
+```
+
+```sql
+SHOW CON_NAME
+```
+
+Verificar que el usuario sea `SYS`, que aparezca `Session altered.` y que el contenedor de Oracle sea `FREEPDB1`. **No confundir** el contenedor Docker `umg-oracle` con la base de datos conectable (PDB) `FREEPDB1`. `ALTER SESSION` cambia la PDB, pero no eleva privilegios. Si se utiliza `SYSTEM` conectado directamente al servicio `FREEPDB1`, no es necesario cambiar de PDB.
+
+### Crear el usuario de prácticas
+
+**Nunca utilizar `SYSTEM` como cuenta de la aplicación.** Conectarse con `SYSTEM` **al servicio `FREEPDB1`** y ejecutar:
+
+```sql
+CREATE USER biblioteca_umg IDENTIFIED BY "BibliotecaLab_2026!";
+GRANT CREATE SESSION, CREATE TABLE, CREATE SEQUENCE TO biblioteca_umg;
+ALTER USER biblioteca_umg QUOTA 100M ON USERS;
+```
+
+Ejecutar **cada sentencia por separado**: esperar `User created.`, `Grant succeeded.` y `User altered.`. El privilegio `CREATE SEQUENCE` se incluye para las columnas `GENERATED ... AS IDENTITY` del ejemplo. Si se accedió como `SYSDBA`, comprobar primero `SHOW CON_NAME` = `FREEPDB1`. Si el usuario ya existe porque se ejecutó previamente el laboratorio, no repetir `CREATE USER`: comprobar su existencia y continuar con la conexión. Si el tablespace predeterminado no es `USERS`, el docente deberá ajustar la cuota al tablespace asignado.
+
+### Conectarse como `biblioteca_umg`
+
+En SQL Developer, crear **otra conexión**, por ejemplo `Oracle-UMG-Practica`, con host `127.0.0.1`, puerto `1521`, servicio `FREEPDB1`, usuario `biblioteca_umg` y contraseña `BibliotecaLab_2026!`. Pulsar **Probar** y luego **Conectar**. Abrir la hoja SQL de **esta segunda conexión**; las tablas se crearán en el esquema de prácticas, no en `SYSTEM`.
+
+Si se usa terminal, salir de la sesión administrativa con `EXIT` y ejecutar **directamente con UTF-8 habilitado**:
+
+```bash
+docker exec -it -e NLS_LANG=AMERICAN_AMERICA.AL32UTF8 umg-oracle sqlplus biblioteca_umg@//localhost:1521/FREEPDB1
+```
+
+Introducir `BibliotecaLab_2026!` cuando se solicite. La opción `-e NLS_LANG=AMERICAN_AMERICA.AL32UTF8` configura la codificación del cliente desde el inicio para que los nombres y títulos en español se almacenen y muestren correctamente. No hace falta abrir una segunda terminal ni modificar los registros posteriormente. Comprobar la conexión:
+
+```sql
+SELECT USER FROM dual;
+```
+
+El resultado esperado es `BIBLIOTECA_UMG`. Si falla la conexión, revisar que el contenedor siga `healthy`, que el servicio sea `FREEPDB1`, que el puerto sea `1521` y que la contraseña corresponda al usuario seleccionado.
+
+## Dos tablas y consultas en Oracle
+
+Ejecutar **como `biblioteca_umg`**. La conexión SQL*Plus anterior ya incorpora la configuración UTF-8 necesaria para trabajar con tildes y eñes. En SQL Developer, utilizar una conexión con soporte Unicode.
+
+::: {.callout-note title="Lectura cómoda en SQL*Plus"}
+Ejecutar **uno por uno**: `SET SQLNUMBER OFF`, `SET LINESIZE 150`, `SET PAGESIZE 50`, `COLUMN nombre FORMAT A30`, `COLUMN titulo FORMAT A30` y `COLUMN pais FORMAT A15`. Solo afectan la presentación. Si aparecen varios `SQL>` al pegar un bloque, no son errores cuando Oracle responde `Table created.` o `1 row created.`.
+:::
+
+**Paso 1. Crear la tabla `autores`** (esperar `Table created.`):
+
+```sql
+CREATE TABLE autores (
+  id_autor NUMBER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+  nombre VARCHAR2(120) NOT NULL,
+  pais VARCHAR2(80) NOT NULL
+);
+```
+
+**Paso 2. Crear la tabla `libros`** (esperar `Table created.`):
+
+```sql
+CREATE TABLE libros (
+  id_libro NUMBER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+  titulo VARCHAR2(180) NOT NULL,
+  id_autor NUMBER NOT NULL,
+  CONSTRAINT fk_libros_autores FOREIGN KEY (id_autor)
+    REFERENCES autores(id_autor)
+);
+```
+
+**Paso 3. Insertar los autores**. Ejecutar **cada `INSERT` por separado** y esperar `1 row created.`. Verificar los IDs reales antes de asociar libros:
+
+```sql
+INSERT INTO autores(nombre,pais) VALUES ('Miguel Ángel Asturias','Guatemala');
+INSERT INTO autores(nombre,pais) VALUES ('Gabriel García Márquez','Colombia');
+```
+
+```sql
+SELECT id_autor, nombre, pais FROM autores ORDER BY id_autor;
+```
+
+**Paso 4. Insertar los libros**. Los IDs `1` y `2` son ejemplos; sustituirlos si Oracle asignó otros valores:
+
+```sql
+INSERT INTO libros(titulo,id_autor) VALUES ('El señor presidente',1);
+INSERT INTO libros(titulo,id_autor) VALUES ('Cien años de soledad',2);
+```
+
+**Paso 5. Confirmar los cambios**:
+
+```sql
+COMMIT;
+```
+
+**Paso 6. Consultar la relación entre tablas**:
+
+```sql
+SELECT l.titulo, a.nombre AS autor
+FROM libros l JOIN autores a ON l.id_autor = a.id_autor;
+```
+
+**Verificación:** después de ejecutar las instrucciones anteriores como `biblioteca_umg`, el `SELECT` con `JOIN` debe mostrar dos filas, una por cada libro con su autor. En SQL Developer ejecutar el bloque como script; en SQL*Plus escribir las sentencias terminadas en `;`. Los `INSERT` agregan registros y `COMMIT` guarda los cambios.
+
+**CRUD individual:** cada estudiante ejecutará una operación sobre registros de prueba:
+
+```sql
+-- CREATE
+INSERT INTO autores(nombre,pais) VALUES ('Autora de prueba','Guatemala');
+COMMIT;
+-- READ
+SELECT * FROM autores ORDER BY id_autor;
+-- UPDATE (sustituir N por el ID realmente creado)
+UPDATE autores SET pais='Honduras' WHERE id_autor=N;
+COMMIT;
+-- DELETE (sustituir N por el ID realmente creado)
+DELETE FROM autores WHERE id_autor=N;
+COMMIT;
+```
+
+**Atención:** `N` es un marcador didáctico; **no se ejecuta literalmente**. El estudiante debe consultar el ID generado en el `SELECT`, sustituir `N` por ese número y ejecutar primero el `UPDATE` y después el `DELETE`. No borrar autores con libros asociados. En Oracle, `COMMIT` confirma los cambios de DML. Si se vuelve a ejecutar el bloque de creación de tablas, aparecerá un error porque las tablas ya existen; **no repetirlo** sobre una práctica ya creada.
+
+::: {.callout-tip title="Evidencia mínima para finalizar el laboratorio"}
+Mostrar (1) el contenedor `umg-oracle` en estado `healthy`, (2) una conexión funcional como `biblioteca_umg`, (3) las tablas `AUTORES` y `LIBROS`, (4) dos registros insertados en cada tabla y (5) el resultado del `JOIN`. Opcionalmente, demostrar una operación de actualización y eliminación sobre un registro de prueba.
+:::
+
+## Experimento de persistencia
+
+```bash
+docker stop umg-oracle
+docker start umg-oracle
+docker logs --tail=30 umg-oracle
+```
+
+Esperar nuevamente la disponibilidad, reconectar y ejecutar `SELECT * FROM autores;`. Los datos deben mantenerse porque se guardan en `oracle_datos_umg`. **No eliminar el volumen** durante la evaluación.
+
+## Proyecto final: defensa práctica individual
+
+**El proyecto es grupal, pero la demostración es individual.** El docente asigna al azar una operación distinta a cada integrante; nadie puede sustituir a otra persona. Cada intervención dura aproximadamente 4–6 minutos, ajustable al número de equipos.
+
+| Rol evaluado | Reto en tiempo real | Evidencia mínima |
+|---|---|---|
+| 1. Infraestructura | Mostrar contenedores activos y explicar función de cada uno | `docker ps`, arquitectura |
+| 2. Servicios web | Mostrar Apache/PHP y detener/restaurar servicio | Navegador, `docker compose` |
+| 3. Redes | Identificar puerto externo/interno y nombre DNS `db` | `compose.yaml`, explicación |
+| 4. Datos MySQL | Insertar/editar registro y comprobar en Workbench | SQL y página CRUD |
+| 5. Oracle | Conectar, ejecutar JOIN y explicar persistencia | SQL Developer, volumen |
+
+Para grupos de **3 o 4**, distribuir los cinco retos de modo que todos realicen uno y el docente asigne los restantes. Para grupos de más de 5, añadir diagnóstico de logs, revisión de volúmenes o recuperación de un servicio. Rotar responsabilidades para que todos hayan participado durante las clases 24–26.
+
+### Preguntas sorpresa para cada integrante
+
+1. ¿Qué diferencia hay entre imagen y contenedor?
+2. ¿Qué kernel usa un contenedor Linux en Windows con Docker Desktop?
+3. ¿Qué sucede si el proceso principal del contenedor termina?
+4. ¿Por qué `localhost` dentro de PHP no es el servidor MySQL?
+5. ¿Por qué necesitamos un volumen para la base de datos?
+6. ¿Cuál es la diferencia entre el puerto publicado y el puerto interno?
+7. ¿Qué ocurre al ejecutar `docker compose down` sin `-v`?
+8. ¿Qué cambia al sustituir MySQL por Oracle?
+9. ¿Para qué sirven los logs?
+10. ¿Por qué no debemos conectar una aplicación con el usuario administrador?
+
+## Rúbrica del proyecto integrador (100 puntos)
+
+| Criterio | Puntos | Evidencia |
+|---|---:|---|
+| Infraestructura Docker y servicios | 20 | Contenedores, estado y comandos |
+| Apache/PHP y comunicación | 15 | Aplicación accesible y explicación de red |
+| MySQL, relaciones y CRUD | 20 | Dos tablas, JOIN, CRUD funcional |
+| Oracle y comparación técnica | 15 | Conexión, consultas y explicación; demostración docente alternativa si hay incompatibilidad |
+| Persistencia, diagnóstico y seguridad básica | 10 | Volúmenes, logs y puertos locales |
+| **Defensa individual** | **20** | Ejecución personal, explicación y respuesta |
+| **Total** | **100** | |
+
+**Criterio de equidad:** si Oracle no puede instalarse por incompatibilidad comprobada, evaluar a ese estudiante mediante una instancia compartida del docente, con una cuenta propia y operaciones individuales. La nota no debe depender de la potencia del equipo.
+
+## Entregables
+
+**Por grupo:** carpeta del proyecto con `compose.yaml`, `Dockerfile`, `app/index.php`, script SQL de MySQL, script SQL de Oracle, capturas de las conexiones y diagrama de arquitectura. **No entregar contraseñas reales ni directorios de volúmenes.**
+
+**Por estudiante:** ficha individual con reto ejecutado, comandos utilizados, evidencia de resultado, explicación de la arquitectura y un problema diagnosticado.
+
+## Reflexión final
+
+El objetivo de Sistemas Operativos I no es memorizar comandos, sino comprender **cómo un sistema administra procesos, redes, almacenamiento y servicios**. El proyecto demuestra que esas decisiones tienen consecuencias visibles: un servicio que se detiene, un puerto incorrecto, una conexión fallida o un volumen que conserva los datos.
+
+**Cierre editorial:** *Comprender es poder.*

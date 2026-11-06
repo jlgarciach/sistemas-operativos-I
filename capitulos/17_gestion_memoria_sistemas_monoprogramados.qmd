@@ -1,6 +1,9 @@
 ---
 title: "Gestión de Memoria en Sistemas Monoprogramados"
 subtitle: "Clase No. 17 - Sistemas Operativos I"
+
+execute:
+  eval: false
 ---
 
 # Gestión de Memoria en Sistemas Monoprogramados
@@ -17,9 +20,9 @@ Al finalizar este capítulo, el estudiante será capaz de:
 - Identificar ventajas, limitaciones y riesgos del modelo monoprogramado.
 
 ::: {.callout-tip title="Tres preguntas fundamentales"}
-1. ¿Cómo se organiza la memoria cuando solo ejecutamos un programa a la vez?
-2. ¿Cómo sabe el programa en qué dirección física se encuentran sus instrucciones y datos?
-3. ¿Por qué este modelo sencillo dejó de ser suficiente para los sistemas modernos?
+1.  ¿Cómo se organiza la memoria cuando solo ejecutamos un programa a la vez?
+2.  ¿Cómo sabe el programa en qué dirección física se encuentran sus instrucciones y datos?
+3.  ¿Por qué este modelo sencillo dejó de ser suficiente para los sistemas modernos?
 :::
 
 ## 1. Antes de comenzar: ¿qué significa administrar memoria?
@@ -39,8 +42,8 @@ flowchart LR
 
 En un sistema monoprogramado la memoria puede imaginarse dividida en dos grandes regiones:
 
-1. Una región reservada para el **sistema operativo**.
-2. Una región utilizada por el **programa de usuario**.
+1.  Una región reservada para el **sistema operativo**.
+2.  Una región utilizada por el **programa de usuario**.
 
 No existe coexistencia de varios programas de usuario compitiendo por la RAM. El control es mucho más simple que en un sistema multiprogramado.
 
@@ -57,11 +60,11 @@ flowchart TB
 
 Supongamos una memoria de **512 KB**:
 
-| Región | Tamaño | Contenido |
-|---|---:|---|
-| Sistema operativo | 128 KB | Kernel y componentes residentes |
-| Programa de usuario | 300 KB | Código, datos y pila |
-| Espacio no utilizado | 84 KB | Memoria disponible que no usa otro proceso |
+| Región               | Tamaño | Contenido                                  |
+|----------------------|-------:|--------------------------------------------|
+| Sistema operativo    | 128 KB | Kernel y componentes residentes            |
+| Programa de usuario  | 300 KB | Código, datos y pila                       |
+| Espacio no utilizado |  84 KB | Memoria disponible que no usa otro proceso |
 
 El espacio libre permanece sin aprovechar por otros programas mientras se mantiene el modelo monoprogramado.
 
@@ -100,10 +103,10 @@ Es la referencia utilizada por el programa antes de considerar su ubicación fí
 
 Es la posición real que ocupa el dato o instrucción dentro de la memoria RAM.
 
-| Tipo | Pregunta que responde | Ejemplo |
-|---|---|---:|
-| Lógica | ¿Dónde está dentro del programa? | 250 |
-| Física | ¿Dónde está realmente en RAM? | 2250 |
+| Tipo   | Pregunta que responde            | Ejemplo |
+|--------|----------------------------------|--------:|
+| Lógica | ¿Dónde está dentro del programa? |     250 |
+| Física | ¿Dónde está realmente en RAM?    |    2250 |
 
 ## 5. Direcciones absolutas
 
@@ -126,9 +129,7 @@ Una alternativa consiste en permitir que el programa utilice direcciones relativ
 
 La idea puede expresarse de manera sencilla:
 
-$$
-\text{Dirección física} = \text{Dirección base} + \text{Dirección lógica}
-$$
+$$\text{Dirección física} = \text{Dirección base} + \text{Dirección lógica}$$
 
 ### Ejemplo
 
@@ -136,9 +137,7 @@ El sistema operativo ocupa las direcciones **0 a 1999** y el programa utiliza di
 
 Si el programa solicita su dirección lógica 250:
 
-$$
-2000 + 250 = 2250
-$$
+$$2000 + 250 = 2250$$
 
 Por lo tanto, la dirección física correspondiente es **2250**.
 
@@ -173,7 +172,7 @@ int main() {
 
 La salida esperada es:
 
-```text
+``` text
 Direccion fisica: 2250
 ```
 
@@ -182,6 +181,7 @@ Direccion fisica: 2250
 Si la dirección base fuera 4096 y el programa solicitara la dirección lógica 120, ¿cuál sería la dirección física?
 
 <details>
+
 <summary>Ver respuesta</summary>
 
 $$4096 + 120 = 4216$$
@@ -207,7 +207,7 @@ Esto ayuda a comprender por qué la **protección de memoria** se convirtió en 
 ## 9. Ventajas y limitaciones
 
 | Ventajas | Limitaciones |
-|---|---|
+|------------------------------------|------------------------------------|
 | Diseño sencillo | Solo un programa de usuario a la vez |
 | Administración de memoria simple | No aprovecha la RAM libre para ejecutar otros programas |
 | Poco trabajo de administración | Flexibilidad limitada para mover programas |
@@ -228,16 +228,14 @@ Una computadora dispone de **1 MB = 1024 KB** de memoria principal.
 
 Responde:
 
-1. ¿Cuánta memoria queda sin utilizar?
-2. Dibuja la distribución de memoria.
-3. Si el programa comienza en la dirección 256 KB, ¿qué representa esa posición?
-4. ¿Podría cargarse simultáneamente otro programa de 200 KB manteniendo estrictamente el modelo monoprogramado? Explica.
+1.  ¿Cuánta memoria queda sin utilizar?
+2.  Dibuja la distribución de memoria.
+3.  Si el programa comienza en la dirección 256 KB, ¿qué representa esa posición?
+4.  ¿Podría cargarse simultáneamente otro programa de 200 KB manteniendo estrictamente el modelo monoprogramado? Explica.
 
 ### Solución de la parte numérica
 
-$$
-1024 - 256 - 500 = 268\text{ KB}
-$$
+$$1024 - 256 - 500 = 268\text{ KB}$$
 
 Quedan **268 KB** sin utilizar.
 
@@ -247,10 +245,10 @@ Quedan **268 KB** sin utilizar.
 
 Un programa utiliza direcciones lógicas de 0 a 1499. El sistema operativo ocupa las direcciones físicas 0 a 4095 y el programa se carga inmediatamente después.
 
-1. ¿Cuál es la dirección base del programa?
-2. ¿Cuál es la dirección física correspondiente a la dirección lógica 300?
-3. ¿Cuál es la última dirección física que podría utilizar el programa?
-4. ¿Qué tendría que ocurrir con las referencias del programa si se cargara en otra ubicación usando relocación estática?
+1.  ¿Cuál es la dirección base del programa?
+2.  ¿Cuál es la dirección física correspondiente a la dirección lógica 300?
+3.  ¿Cuál es la última dirección física que podría utilizar el programa?
+4.  ¿Qué tendría que ocurrir con las referencias del programa si se cargara en otra ubicación usando relocación estática?
 
 ## 13. Del sistema monoprogramado al multiprogramado
 
@@ -284,13 +282,13 @@ flowchart LR
 
 ## 15. Preguntas de autoevaluación
 
-1. ¿Qué caracteriza a un sistema monoprogramado?
-2. ¿Cómo se organiza típicamente su memoria?
-3. ¿Qué significa que la asignación sea contigua?
-4. ¿Cuál es la diferencia entre dirección lógica y física?
-5. ¿Qué es una dirección absoluta?
-6. ¿En qué momento ocurre la relocación estática?
-7. Si la base es 3000 y la dirección lógica es 450, ¿cuál es la dirección física?
-8. ¿Por qué puede desperdiciarse memoria en este modelo?
-9. ¿Qué riesgo existe si no hay protección de memoria?
+1.  ¿Qué caracteriza a un sistema monoprogramado?
+2.  ¿Cómo se organiza típicamente su memoria?
+3.  ¿Qué significa que la asignación sea contigua?
+4.  ¿Cuál es la diferencia entre dirección lógica y física?
+5.  ¿Qué es una dirección absoluta?
+6.  ¿En qué momento ocurre la relocación estática?
+7.  Si la base es 3000 y la dirección lógica es 450, ¿cuál es la dirección física?
+8.  ¿Por qué puede desperdiciarse memoria en este modelo?
+9.  ¿Qué riesgo existe si no hay protección de memoria?
 10. ¿Qué necesidad tecnológica conduce de la monoprogramación a la multiprogramación?

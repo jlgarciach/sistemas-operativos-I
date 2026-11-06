@@ -1,0 +1,342 @@
+---
+title: "Clase 23. Linux, kernel, procesos y administración de servicios en Docker"
+subtitle: "Sistemas Operativos I · Proyecto integrador (2 de 5)"
+lang: es
+number-sections: true
+execute:
+  eval: false
+---
+
+::: {.callout-tip title="La pregunta de hoy"}
+**¿Cómo puede ejecutarse Ubuntu dentro de Docker y qué comparte realmente con el sistema anfitrión?**
+:::
+
+## Propósito de la clase
+
+En la clase anterior instalamos Docker, descargamos Ubuntu y practicamos el ciclo de vida de un contenedor. Hoy examinaremos **cómo Linux administra procesos y recursos**, qué papel desempeña el **kernel** y cómo se ejecutan **servicios** en un contenedor. Dejaremos preparado un entorno Linux para las siguientes clases, cuando instalaremos Apache y MySQL.
+
+**Duración sugerida:** 90 minutos. **Requisito:** Docker funcionando y acceso a una terminal (PowerShell, Terminal o consola Linux).
+
+### Resultados de aprendizaje
+
+Al finalizar, el estudiante podrá:
+
+1. Distinguir entre kernel, distribución Linux, sistema anfitrión y contenedor.
+2. Explicar las diferencias de ejecución de Docker en Linux, Windows y macOS.
+3. Inspeccionar procesos, usuarios, memoria y sistema de archivos de un contenedor.
+4. Reconocer el papel de *namespaces* y *cgroups* en el aislamiento.
+5. Ejecutar un servicio sencillo, comprobar su disponibilidad y analizar por qué un contenedor permanece activo o se detiene.
+
+## 1. Recordemos lo aprendido
+
+Una **imagen** es una plantilla inmutable para crear contenedores. Un **contenedor** es una instancia de ejecución aislada de una imagen. Docker administra su creación, arranque, detención y eliminación.
+
+| Concepto | Definición sencilla | Ejemplo |
+|---|---|---|
+| Sistema anfitrión | Entorno donde se ejecuta Docker | Windows 11, macOS o Ubuntu |
+| Imagen | Plantilla con archivos y configuración | `ubuntu:24.04` |
+| Contenedor | Entorno de procesos creado desde una imagen | `laboratorio-linux` |
+| Kernel | Núcleo que administra recursos del sistema | Kernel Linux |
+| Servicio | Programa que atiende solicitudes o realiza tareas | Servidor HTTP |
+
+::: {.callout-note title="Tres preguntas para discutir"}
+1. ¿Es lo mismo descargar una imagen de Ubuntu que instalar Ubuntu en una máquina virtual?
+2. ¿Qué ocurre con un contenedor cuando termina su proceso principal?
+3. ¿Quién administra la memoria y los procesos que ejecutamos dentro del contenedor?
+:::
+
+## 2. El kernel y el espacio de usuario
+
+El **kernel** es la parte central del sistema operativo. Gestiona la ejecución de procesos, memoria, dispositivos y acceso a recursos. Los programas comunes se ejecutan en el **espacio de usuario** y solicitan servicios al kernel mediante llamadas al sistema.
+
+```{mermaid}
+flowchart TB
+  A[Aplicaciones y comandos] --> B[Espacio de usuario]
+  B --> C[Llamadas al sistema]
+  C --> D[Kernel Linux]
+  D --> E[CPU, memoria, disco y red]
+```
+
+**Ejemplo:** cuando ejecutamos `ls`, el programa necesita consultar el sistema de archivos; para hacerlo utiliza servicios del kernel. Cuando ejecutamos `ps`, consultamos información sobre procesos que el kernel administra.
+
+### ¿Qué kernel utilizan los contenedores?
+
+| Equipo del estudiante | Ejecución de contenedores Linux | Kernel utilizado |
+|---|---|---|
+| Linux | Docker Engine sobre Linux | Kernel del anfitrión Linux |
+| Windows con Docker Desktop | Entorno Linux, normalmente WSL 2 | Kernel Linux del entorno WSL 2 |
+| macOS con Docker Desktop | Máquina virtual Linux administrada por Docker Desktop | Kernel Linux de esa máquina virtual |
+
+::: {.callout-warning title="Precisión importante"}
+Un contenedor Ubuntu **no arranca un kernel Ubuntu propio**. Incluye herramientas y bibliotecas del espacio de usuario de Ubuntu y utiliza el kernel Linux del entorno que lo ejecuta. En Windows y macOS, ese kernel pertenece al entorno Linux virtualizado, **no al kernel de Windows o macOS**.
+:::
+
+### Comparación: máquina virtual y contenedor
+
+```{mermaid}
+flowchart LR
+  subgraph VM[Máquina virtual]
+    A[Aplicación] --> B[Sistema operativo invitado]
+    B --> C[Kernel invitado]
+    C --> D[Hardware virtual]
+  end
+  subgraph CT[Contenedor Linux]
+    E[Aplicación] --> F[Archivos y bibliotecas]
+    F --> G[Kernel Linux compartido]
+  end
+```
+
+**Reflexión:** los contenedores son más ligeros que una máquina virtual completa en muchos escenarios, pero su aislamiento no equivale exactamente al de una máquina virtual.
+
+## 3. Laboratorio A: preparar el entorno Linux (15 minutos)
+
+Todos los comandos de este apartado se ejecutan en la **terminal de la computadora anfitriona**, excepto cuando se indique explícitamente «dentro del contenedor».
+
+### Paso 1. Verificar Docker
+
+```bash
+ docker --version
+ docker info
+```
+
+Si `docker info` falla, comprobar que Docker Desktop o el servicio Docker Engine esté iniciado.
+
+### Paso 2. Crear un contenedor que permanezca activo
+
+```bash
+ docker pull ubuntu:24.04
+ docker run -d --name laboratorio-linux ubuntu:24.04 sleep infinity
+```
+
+**¿Qué significa cada parte?**
+
+| Elemento | Función |
+|---|---|
+| `docker run` | Crea e inicia el contenedor |
+| `-d` | Ejecuta en segundo plano |
+| `--name laboratorio-linux` | Asigna un nombre fácil de identificar |
+| `ubuntu:24.04` | Imagen utilizada |
+| `sleep infinity` | Mantiene vivo el proceso principal para el laboratorio |
+
+Si el contenedor `laboratorio-linux` ya existe desde una práctica anterior, **no lo crees otra vez**. Revisa su estado y, si está detenido, inícialo:
+
+```bash
+ docker ps -a
+ docker start laboratorio-linux
+```
+
+### Paso 3. Entrar a Ubuntu
+
+```bash
+ docker exec -it laboratorio-linux bash
+```
+
+Desde este punto, los comandos del siguiente apartado se ejecutan **dentro del contenedor**. Para salir sin detenerlo: `exit`.
+
+::: {.callout-tip title="Punto de control 1"}
+Antes de continuar, cada estudiante debe mostrar en Docker Desktop o mediante `docker ps` que `laboratorio-linux` está activo.
+:::
+
+## 4. Laboratorio B: reconocer el sistema y sus procesos (20 minutos)
+
+### Paso 1. Identificar la distribución y el kernel
+
+Dentro del contenedor:
+
+```bash
+ cat /etc/os-release
+ uname -a
+ whoami
+ pwd
+```
+
+- `cat /etc/os-release`: identifica la distribución y versión del espacio de usuario.
+- `uname -a`: muestra información del kernel en ejecución.
+- `whoami`: muestra el usuario actual.
+- `pwd`: muestra el directorio de trabajo.
+
+**Pregunta:** ¿por qué `cat /etc/os-release` dice Ubuntu y `uname -a` puede mencionar un kernel propio de WSL 2 o del entorno Docker Desktop?
+
+### Paso 2. Instalar herramientas de diagnóstico
+
+```bash
+ apt update
+ apt install -y procps iproute2 nano curl python3
+```
+
+Las imágenes mínimas no siempre incluyen `ps`, `top` o `ip`. Instalaremos las herramientas necesarias dentro del contenedor, sin modificar directamente el sistema anfitrión.
+
+### Paso 3. Examinar procesos
+
+```bash
+ ps -ef
+ top
+```
+
+Presiona `q` para salir de `top`.
+
+Identifica el proceso `sleep infinity` y observa los identificadores PID. En un contenedor, el espacio de identificadores de procesos puede ser diferente del que ve el anfitrión.
+
+### Paso 4. Examinar memoria y disco
+
+```bash
+ free -h
+ df -h
+ ls -la /
+```
+
+::: {.callout-note title="Interpretación"}
+`free -h` informa sobre memoria visible desde el entorno Linux y **no debe interpretarse por sí solo como el límite de memoria asignado al contenedor**. Para observar el consumo y los límites reportados por Docker, utilizaremos `docker stats` desde el anfitrión.
+:::
+
+## 5. ¿Cómo aísla Linux a los contenedores?
+
+Dos mecanismos centrales son:
+
+- **Namespaces:** proporcionan vistas aisladas de recursos, como procesos, red y puntos de montaje.
+- **Cgroups:** permiten contabilizar y limitar el consumo de recursos como CPU y memoria.
+
+Esto no significa que cada contenedor tenga su propio kernel. Varios contenedores pueden utilizar el mismo kernel Linux manteniendo espacios de ejecución separados.
+
+### Experimento: observar los recursos desde Docker
+
+Abre **otra terminal en el anfitrión**, sin cerrar la sesión dentro de Ubuntu:
+
+```bash
+ docker stats --no-stream laboratorio-linux
+ docker inspect laboratorio-linux
+```
+
+`docker stats --no-stream` ofrece una lectura puntual del consumo. `docker inspect` muestra detalles de configuración, estado y red. La salida de `inspect` es extensa: no es necesario memorizarla.
+
+### Experimento opcional: límite de memoria
+
+En la terminal anfitriona:
+
+```bash
+ docker run -d --name linux-limitado --memory 256m ubuntu:24.04 sleep infinity
+ docker stats --no-stream linux-limitado
+ docker rm -f linux-limitado
+```
+
+**Analiza:** ¿qué diferencia existe entre observar el uso de memoria y configurar un límite? No intentaremos agotar la memoria; el objetivo es entender la configuración.
+
+## 6. Laboratorio C: procesos y servicios (20 minutos)
+
+Un **proceso** es un programa en ejecución. Un **servicio** es un programa que realiza una función de manera continua o responde a solicitudes, por ejemplo, un servidor HTTP.
+
+En una instalación Linux convencional, muchos servicios son administrados por `systemd`. Sin embargo, **un contenedor Ubuntu mínimo normalmente no inicia `systemd` como PID 1**. Por eso, `systemctl start ...` no es el método apropiado en este laboratorio.
+
+### Paso 1. Crear una página de prueba
+
+Dentro de `laboratorio-linux`:
+
+```bash
+ mkdir -p /opt/laboratorio-web
+ echo '<h1>UMG - Sistemas Operativos I</h1><p>Servicio HTTP desde Linux en Docker</p>' > /opt/laboratorio-web/index.html
+ cd /opt/laboratorio-web
+```
+
+### Paso 2. Iniciar un servidor HTTP sencillo
+
+Dentro del contenedor:
+
+```bash
+ python3 -m http.server 8000 --bind 0.0.0.0
+```
+
+Este comando queda ejecutándose en primer plano. **No es Apache**: es un servidor de prueba que nos permitirá estudiar un proceso que escucha solicitudes. Mantén abierta esa terminal.
+
+### Paso 3. Comprobar el servicio desde el contenedor
+
+Abre otra terminal en el anfitrión y ejecuta:
+
+```bash
+ docker exec laboratorio-linux curl -I http://127.0.0.1:8000
+ docker exec laboratorio-linux ps -ef
+```
+
+La primera instrucción debe devolver una respuesta HTTP; la segunda permite identificar el proceso `python3`.
+
+::: {.callout-warning title="¿Por qué no funciona localhost:8000 desde mi navegador?"}
+Creamos `laboratorio-linux` **sin publicar puertos**. Por tanto, aunque el servidor escuche dentro del contenedor, el puerto 8000 no queda expuesto automáticamente en la computadora anfitriona. En la clase 3 aprenderemos a publicar puertos con `-p` y a usar redes Docker para Apache y MySQL.
+:::
+
+### Paso 4. Detener el servicio
+
+Regresa a la terminal donde corre el servidor y presiona `Ctrl+C`. Repite la comprobación con `curl`: ahora debería fallar la conexión. **El contenedor seguirá activo** porque su proceso principal es `sleep infinity`.
+
+### Paso 5. Diferenciar proceso principal y proceso adicional
+
+En el anfitrión:
+
+```bash
+ docker ps
+ docker stop laboratorio-linux
+ docker ps -a
+ docker start laboratorio-linux
+```
+
+**Explicación:** detener el contenedor finaliza sus procesos. Al reiniciarlo vuelve a ejecutarse el proceso principal configurado (`sleep infinity`), pero **el servidor HTTP que iniciamos manualmente no se reinicia solo**.
+
+## 7. Relación con nuestro proyecto integrador
+
+```{mermaid}
+flowchart TB
+  A[Computadora del estudiante] --> B[Docker Desktop o Docker Engine]
+  B --> C[Entorno Linux y kernel compartido]
+  C --> D[Contenedor Ubuntu: procesos y herramientas]
+  C --> E[Próxima clase: Apache]
+  C --> F[Próxima clase: MySQL]
+  E --> G[Clase 4: aplicación CRUD]
+  F --> G
+  C --> H[Clase 5: Oracle Database]
+```
+
+**Hoy** entendimos el fundamento de los contenedores y probamos un servicio HTTP temporal. **En la siguiente clase** instalaremos servicios reales, publicaremos puertos y conectaremos MySQL desde Workbench.
+
+## 8. Errores frecuentes y soluciones
+
+| Síntoma | Causa probable | Qué revisar |
+|---|---|---|
+| `Conflict. The container name ... is already in use` | Ya existe el contenedor | Ejecutar `docker ps -a` y reutilizarlo |
+| `container ... is not running` | Está detenido | `docker start laboratorio-linux` |
+| `ps: command not found` | Imagen mínima | `apt update && apt install -y procps` |
+| `systemctl` no funciona | No se inició `systemd` como PID 1 | Administrar el proceso directamente |
+| El navegador no abre `localhost:8000` | Puerto no publicado | Verificar `docker ps`; lo veremos en clase 3 |
+| `curl: Failed to connect` | El servidor no está activo | Volver a iniciar `python3 -m http.server ...` |
+
+## 9. Actividades de comprobación (10 minutos)
+
+Responde en tu cuaderno o en un documento breve:
+
+1. ¿Qué diferencia hay entre la distribución Ubuntu del contenedor y el kernel Linux que utiliza?
+2. ¿Qué función cumplen los *namespaces* y los *cgroups*?
+3. ¿Qué comando permite observar el consumo de recursos de un contenedor?
+4. ¿Por qué `systemctl` no funciona normalmente en una imagen mínima de Ubuntu?
+5. ¿Por qué detener el servidor Python no detiene necesariamente el contenedor?
+6. ¿Por qué no pudimos acceder al servicio HTTP desde el navegador del anfitrión?
+
+### Mini-reto individual
+
+Crea un archivo `/opt/laboratorio-web/autor.txt` con tu nombre y sección, utilizando `echo` o `nano`. Después comprueba su contenido con `cat`. Sal del contenedor, vuelve a entrar y verifica que el archivo sigue allí.
+
+::: {.callout-note title="Para reflexionar"}
+El archivo permanece al salir y volver a entrar en **el mismo contenedor**, pero no debemos asumir que sobrevivirá a su eliminación. En la próxima clase estudiaremos los **volúmenes** para persistencia de datos.
+:::
+
+## 10. Evidencias y cierre (5 minutos)
+
+Cada estudiante debe presentar:
+
+1. Captura de `docker ps` mostrando `laboratorio-linux` activo.
+2. Salida de `cat /etc/os-release` y `uname -a`.
+3. Salida de `ps -ef` con el proceso principal y, durante la prueba, el servidor HTTP.
+4. Comprobación del servicio mediante `curl -I`.
+5. Respuesta breve: **¿qué kernel utiliza mi contenedor según el sistema anfitrión de mi equipo?**
+
+**Distribución sugerida del tiempo:** repaso y teoría 20 min; laboratorio A 15 min; laboratorio B 20 min; laboratorio C 20 min; comprobación y cierre 15 min. Ajustar según la velocidad de descarga de paquetes.
+
+::: {.callout-tip title="Idea clave de la clase"}
+**Un contenedor no es una computadora virtual completa:** es un conjunto de procesos aislados que utiliza el kernel Linux del entorno donde se ejecuta. Comprender esta diferencia es fundamental para administrar servicios con Docker.
+:::

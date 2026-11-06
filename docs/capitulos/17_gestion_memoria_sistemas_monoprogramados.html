@@ -277,8 +277,38 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../capitulos/22_introduccion_docker.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Clase 22. Introducción a Docker: instalación y primeros contenedores</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/23_linux_kernel_procesos_servicios.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Clase 23. Linux, kernel, procesos y administración de servicios en Docker</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/24_apache_mysql_docker.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Clase 24. Servicios Apache y MySQL con Docker Compose</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/25_crud_php_mysql_docker.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Clase 25. CRUD web con PHP, Apache y MySQL</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../capitulos/26_oracle_docker_cierre_proyecto.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Clase 26. Oracle Database Free y defensa del proyecto integrador</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../capitulos/99_cierre.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Cierre de la clase</span></span></a>
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Cierre de la clase</span></span></a>
   </div>
 </li>
     </ul>
@@ -398,9 +428,7 @@ window.Quarto = {
 <div>
 <p></p><figure class="figure"><p></p>
 <div>
-<pre class="mermaid mermaid-js">flowchart LR
-    CPU[CPU] --&gt; RAM["Memoria principal\nSistema Operativo + 1 programa"]
-</pre>
+
 </div>
 <p></p></figure><p></p>
 </div>
@@ -423,13 +451,7 @@ window.Quarto = {
 <div>
 <p></p><figure class="figure"><p></p>
 <div>
-<pre class="mermaid mermaid-js">flowchart TB
-    M[Memoria principal]
-    SO["Sistema Operativo"]
-    P["Programa de usuario"]
-    M --&gt; SO
-    M --&gt; P
-</pre>
+
 </div>
 <p></p></figure><p></p>
 </div>
@@ -440,9 +462,9 @@ window.Quarto = {
 <p>Supongamos una memoria de <strong>512 KB</strong>:</p>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 30%">
-<col style="width: 40%">
-<col style="width: 30%">
+<col style="width: 29%">
+<col style="width: 10%">
+<col style="width: 59%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -480,12 +502,7 @@ window.Quarto = {
 <div>
 <p></p><figure class="figure"><p></p>
 <div>
-<pre class="mermaid mermaid-js">flowchart TB
-    A["0 KB"] --&gt; SO["Sistema Operativo\n128 KB"]
-    SO --&gt; P["Programa\n300 KB"]
-    P --&gt; L["Espacio no utilizado\n84 KB"]
-    L --&gt; F["512 KB"]
-</pre>
+
 </div>
 <p></p></figure><p></p>
 </div>
@@ -556,11 +573,7 @@ window.Quarto = {
 <div>
 <p></p><figure class="figure"><p></p>
 <div>
-<pre class="mermaid mermaid-js">flowchart LR
-    P[Programa] --&gt; D1[Dirección 2000]
-    P --&gt; D2[Dirección 2250]
-    P --&gt; D3[Dirección 2999]
-</pre>
+
 </div>
 <p></p></figure><p></p>
 </div>
@@ -572,27 +585,19 @@ window.Quarto = {
 <h2 data-number="20.7" class="anchored" data-anchor-id="relocación-estática"><span class="header-section-number">20.7</span> 6. Relocación estática</h2>
 <p>Una alternativa consiste en permitir que el programa utilice direcciones relativas y realizar un ajuste <strong>una sola vez, durante la carga</strong>. A este procedimiento lo llamamos <strong>relocación estática</strong>.</p>
 <p>La idea puede expresarse de manera sencilla:</p>
-<p><span class="math display">\[
-\text{Dirección física} = \text{Dirección base} + \text{Dirección lógica}
-\]</span></p>
+<p><span class="math display">\[\text{Dirección física} = \text{Dirección base} + \text{Dirección lógica}\]</span></p>
 <section id="ejemplo" class="level3" data-number="20.7.1">
 <h3 data-number="20.7.1" class="anchored" data-anchor-id="ejemplo"><span class="header-section-number">20.7.1</span> Ejemplo</h3>
 <p>El sistema operativo ocupa las direcciones <strong>0 a 1999</strong> y el programa utiliza direcciones lógicas <strong>0 a 999</strong>. El cargador decide colocar el programa a partir de la dirección <strong>2000</strong>.</p>
 <p>Si el programa solicita su dirección lógica 250:</p>
-<p><span class="math display">\[
-2000 + 250 = 2250
-\]</span></p>
+<p><span class="math display">\[2000 + 250 = 2250\]</span></p>
 <p>Por lo tanto, la dirección física correspondiente es <strong>2250</strong>.</p>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
 <div>
 <p></p><figure class="figure"><p></p>
 <div>
-<pre class="mermaid mermaid-js">flowchart LR
-    DL["Dirección lógica\n250"] --&gt; SUMA((+))
-    BASE["Base\n2000"] --&gt; SUMA
-    SUMA --&gt; DF["Dirección física\n2250"]
-</pre>
+
 </div>
 <p></p></figure><p></p>
 </div>
@@ -649,12 +654,7 @@ Ver respuesta
 <div>
 <p></p><figure class="figure"><p></p>
 <div>
-<pre class="mermaid mermaid-js">flowchart TB
-    SO["Sistema Operativo"]
-    P["Programa de usuario"]
-    E["Escritura fuera de límites"]
-    P --&gt; E --&gt; SO
-</pre>
+
 </div>
 <p></p></figure><p></p>
 </div>
@@ -716,9 +716,7 @@ Ver respuesta
 </ol>
 <section id="solución-de-la-parte-numérica" class="level3" data-number="20.12.1">
 <h3 data-number="20.12.1" class="anchored" data-anchor-id="solución-de-la-parte-numérica"><span class="header-section-number">20.12.1</span> Solución de la parte numérica</h3>
-<p><span class="math display">\[
-1024 - 256 - 500 = 268\text{ KB}
-\]</span></p>
+<p><span class="math display">\[1024 - 256 - 500 = 268\text{ KB}\]</span></p>
 <p>Quedan <strong>268 KB</strong> sin utilizar.</p>
 <blockquote class="blockquote">
 <p><strong>Atención:</strong> si se considera 1 MB como 1000 KB se obtendrían 244 KB, pero en este ejercicio trabajaremos con <strong>1 MB = 1024 KB</strong> para mantener consistencia binaria.</p>
@@ -751,14 +749,7 @@ Ver respuesta
 <div>
 <p></p><figure class="figure"><p></p>
 <div>
-<pre class="mermaid mermaid-js">flowchart LR
-    M[Monoprogramación] --&gt; U["Un programa de usuario"]
-    M --&gt; C["Asignación contigua simple"]
-    M --&gt; D["Direcciones lógicas y físicas"]
-    D --&gt; R["Relocación estática"]
-    R --&gt; F["Física = Base + Lógica"]
-    M --&gt; L["Simplicidad, pero poca flexibilidad"]
-</pre>
+
 </div>
 <p></p></figure><p></p>
 </div>
